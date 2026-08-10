@@ -64,6 +64,7 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  overflow-x: hidden;
   scroll-behavior: smooth;
   scroll-padding-top: calc(var(--nav-h) + 24px);
 }
@@ -1563,7 +1564,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .contact-grid {
   display: grid;
-  grid-template-columns: 45% 55%;
+  grid-template-columns: 9fr 11fr;  /* not 45%/55% — percentages ignore the gap */
   gap: 0 clamp(32px, 5vw, 80px);
   align-items: start;
 }
@@ -1653,7 +1654,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* Qualification — compact editorial strip */
 .qualify {
   display: grid;
-  grid-template-columns: 40% 60%;
+  grid-template-columns: 2fr 3fr;   /* not 40%/60% — percentages ignore the gap */
   gap: 0 clamp(32px, 6vw, 96px);
   align-items: start;
 }
