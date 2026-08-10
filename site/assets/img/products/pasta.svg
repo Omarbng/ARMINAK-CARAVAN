@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="46 0 400 500" width="400" height="500" role="img">
+  <g fill="none" stroke="#8B8B8B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M171 142 C159 212 183 310 165 392" stroke-width="1.25"/>
+      <path d="M186 142 C176 212 196 310 181 392" stroke-width="1.25"/>
+      <path d="M201 142 C194 212 208 310 197 392" stroke-width="1.25"/>
+      <path d="M216 142 C211 212 221 310 214 392" stroke-width="1.25"/>
+      <path d="M231 142 C229 212 233 310 230 392" stroke-width="1.25"/>
+      <path d="M246 142 C246 212 246 310 246 392" stroke-width="1.25"/>
+      <path d="M261 142 C263 212 259 310 262 392" stroke-width="1.25"/>
+      <path d="M276 142 C281 212 271 310 278 392" stroke-width="1.25"/>
+      <path d="M291 142 C298 212 284 310 295 392" stroke-width="1.25"/>
+      <path d="M306 142 C316 212 296 310 311 392" stroke-width="1.25"/>
+      <path d="M321 142 C333 212 309 310 327 392" stroke-width="1.25"/>
+      <rect x="158" y="246" width="176" height="54" stroke-width="1.4"/>
+      <line x1="158" y1="260" x2="334" y2="260" stroke-opacity="0.28" stroke-width="1"/>
+      <line x1="158" y1="286" x2="334" y2="286" stroke-opacity="0.28" stroke-width="1"/>
+  </g>
+</svg>

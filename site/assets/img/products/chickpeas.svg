@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="46 0 400 500" width="400" height="500" role="img">
+  <g fill="none" stroke="#8B8B8B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+      <g transform="rotate(-8 246 194)">
+        <path d="M241 158 A36 36 0 1 0 268.3 165.2 C266.2 154.4 258.2 149.4 248.9 153.0 C245.6 154.8 244.2 156.6 241 158 Z" stroke-width="1.35"/>
+        <path d="M230.9 192 C241.7 204 253.2 206 264.0 200" stroke-opacity="0.32" stroke-width="0.95"/>
+        <path d="M228.0 176.0 C223.7 186.8 224.4 199.0 230.2 208.4" stroke-opacity="0.22" stroke-width="0.9"/>
+      </g>
+      <g transform="rotate(12 188 300)">
+        <path d="M183 264 A36 36 0 1 0 210.3 271.2 C208.2 260.4 200.2 255.4 190.9 259.0 C187.6 260.8 186.2 262.6 183 264 Z" stroke-width="1.35"/>
+        <path d="M172.9 298 C183.7 310 195.2 312 206.0 306" stroke-opacity="0.32" stroke-width="0.95"/>
+        <path d="M170.0 282.0 C165.7 292.8 166.4 305.0 172.2 314.4" stroke-opacity="0.22" stroke-width="0.9"/>
+      </g>
+      <g transform="rotate(-14 304 300)">
+        <path d="M299 264 A36 36 0 1 0 326.3 271.2 C324.2 260.4 316.2 255.4 306.9 259.0 C303.6 260.8 302.2 262.6 299 264 Z" stroke-width="1.35"/>
+        <path d="M288.9 298 C299.7 310 311.2 312 322.0 306" stroke-opacity="0.32" stroke-width="0.95"/>
+        <path d="M286.0 282.0 C281.7 292.8 282.4 305.0 288.2 314.4" stroke-opacity="0.22" stroke-width="0.9"/>
+      </g>
+  </g>
+</svg>

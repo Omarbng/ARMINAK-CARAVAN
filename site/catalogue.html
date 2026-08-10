@@ -1,0 +1,936 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop All — Grain, Oils, Dairy &amp; Foodstuff | ARMINAK CARAVAN</title>
+<meta name="description" content="Browse the full ARMINAK CARAVAN catalogue — milling wheat, feed barley, corn, flaxseed, sunflower and rapeseed oil, flour, rice, dairy, sugar ICUMSA 45, pasta, tomato paste and pulses.">
+<meta name="theme-color" content="#111214">
+<script>(function(){try{var t=localStorage.getItem('ac_theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}})();</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+</head>
+
+<body>
+<a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <button class="nav__burger" id="navBurger" aria-expanded="false" aria-controls="navMenu" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav__menu" id="navMenu" aria-label="Primary">
+      <a class="nav__link" href="catalogue.html" aria-current="page" data-i18n="nav.catalogue">Catalogue</a>
+      <a class="nav__link" href="index.html#about" data-i18n="nav.about">About</a>
+      <a class="nav__link" href="insights.html" data-i18n="nav.insights">Insights</a>
+      <a class="nav__link" href="contact.html" data-i18n="nav.contact">Contact</a>
+    </nav>
+
+    <a class="nav__mark" href="index.html">ARMINAK CARAVAN<sup>™</sup></a>
+
+    <div class="nav__side">
+      <div class="lang" role="group" aria-label="Language">
+        <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
+        <button class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
+      </div>
+      <button class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+        <span class="theme-toggle__thumb">
+          <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.6 14.6A8.6 8.6 0 0 1 9.4 3.4a8.6 8.6 0 1 0 11.2 11.2Z"/></svg>
+        </span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+
+  <section class="pagehead">
+    <div class="shell">
+      <span class="label pagehead__tag fade-up" data-i18n="cat.tag">Product Catalogue</span>
+      <h1 class="t-section pagehead__title fade-up stagger-1" data-i18n="cat.title">Shop all</h1>
+      <p class="pagehead__copy fade-up stagger-2" data-i18n="cat.copy">Commodities documented to contract standard. Every line is quoted against a specific enquiry — laboratory parameters are fixed in the contract and verified by independent inspection at the load port.</p>
+    </div>
+  </section>
+
+  <div class="shell">
+    <div class="shop">
+
+      <aside class="filters" aria-label="Filters">
+        <h2 class="filters__title"><span data-i18n="shop.filter">Filter</span></h2>
+
+        <div class="filters__groups">
+          <div class="fgroup">
+            <button type="button" class="fgroup__head" aria-expanded="true">
+              <span data-i18n="shop.collections">Collections</span>
+              <svg viewBox="0 0 12 12" fill="none"><path d="M2 7.5 6 3.5l4 4" stroke-width="1.5"/></svg>
+            </button>
+            <div class="fgroup__body">
+              <label class="check">
+                <input type="checkbox" data-filter-col="new">
+                <span data-i18n="shop.colNew">New Arrivals</span>
+              </label>
+              <label class="check">
+                <input type="checkbox" data-filter-col="bestsellers">
+                <span data-i18n="shop.colBest">Bestsellers</span>
+              </label>
+              <label class="check">
+                <input type="checkbox" data-filter-col="private-label">
+                <span data-i18n="shop.colPl">Private Label</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="fgroup">
+            <button type="button" class="fgroup__head" aria-expanded="true">
+              <span data-i18n="shop.category">Category</span>
+              <svg viewBox="0 0 12 12" fill="none"><path d="M2 7.5 6 3.5l4 4" stroke-width="1.5"/></svg>
+            </button>
+            <div class="fgroup__body">
+          <label class="check">
+            <input type="checkbox" data-filter-cat="grains">
+            <span data-i18n="cat.c.grains">Agriculture & Grains</span>
+            <span class="check__n tabular">4</span>
+          </label>
+          <label class="check">
+            <input type="checkbox" data-filter-cat="oils">
+            <span data-i18n="cat.c.oils">Oils & Grocery</span>
+            <span class="check__n tabular">4</span>
+          </label>
+          <label class="check">
+            <input type="checkbox" data-filter-cat="dairy">
+            <span data-i18n="cat.c.dairy">Dairy & Beverages</span>
+            <span class="check__n tabular">4</span>
+          </label>
+          <label class="check">
+            <input type="checkbox" data-filter-cat="sugar">
+            <span data-i18n="cat.c.sugar">Sugar & Foodstuff</span>
+            <span class="check__n tabular">4</span>
+          </label>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <div>
+        <div class="shop__toolbar">
+          <span class="shop__count"><span id="shopCount" class="tabular" data-tpl="%n">16</span>&nbsp;<span data-i18n="shop.products">products</span></span>
+          <label class="sort">
+            <span data-i18n="shop.sortBy">Sort by</span>
+            <select id="shopSort">
+              <option value="relevance" data-i18n="shop.sortRelevance">Relevance</option>
+              <option value="name" data-i18n="shop.sortName">Name A–Z</option>
+              <option value="category" data-i18n="shop.sortCat">Category</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="grid-products" id="shopGrid">
+      <a class="card fade-up" href="product.html?p=milling-wheat-grade-3"
+         data-product="Milling Wheat" data-grade="Grade 3 · Milling"
+         data-product-key="p.milling-wheat-grade-3.name" data-grade-key="p.milling-wheat-grade-3.grade"
+         data-cat="grains" data-name="Milling Wheat" data-collections="bestsellers">
+        <div class="card__figure">
+          <span class="card__badge" data-i18n="shop.badgeBest">Bestseller</span>
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/wheat.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.milling-wheat-grade-3.name">Milling Wheat</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.grains">Agriculture & Grains</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp0">Protein</th><td data-i18n="p.milling-wheat-grade-3.sv0">12.5% min</td></tr>
+            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp1">Falling Number</th><td data-i18n="p.milling-wheat-grade-3.sv1">250 sec min</td></tr>
+            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp2">Test Weight</th><td data-i18n="p.milling-wheat-grade-3.sv2">770 g/l min</td></tr>
+            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp3">Wet Gluten</th><td data-i18n="p.milling-wheat-grade-3.sv3">23–25%</td></tr>
+            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp4">Moisture</th><td data-i18n="p.milling-wheat-grade-3.sv4">14% max</td></tr>
+            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp5">Foreign Matter</th><td data-i18n="p.milling-wheat-grade-3.sv5">2% max</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.milling-wheat-grade-3.mp0">Origin</dt><dd data-i18n="p.milling-wheat-grade-3.mv0">Russia · Kazakhstan</dd></div>
+            <div><dt data-i18n="p.milling-wheat-grade-3.mp1">Packing</dt><dd data-i18n="p.milling-wheat-grade-3.mv1">Bulk / 50 kg / big bags</dd></div>
+            <div><dt data-i18n="p.milling-wheat-grade-3.mp2">Incoterms</dt><dd data-i18n="p.milling-wheat-grade-3.mv2">FOB · CIF · CFR</dd></div>
+            <div><dt data-i18n="p.milling-wheat-grade-3.mp3">Minimum lot</dt><dd data-i18n="p.milling-wheat-grade-3.mv3">3 000 MT</dd></div>
+          </dl>
+        </template>
+      </a>
+      <a class="card fade-up" href="product.html?p=feed-barley-grade-1"
+         data-product="Feed Barley" data-grade="Grade 1 · Feed"
+         data-product-key="p.feed-barley-grade-1.name" data-grade-key="p.feed-barley-grade-1.grade"
+         data-cat="grains" data-name="Feed Barley" data-collections="bestsellers">
+        <div class="card__figure">
+          <span class="card__badge" data-i18n="shop.badgeBest">Bestseller</span>
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/barley.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.feed-barley-grade-1.name">Feed Barley</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.grains">Agriculture & Grains</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp0">Protein</th><td data-i18n="p.feed-barley-grade-1.sv0">11% min</td></tr>
+            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp1">Moisture</th><td data-i18n="p.feed-barley-grade-1.sv1">13.5% max</td></tr>
+            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp2">Test Weight</th><td data-i18n="p.feed-barley-grade-1.sv2">620 g/l min</td></tr>
+            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp3">Foreign Matter</th><td data-i18n="p.feed-barley-grade-1.sv3">2% max</td></tr>
+            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp4">Broken Grains</th><td data-i18n="p.feed-barley-grade-1.sv4">5% max</td></tr>
+            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp5">Damaged Grains</th><td data-i18n="p.feed-barley-grade-1.sv5">3% max</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.feed-barley-grade-1.mp0">Origin</dt><dd data-i18n="p.feed-barley-grade-1.mv0">Russia · Ukraine · Kazakhstan</dd></div>
+            <div><dt data-i18n="p.feed-barley-grade-1.mp1">Packing</dt><dd data-i18n="p.feed-barley-grade-1.mv1">Bulk / 50 kg bags</dd></div>
+            <div><dt data-i18n="p.feed-barley-grade-1.mp2">Incoterms</dt><dd data-i18n="p.feed-barley-grade-1.mv2">FOB · CIF · CFR</dd></div>
+            <div><dt data-i18n="p.feed-barley-grade-1.mp3">Minimum lot</dt><dd data-i18n="p.feed-barley-grade-1.mv3">3 000 MT</dd></div>
+          </dl>
+        </template>
+      </a>
+      <a class="card fade-up" href="product.html?p=corn-feed-grade"
+         data-product="Corn (Maize)" data-grade="Feed Grade"
+         data-product-key="p.corn-feed-grade.name" data-grade-key="p.corn-feed-grade.grade"
+         data-cat="grains" data-name="Corn (Maize)" data-collections="">
+        <div class="card__figure">
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/corn.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.corn-feed-grade.name">Corn (Maize)</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.grains">Agriculture & Grains</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.corn-feed-grade.sp0">Protein</th><td data-i18n="p.corn-feed-grade.sv0">8% min</td></tr>
+            <tr><th scope="row" data-i18n="p.corn-feed-grade.sp1">Moisture</th><td data-i18n="p.corn-feed-grade.sv1">14% max</td></tr>
+            <tr><th scope="row" data-i18n="p.corn-feed-grade.sp2">Test Weight</th><td data-i18n="p.corn-feed-grade.sv2">720 g/l min</td></tr>
+            <tr><th scope="row" data-i18n="p.corn-feed-grade.sp3">Foreign Matter</th><td data-i18n="p.corn-feed-grade.sv3">2% max</td></tr>
+            <tr><th scope="row" data-i18n="p.corn-feed-grade.sp4">Broken Grains</th><td data-i18n="p.corn-feed-grade.sv4">5% max</td></tr>
+            <tr><th scope="row" data-i18n="p.corn-feed-grade.sp5">Aflatoxin</th><td data-i18n="p.corn-feed-grade.sv5">20 ppb max</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.corn-feed-grade.mp0">Origin</dt><dd data-i18n="p.corn-feed-grade.mv0">Ukraine · Russia · Serbia</dd></div>
+            <div><dt data-i18n="p.corn-feed-grade.mp1">Packing</dt><dd data-i18n="p.corn-feed-grade.mv1">Bulk / 50 kg bags</dd></div>
+            <div><dt data-i18n="p.corn-feed-grade.mp2">Incoterms</dt><dd data-i18n="p.corn-feed-grade.mv2">FOB · CIF · CFR</dd></div>
+            <div><dt data-i18n="p.corn-feed-grade.mp3">Minimum lot</dt><dd data-i18n="p.corn-feed-grade.mv3">3 000 MT</dd></div>
+          </dl>
+        </template>
+      </a>
+      <a class="card fade-up" href="product.html?p=flaxseed-food-grade"
+         data-product="Flaxseed" data-grade="Brown · Food Grade"
+         data-product-key="p.flaxseed-food-grade.name" data-grade-key="p.flaxseed-food-grade.grade"
+         data-cat="grains" data-name="Flaxseed" data-collections="new">
+        <div class="card__figure">
+          <span class="card__badge" data-i18n="shop.badgeNew">New</span>
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/flaxseed.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.flaxseed-food-grade.name">Flaxseed</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.grains">Agriculture & Grains</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.flaxseed-food-grade.sp0">Oil Content</th><td data-i18n="p.flaxseed-food-grade.sv0">40% min</td></tr>
+            <tr><th scope="row" data-i18n="p.flaxseed-food-grade.sp1">Moisture</th><td data-i18n="p.flaxseed-food-grade.sv1">9% max</td></tr>
+            <tr><th scope="row" data-i18n="p.flaxseed-food-grade.sp2">Purity</th><td data-i18n="p.flaxseed-food-grade.sv2">99% min</td></tr>
+            <tr><th scope="row" data-i18n="p.flaxseed-food-grade.sp3">Admixture</th><td data-i18n="p.flaxseed-food-grade.sv3">1% max</td></tr>
+            <tr><th scope="row" data-i18n="p.flaxseed-food-grade.sp4">Free Fatty Acids</th><td data-i18n="p.flaxseed-food-grade.sv4">2% max</td></tr>
+            <tr><th scope="row" data-i18n="p.flaxseed-food-grade.sp5">Damaged Seeds</th><td data-i18n="p.flaxseed-food-grade.sv5">2% max</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.flaxseed-food-grade.mp0">Origin</dt><dd data-i18n="p.flaxseed-food-grade.mv0">Kazakhstan · Russia</dd></div>
+            <div><dt data-i18n="p.flaxseed-food-grade.mp1">Packing</dt><dd data-i18n="p.flaxseed-food-grade.mv1">Big bags / 25 kg bags</dd></div>
+            <div><dt data-i18n="p.flaxseed-food-grade.mp2">Incoterms</dt><dd data-i18n="p.flaxseed-food-grade.mv2">FOB · CIF · CFR</dd></div>
+            <div><dt data-i18n="p.flaxseed-food-grade.mp3">Minimum lot</dt><dd data-i18n="p.flaxseed-food-grade.mv3">500 MT</dd></div>
+          </dl>
+        </template>
+      </a>
+      <a class="card fade-up" href="product.html?p=crude-sunflower-oil"
+         data-product="Crude Sunflower Oil" data-grade="Crude · Degummed"
+         data-product-key="p.crude-sunflower-oil.name" data-grade-key="p.crude-sunflower-oil.grade"
+         data-cat="oils" data-name="Crude Sunflower Oil" data-collections="bestsellers">
+        <div class="card__figure">
+          <span class="card__badge" data-i18n="shop.badgeBest">Bestseller</span>
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/sunflower-oil.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.crude-sunflower-oil.name">Crude Sunflower Oil</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.oils">Oils & Grocery</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.crude-sunflower-oil.sp0">Free Fatty Acids</th><td data-i18n="p.crude-sunflower-oil.sv0">2% max</td></tr>
+            <tr><th scope="row" data-i18n="p.crude-sunflower-oil.sp1">Moisture & Volatiles</th><td data-i18n="p.crude-sunflower-oil.sv1">0.2% max</td></tr>
+            <tr><th scope="row" data-i18n="p.crude-sunflower-oil.sp2">Insoluble Impurities</th><td data-i18n="p.crude-sunflower-oil.sv2">0.1% max</td></tr>
+            <tr><th scope="row" data-i18n="p.crude-sunflower-oil.sp3">Peroxide Value</th><td data-i18n="p.crude-sunflower-oil.sv3">5 meq/kg max</td></tr>
+            <tr><th scope="row" data-i18n="p.crude-sunflower-oil.sp4">Phosphorus</th><td data-i18n="p.crude-sunflower-oil.sv4">300 ppm max</td></tr>
+            <tr><th scope="row" data-i18n="p.crude-sunflower-oil.sp5">Colour (Lovibond)</th><td data-i18n="p.crude-sunflower-oil.sv5">30 max</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.crude-sunflower-oil.mp0">Origin</dt><dd data-i18n="p.crude-sunflower-oil.mv0">Russia · Ukraine</dd></div>
+            <div><dt data-i18n="p.crude-sunflower-oil.mp1">Packing</dt><dd data-i18n="p.crude-sunflower-oil.mv1">Flexitank / ISO tank / 200 l drums</dd></div>
+            <div><dt data-i18n="p.crude-sunflower-oil.mp2">Incoterms</dt><dd data-i18n="p.crude-sunflower-oil.mv2">FOB · CIF · CFR</dd></div>
+            <div><dt data-i18n="p.crude-sunflower-oil.mp3">Minimum lot</dt><dd data-i18n="p.crude-sunflower-oil.mv3">1 000 MT</dd></div>
+          </dl>
+        </template>
+      </a>
+      <a class="card fade-up" href="product.html?p=refined-rapeseed-oil"
+         data-product="Refined Rapeseed Oil" data-grade="RBD · Winterised"
+         data-product-key="p.refined-rapeseed-oil.name" data-grade-key="p.refined-rapeseed-oil.grade"
+         data-cat="oils" data-name="Refined Rapeseed Oil" data-collections="new private-label">
+        <div class="card__figure">
+          <span class="card__badge" data-i18n="shop.badgeNew">New</span>
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/rapeseed-oil.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.refined-rapeseed-oil.name">Refined Rapeseed Oil</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.oils">Oils & Grocery</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.refined-rapeseed-oil.sp0">Free Fatty Acids</th><td data-i18n="p.refined-rapeseed-oil.sv0">0.1% max</td></tr>
+            <tr><th scope="row" data-i18n="p.refined-rapeseed-oil.sp1">Moisture & Volatiles</th><td data-i18n="p.refined-rapeseed-oil.sv1">0.1% max</td></tr>
+            <tr><th scope="row" data-i18n="p.refined-rapeseed-oil.sp2">Peroxide Value</th><td data-i18n="p.refined-rapeseed-oil.sv2">2 meq/kg max</td></tr>
+            <tr><th scope="row" data-i18n="p.refined-rapeseed-oil.sp3">Colour (Lovibond)</th><td data-i18n="p.refined-rapeseed-oil.sv3">2R / 20Y max</td></tr>
+            <tr><th scope="row" data-i18n="p.refined-rapeseed-oil.sp4">Soap Content</th><td data-i18n="p.refined-rapeseed-oil.sv4">Nil</td></tr>
+            <tr><th scope="row" data-i18n="p.refined-rapeseed-oil.sp5">Cold Test</th><td data-i18n="p.refined-rapeseed-oil.sv5">24 h at 0 °C</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.refined-rapeseed-oil.mp0">Origin</dt><dd data-i18n="p.refined-rapeseed-oil.mv0">Russia · Poland · Ukraine</dd></div>
+            <div><dt data-i18n="p.refined-rapeseed-oil.mp1">Packing</dt><dd data-i18n="p.refined-rapeseed-oil.mv1">Flexitank / 1 l · 5 l PET</dd></div>
+            <div><dt data-i18n="p.refined-rapeseed-oil.mp2">Incoterms</dt><dd data-i18n="p.refined-rapeseed-oil.mv2">FOB · CIF · CFR</dd></div>
+            <div><dt data-i18n="p.refined-rapeseed-oil.mp3">Minimum lot</dt><dd data-i18n="p.refined-rapeseed-oil.mv3">500 MT</dd></div>
+          </dl>
+        </template>
+      </a>
+      <a class="card fade-up" href="product.html?p=wheat-flour-type-550"
+         data-product="Wheat Flour" data-grade="Type 550 · Bakery"
+         data-product-key="p.wheat-flour-type-550.name" data-grade-key="p.wheat-flour-type-550.grade"
+         data-cat="oils" data-name="Wheat Flour" data-collections="">
+        <div class="card__figure">
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/flour.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.wheat-flour-type-550.name">Wheat Flour</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.oils">Oils & Grocery</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.wheat-flour-type-550.sp0">Protein</th><td data-i18n="p.wheat-flour-type-550.sv0">10.5% min</td></tr>
+            <tr><th scope="row" data-i18n="p.wheat-flour-type-550.sp1">Ash Content</th><td data-i18n="p.wheat-flour-type-550.sv1">0.55% max</td></tr>
+            <tr><th scope="row" data-i18n="p.wheat-flour-type-550.sp2">Moisture</th><td data-i18n="p.wheat-flour-type-550.sv2">14.5% max</td></tr>
+            <tr><th scope="row" data-i18n="p.wheat-flour-type-550.sp3">Wet Gluten</th><td data-i18n="p.wheat-flour-type-550.sv3">26% min</td></tr>
+            <tr><th scope="row" data-i18n="p.wheat-flour-type-550.sp4">Falling Number</th><td data-i18n="p.wheat-flour-type-550.sv4">250 sec min</td></tr>
+            <tr><th scope="row" data-i18n="p.wheat-flour-type-550.sp5">Granulation</th><td data-i18n="p.wheat-flour-type-550.sv5">180 µm</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.wheat-flour-type-550.mp0">Origin</dt><dd data-i18n="p.wheat-flour-type-550.mv0">Turkey · Kazakhstan</dd></div>
+            <div><dt data-i18n="p.wheat-flour-type-550.mp1">Packing</dt><dd data-i18n="p.wheat-flour-type-550.mv1">25 / 50 kg bags · big bags</dd></div>
+            <div><dt data-i18n="p.wheat-flour-type-550.mp2">Incoterms</dt><dd data-i18n="p.wheat-flour-type-550.mv2">FOB · CIF · CFR</dd></div>
+            <div><dt data-i18n="p.wheat-flour-type-550.mp3">Minimum lot</dt><dd data-i18n="p.wheat-flour-type-550.mv3">500 MT</dd></div>
+          </dl>
+        </template>
+      </a>
+      <a class="card fade-up" href="product.html?p=long-grain-white-rice"
+         data-product="Long Grain White Rice" data-grade="5% Broken"
+         data-product-key="p.long-grain-white-rice.name" data-grade-key="p.long-grain-white-rice.grade"
+         data-cat="oils" data-name="Long Grain White Rice" data-collections="">
+        <div class="card__figure">
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/rice.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.long-grain-white-rice.name">Long Grain White Rice</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.oils">Oils & Grocery</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.long-grain-white-rice.sp0">Broken Grains</th><td data-i18n="p.long-grain-white-rice.sv0">5% max</td></tr>
+            <tr><th scope="row" data-i18n="p.long-grain-white-rice.sp1">Moisture</th><td data-i18n="p.long-grain-white-rice.sv1">14% max</td></tr>
+            <tr><th scope="row" data-i18n="p.long-grain-white-rice.sp2">Average Length</th><td data-i18n="p.long-grain-white-rice.sv2">6.8 mm min</td></tr>
+            <tr><th scope="row" data-i18n="p.long-grain-white-rice.sp3">Chalky Grains</th><td data-i18n="p.long-grain-white-rice.sv3">4% max</td></tr>
+            <tr><th scope="row" data-i18n="p.long-grain-white-rice.sp4">Damaged Grains</th><td data-i18n="p.long-grain-white-rice.sv4">1% max</td></tr>
+            <tr><th scope="row" data-i18n="p.long-grain-white-rice.sp5">Foreign Matter</th><td data-i18n="p.long-grain-white-rice.sv5">0.1% max</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.long-grain-white-rice.mp0">Origin</dt><dd data-i18n="p.long-grain-white-rice.mv0">India · Pakistan · Vietnam</dd></div>
+            <div><dt data-i18n="p.long-grain-white-rice.mp1">Packing</dt><dd data-i18n="p.long-grain-white-rice.mv1">25 / 50 kg bags</dd></div>
+            <div><dt data-i18n="p.long-grain-white-rice.mp2">Incoterms</dt><dd data-i18n="p.long-grain-white-rice.mv2">FOB · CIF · CFR</dd></div>
+            <div><dt data-i18n="p.long-grain-white-rice.mp3">Minimum lot</dt><dd data-i18n="p.long-grain-white-rice.mv3">1 000 MT</dd></div>
+          </dl>
+        </template>
+      </a>
+      <a class="card fade-up" href="product.html?p=skimmed-milk-powder"
+         data-product="Skimmed Milk Powder" data-grade="Medium Heat · SMP"
+         data-product-key="p.skimmed-milk-powder.name" data-grade-key="p.skimmed-milk-powder.grade"
+         data-cat="dairy" data-name="Skimmed Milk Powder" data-collections="bestsellers">
+        <div class="card__figure">
+          <span class="card__badge" data-i18n="shop.badgeBest">Bestseller</span>
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/milk-powder.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.skimmed-milk-powder.name">Skimmed Milk Powder</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.dairy">Dairy & Beverages</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.skimmed-milk-powder.sp0">Protein (on SNF)</th><td data-i18n="p.skimmed-milk-powder.sv0">34% min</td></tr>
+            <tr><th scope="row" data-i18n="p.skimmed-milk-powder.sp1">Milk Fat</th><td data-i18n="p.skimmed-milk-powder.sv1">1.25% max</td></tr>
+            <tr><th scope="row" data-i18n="p.skimmed-milk-powder.sp2">Moisture</th><td data-i18n="p.skimmed-milk-powder.sv2">4% max</td></tr>
+            <tr><th scope="row" data-i18n="p.skimmed-milk-powder.sp3">Titratable Acidity</th><td data-i18n="p.skimmed-milk-powder.sv3">0.15% max</td></tr>
+            <tr><th scope="row" data-i18n="p.skimmed-milk-powder.sp4">Scorched Particles</th><td data-i18n="p.skimmed-milk-powder.sv4">Disc B</td></tr>
+            <tr><th scope="row" data-i18n="p.skimmed-milk-powder.sp5">Solubility Index</th><td data-i18n="p.skimmed-milk-powder.sv5">1.0 ml max</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.skimmed-milk-powder.mp0">Origin</dt><dd data-i18n="p.skimmed-milk-powder.mv0">EU · Belarus</dd></div>
+            <div><dt data-i18n="p.skimmed-milk-powder.mp1">Packing</dt><dd data-i18n="p.skimmed-milk-powder.mv1">25 kg multi-ply bags</dd></div>
+            <div><dt data-i18n="p.skimmed-milk-powder.mp2">Incoterms</dt><dd data-i18n="p.skimmed-milk-powder.mv2">CIF · CFR · DAP</dd></div>
+            <div><dt data-i18n="p.skimmed-milk-powder.mp3">Minimum lot</dt><dd data-i18n="p.skimmed-milk-powder.mv3">100 MT</dd></div>
+          </dl>
+        </template>
+      </a>
+      <a class="card fade-up" href="product.html?p=uht-milk-3-2"
+         data-product="UHT Milk 3.2%" data-grade="Ambient · 9 Months"
+         data-product-key="p.uht-milk-3-2.name" data-grade-key="p.uht-milk-3-2.grade"
+         data-cat="dairy" data-name="UHT Milk 3.2%" data-collections="private-label">
+        <div class="card__figure">
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/uht-milk.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.uht-milk-3-2.name">UHT Milk 3.2%</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.dairy">Dairy & Beverages</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.uht-milk-3-2.sp0">Milk Fat</th><td data-i18n="p.uht-milk-3-2.sv0">3.2%</td></tr>
+            <tr><th scope="row" data-i18n="p.uht-milk-3-2.sp1">Protein</th><td data-i18n="p.uht-milk-3-2.sv1">3.0% min</td></tr>
+            <tr><th scope="row" data-i18n="p.uht-milk-3-2.sp2">Solids-Not-Fat</th><td data-i18n="p.uht-milk-3-2.sv2">8.5% min</td></tr>
+            <tr><th scope="row" data-i18n="p.uht-milk-3-2.sp3">Shelf Life</th><td data-i18n="p.uht-milk-3-2.sv3">9 months</td></tr>
+            <tr><th scope="row" data-i18n="p.uht-milk-3-2.sp4">Packing</th><td data-i18n="p.uht-milk-3-2.sv4">1 l Tetra Pak</td></tr>
+            <tr><th scope="row" data-i18n="p.uht-milk-3-2.sp5">Sterilisation</th><td data-i18n="p.uht-milk-3-2.sv5">UHT 137 °C / 4 sec</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.uht-milk-3-2.mp0">Origin</dt><dd data-i18n="p.uht-milk-3-2.mv0">EU · Turkey</dd></div>
+            <div><dt data-i18n="p.uht-milk-3-2.mp1">Packing</dt><dd data-i18n="p.uht-milk-3-2.mv1">1 l Tetra Pak · 12 per case</dd></div>
+            <div><dt data-i18n="p.uht-milk-3-2.mp2">Incoterms</dt><dd data-i18n="p.uht-milk-3-2.mv2">CIF · CFR · DAP</dd></div>
+            <div><dt data-i18n="p.uht-milk-3-2.mp3">Minimum lot</dt><dd data-i18n="p.uht-milk-3-2.mv3">1 × 40' FCL</dd></div>
+          </dl>
+        </template>
+      </a>
+      <a class="card fade-up" href="product.html?p=ice-cream-private-label"
+         data-product="Ice Cream" data-grade="Private Label · Frozen"
+         data-product-key="p.ice-cream-private-label.name" data-grade-key="p.ice-cream-private-label.grade"
+         data-cat="dairy" data-name="Ice Cream" data-collections="new private-label">
+        <div class="card__figure">
+          <span class="card__badge" data-i18n="shop.badgeNew">New</span>
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/ice-cream.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.ice-cream-private-label.name">Ice Cream</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.dairy">Dairy & Beverages</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.ice-cream-private-label.sp0">Milk Fat</th><td data-i18n="p.ice-cream-private-label.sv0">8–12%</td></tr>
+            <tr><th scope="row" data-i18n="p.ice-cream-private-label.sp1">Total Solids</th><td data-i18n="p.ice-cream-private-label.sv1">36% min</td></tr>
+            <tr><th scope="row" data-i18n="p.ice-cream-private-label.sp2">Overrun</th><td data-i18n="p.ice-cream-private-label.sv2">80–100%</td></tr>
+            <tr><th scope="row" data-i18n="p.ice-cream-private-label.sp3">Storage Temperature</th><td data-i18n="p.ice-cream-private-label.sv3">−18 °C</td></tr>
+            <tr><th scope="row" data-i18n="p.ice-cream-private-label.sp4">Shelf Life</th><td data-i18n="p.ice-cream-private-label.sv4">18 months</td></tr>
+            <tr><th scope="row" data-i18n="p.ice-cream-private-label.sp5">Format</th><td data-i18n="p.ice-cream-private-label.sv5">Cone / stick / 5 l bulk</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.ice-cream-private-label.mp0">Origin</dt><dd data-i18n="p.ice-cream-private-label.mv0">EU · Turkey · UAE</dd></div>
+            <div><dt data-i18n="p.ice-cream-private-label.mp1">Packing</dt><dd data-i18n="p.ice-cream-private-label.mv1">Retail multipack / HoReCa bulk</dd></div>
+            <div><dt data-i18n="p.ice-cream-private-label.mp2">Incoterms</dt><dd data-i18n="p.ice-cream-private-label.mv2">CIF · CFR · DAP (reefer)</dd></div>
+            <div><dt data-i18n="p.ice-cream-private-label.mp3">Minimum lot</dt><dd data-i18n="p.ice-cream-private-label.mv3">1 × 40' RF</dd></div>
+          </dl>
+        </template>
+      </a>
+      <a class="card fade-up" href="product.html?p=natural-mineral-water"
+         data-product="Natural Mineral Water" data-grade="Still · PET"
+         data-product-key="p.natural-mineral-water.name" data-grade-key="p.natural-mineral-water.grade"
+         data-cat="dairy" data-name="Natural Mineral Water" data-collections="private-label">
+        <div class="card__figure">
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/water.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.natural-mineral-water.name">Natural Mineral Water</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.dairy">Dairy & Beverages</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.natural-mineral-water.sp0">Total Dissolved Solids</th><td data-i18n="p.natural-mineral-water.sv0">150–500 mg/l</td></tr>
+            <tr><th scope="row" data-i18n="p.natural-mineral-water.sp1">pH</th><td data-i18n="p.natural-mineral-water.sv1">7.0–7.6</td></tr>
+            <tr><th scope="row" data-i18n="p.natural-mineral-water.sp2">Nitrates</th><td data-i18n="p.natural-mineral-water.sv2">10 mg/l max</td></tr>
+            <tr><th scope="row" data-i18n="p.natural-mineral-water.sp3">Packing</th><td data-i18n="p.natural-mineral-water.sv3">0.5 / 1.5 l PET</td></tr>
+            <tr><th scope="row" data-i18n="p.natural-mineral-water.sp4">Shelf Life</th><td data-i18n="p.natural-mineral-water.sv4">12 months</td></tr>
+            <tr><th scope="row" data-i18n="p.natural-mineral-water.sp5">Certification</th><td data-i18n="p.natural-mineral-water.sv5">ISO 22000 · HACCP</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.natural-mineral-water.mp0">Origin</dt><dd data-i18n="p.natural-mineral-water.mv0">Turkey · Georgia</dd></div>
+            <div><dt data-i18n="p.natural-mineral-water.mp1">Packing</dt><dd data-i18n="p.natural-mineral-water.mv1">Shrink 6 / 12 per pack</dd></div>
+            <div><dt data-i18n="p.natural-mineral-water.mp2">Incoterms</dt><dd data-i18n="p.natural-mineral-water.mv2">FOB · CIF · CFR</dd></div>
+            <div><dt data-i18n="p.natural-mineral-water.mp3">Minimum lot</dt><dd data-i18n="p.natural-mineral-water.mv3">1 × 40' FCL</dd></div>
+          </dl>
+        </template>
+      </a>
+      <a class="card fade-up" href="product.html?p=refined-sugar-icumsa-45"
+         data-product="Refined White Sugar" data-grade="ICUMSA 45"
+         data-product-key="p.refined-sugar-icumsa-45.name" data-grade-key="p.refined-sugar-icumsa-45.grade"
+         data-cat="sugar" data-name="Refined White Sugar" data-collections="bestsellers">
+        <div class="card__figure">
+          <span class="card__badge" data-i18n="shop.badgeBest">Bestseller</span>
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/sugar.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.refined-sugar-icumsa-45.name">Refined White Sugar</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.sugar">Sugar & Foodstuff</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.refined-sugar-icumsa-45.sp0">Polarisation</th><td data-i18n="p.refined-sugar-icumsa-45.sv0">99.80% min</td></tr>
+            <tr><th scope="row" data-i18n="p.refined-sugar-icumsa-45.sp1">ICUMSA</th><td data-i18n="p.refined-sugar-icumsa-45.sv1">45 RBU max</td></tr>
+            <tr><th scope="row" data-i18n="p.refined-sugar-icumsa-45.sp2">Moisture</th><td data-i18n="p.refined-sugar-icumsa-45.sv2">0.04% max</td></tr>
+            <tr><th scope="row" data-i18n="p.refined-sugar-icumsa-45.sp3">Ash Content</th><td data-i18n="p.refined-sugar-icumsa-45.sv3">0.04% max</td></tr>
+            <tr><th scope="row" data-i18n="p.refined-sugar-icumsa-45.sp4">Sulphur Dioxide</th><td data-i18n="p.refined-sugar-icumsa-45.sv4">20 mg/kg max</td></tr>
+            <tr><th scope="row" data-i18n="p.refined-sugar-icumsa-45.sp5">Granulation</th><td data-i18n="p.refined-sugar-icumsa-45.sv5">0.6–0.8 mm</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.refined-sugar-icumsa-45.mp0">Origin</dt><dd data-i18n="p.refined-sugar-icumsa-45.mv0">Brazil · India</dd></div>
+            <div><dt data-i18n="p.refined-sugar-icumsa-45.mp1">Packing</dt><dd data-i18n="p.refined-sugar-icumsa-45.mv1">50 kg bags / 1 MT big bags</dd></div>
+            <div><dt data-i18n="p.refined-sugar-icumsa-45.mp2">Incoterms</dt><dd data-i18n="p.refined-sugar-icumsa-45.mv2">FOB · CIF · CFR</dd></div>
+            <div><dt data-i18n="p.refined-sugar-icumsa-45.mp3">Minimum lot</dt><dd data-i18n="p.refined-sugar-icumsa-45.mv3">12 500 MT</dd></div>
+          </dl>
+        </template>
+      </a>
+      <a class="card fade-up" href="product.html?p=durum-wheat-pasta"
+         data-product="Durum Wheat Pasta" data-grade="100% Semolina"
+         data-product-key="p.durum-wheat-pasta.name" data-grade-key="p.durum-wheat-pasta.grade"
+         data-cat="sugar" data-name="Durum Wheat Pasta" data-collections="private-label">
+        <div class="card__figure">
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/pasta.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.durum-wheat-pasta.name">Durum Wheat Pasta</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.sugar">Sugar & Foodstuff</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.durum-wheat-pasta.sp0">Raw Material</th><td data-i18n="p.durum-wheat-pasta.sv0">100% durum semolina</td></tr>
+            <tr><th scope="row" data-i18n="p.durum-wheat-pasta.sp1">Protein</th><td data-i18n="p.durum-wheat-pasta.sv1">12% min</td></tr>
+            <tr><th scope="row" data-i18n="p.durum-wheat-pasta.sp2">Moisture</th><td data-i18n="p.durum-wheat-pasta.sv2">12.5% max</td></tr>
+            <tr><th scope="row" data-i18n="p.durum-wheat-pasta.sp3">Ash Content</th><td data-i18n="p.durum-wheat-pasta.sv3">0.9% max</td></tr>
+            <tr><th scope="row" data-i18n="p.durum-wheat-pasta.sp4">Cooking Loss</th><td data-i18n="p.durum-wheat-pasta.sv4">6% max</td></tr>
+            <tr><th scope="row" data-i18n="p.durum-wheat-pasta.sp5">Shelf Life</th><td data-i18n="p.durum-wheat-pasta.sv5">36 months</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.durum-wheat-pasta.mp0">Origin</dt><dd data-i18n="p.durum-wheat-pasta.mv0">Turkey · Italy</dd></div>
+            <div><dt data-i18n="p.durum-wheat-pasta.mp1">Packing</dt><dd data-i18n="p.durum-wheat-pasta.mv1">400 / 500 g · 5 kg catering</dd></div>
+            <div><dt data-i18n="p.durum-wheat-pasta.mp2">Incoterms</dt><dd data-i18n="p.durum-wheat-pasta.mv2">FOB · CIF · CFR</dd></div>
+            <div><dt data-i18n="p.durum-wheat-pasta.mp3">Minimum lot</dt><dd data-i18n="p.durum-wheat-pasta.mv3">1 × 40' FCL</dd></div>
+          </dl>
+        </template>
+      </a>
+      <a class="card fade-up" href="product.html?p=tomato-paste-28-30"
+         data-product="Tomato Paste" data-grade="28/30% · Hot Break"
+         data-product-key="p.tomato-paste-28-30.name" data-grade-key="p.tomato-paste-28-30.grade"
+         data-cat="sugar" data-name="Tomato Paste" data-collections="new">
+        <div class="card__figure">
+          <span class="card__badge" data-i18n="shop.badgeNew">New</span>
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/tomato-paste.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.tomato-paste-28-30.name">Tomato Paste</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.sugar">Sugar & Foodstuff</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.tomato-paste-28-30.sp0">Brix (at 20 °C)</th><td data-i18n="p.tomato-paste-28-30.sv0">28–30%</td></tr>
+            <tr><th scope="row" data-i18n="p.tomato-paste-28-30.sp1">pH</th><td data-i18n="p.tomato-paste-28-30.sv1">4.2–4.4</td></tr>
+            <tr><th scope="row" data-i18n="p.tomato-paste-28-30.sp2">Process</th><td data-i18n="p.tomato-paste-28-30.sv2">Hot break</td></tr>
+            <tr><th scope="row" data-i18n="p.tomato-paste-28-30.sp3">Bostwick</th><td data-i18n="p.tomato-paste-28-30.sv3">4–6 cm / 30 sec</td></tr>
+            <tr><th scope="row" data-i18n="p.tomato-paste-28-30.sp4">Mould (Howard)</th><td data-i18n="p.tomato-paste-28-30.sv4">40% max</td></tr>
+            <tr><th scope="row" data-i18n="p.tomato-paste-28-30.sp5">Packing</th><td data-i18n="p.tomato-paste-28-30.sv5">220 kg aseptic drum</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.tomato-paste-28-30.mp0">Origin</dt><dd data-i18n="p.tomato-paste-28-30.mv0">Turkey · Iran</dd></div>
+            <div><dt data-i18n="p.tomato-paste-28-30.mp1">Packing</dt><dd data-i18n="p.tomato-paste-28-30.mv1">220 kg aseptic drum · retail tins</dd></div>
+            <div><dt data-i18n="p.tomato-paste-28-30.mp2">Incoterms</dt><dd data-i18n="p.tomato-paste-28-30.mv2">FOB · CIF · CFR</dd></div>
+            <div><dt data-i18n="p.tomato-paste-28-30.mp3">Minimum lot</dt><dd data-i18n="p.tomato-paste-28-30.mv3">1 × 20' FCL</dd></div>
+          </dl>
+        </template>
+      </a>
+      <a class="card fade-up" href="product.html?p=chickpeas-kabuli-8mm"
+         data-product="Chickpeas" data-grade="Kabuli · 8 mm"
+         data-product-key="p.chickpeas-kabuli-8mm.name" data-grade-key="p.chickpeas-kabuli-8mm.grade"
+         data-cat="sugar" data-name="Chickpeas" data-collections="new">
+        <div class="card__figure">
+          <span class="card__badge" data-i18n="shop.badgeNew">New</span>
+          <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
+          <img class="card__art" src="assets/img/products/chickpeas.svg" alt="" loading="lazy" width="400" height="500">
+          <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
+        </div>
+
+        <div class="card__row">
+          <h3 class="card__title" data-i18n="p.chickpeas-kabuli-8mm.name">Chickpeas</h3>
+          <span class="card__price" data-i18n="shop.onRequest">On request</span>
+        </div>
+        <span class="card__cat" data-i18n="cat.c.sugar">Sugar & Foodstuff</span>
+
+        <template class="card__spec">
+          <table class="spec">
+            <thead>
+            <tr>
+              <th scope="col" data-i18n="cat.param">Parameter</th>
+              <th scope="col" data-i18n="cat.value">Value</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr><th scope="row" data-i18n="p.chickpeas-kabuli-8mm.sp0">Calibre</th><td data-i18n="p.chickpeas-kabuli-8mm.sv0">8 mm</td></tr>
+            <tr><th scope="row" data-i18n="p.chickpeas-kabuli-8mm.sp1">Moisture</th><td data-i18n="p.chickpeas-kabuli-8mm.sv1">12% max</td></tr>
+            <tr><th scope="row" data-i18n="p.chickpeas-kabuli-8mm.sp2">Purity</th><td data-i18n="p.chickpeas-kabuli-8mm.sv2">99% min</td></tr>
+            <tr><th scope="row" data-i18n="p.chickpeas-kabuli-8mm.sp3">Foreign Matter</th><td data-i18n="p.chickpeas-kabuli-8mm.sv3">0.5% max</td></tr>
+            <tr><th scope="row" data-i18n="p.chickpeas-kabuli-8mm.sp4">Damaged Seeds</th><td data-i18n="p.chickpeas-kabuli-8mm.sv4">2% max</td></tr>
+            <tr><th scope="row" data-i18n="p.chickpeas-kabuli-8mm.sp5">Split Seeds</th><td data-i18n="p.chickpeas-kabuli-8mm.sv5">1% max</td></tr>
+            </tbody>
+          </table>
+          <dl class="drawer__meta">
+            <div><dt data-i18n="p.chickpeas-kabuli-8mm.mp0">Origin</dt><dd data-i18n="p.chickpeas-kabuli-8mm.mv0">Turkey · Kazakhstan</dd></div>
+            <div><dt data-i18n="p.chickpeas-kabuli-8mm.mp1">Packing</dt><dd data-i18n="p.chickpeas-kabuli-8mm.mv1">25 / 50 kg bags · big bags</dd></div>
+            <div><dt data-i18n="p.chickpeas-kabuli-8mm.mp2">Incoterms</dt><dd data-i18n="p.chickpeas-kabuli-8mm.mv2">FOB · CIF · CFR</dd></div>
+            <div><dt data-i18n="p.chickpeas-kabuli-8mm.mp3">Minimum lot</dt><dd data-i18n="p.chickpeas-kabuli-8mm.mv3">500 MT</dd></div>
+          </dl>
+        </template>
+      </a>
+        </div>
+
+        <p class="shop__empty" id="shopEmpty" data-i18n="shop.empty">No products match the selected filters.</p>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<!-- ==================================================== SPEC / RFQ DRAWER -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
+  <header class="drawer__head">
+    <div>
+      <span class="label drawer__eyebrow" id="drawerEyebrow"></span>
+      <h2 class="drawer__title" id="drawerTitle"></h2>
+    </div>
+    <button type="button" class="drawer__close" aria-label="Close">
+      <svg width="13" height="13" viewBox="0 0 13 13" aria-hidden="true">
+        <path d="M1 1l11 11M12 1L1 12" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      </svg>
+    </button>
+  </header>
+
+  <div class="drawer__body">
+    <section class="drawer__section">
+      <div class="drawer__legend"><span class="label" data-i18n="cat.lab">Laboratory Specification</span></div>
+      <div id="drawerSpec"></div>
+    </section>
+
+    <section class="drawer__section">
+      <div class="drawer__legend"><span class="label" data-i18n="cat.rfqTitle">Request for Quotation</span></div>
+
+      <form id="rfqForm" data-mailto="trading@arminakcaravan.ae" data-subject="Request for Quotation" novalidate>
+        <input type="hidden" id="rfqProduct" name="Product">
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field__label" for="rfqVolume" data-i18n="form.volume">Target volume, tonnes</label>
+            <input class="input tabular" id="rfqVolume" name="Target volume (MT)" type="number" min="1" step="1" required placeholder="3000" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label class="field__label" for="rfqPort" data-i18n="form.port">Destination port</label>
+            <select class="select" id="rfqPort" name="Destination port" required>
+              <option value="CIF Jebel Ali" data-i18n="form.port1">CIF Jebel Ali</option>
+              <option value="CIF Dammam" data-i18n="form.port2">CIF Dammam</option>
+              <option value="Other" data-i18n="form.port3">Other — specify below</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="rfqName" data-i18n="form.name">Full name</label>
+          <input class="input" id="rfqName" name="Full name" type="text" autocomplete="name" required>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="rfqEmail" data-i18n="form.email">Corporate email</label>
+          <input class="input" id="rfqEmail" name="Corporate email" type="email" autocomplete="email" required>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="rfqCompany" data-i18n="form.company">Company entity</label>
+          <input class="input" id="rfqCompany" name="Company entity" type="text" autocomplete="organization" required>
+        </div>
+
+        <button class="btn btn--primary btn--full" type="submit" data-i18n="form.submitRfq">Submit Request for Quotation</button>
+
+        <p class="form__note" data-i18n="form.note">Submitting opens your mail client with the enquiry addressed to our trading desk. Prices and freight rates are released against a formal written request only.</p>
+        <p class="form__status" data-i18n="form.status">Your enquiry has been prepared in your mail client. Send it to reach the trading desk.</p>
+      </form>
+    </section>
+  </div>
+</aside>
+
+<footer class="footer">
+  <div class="shell">
+    <div class="footer__grid">
+      <div>
+        <a class="footer__mark" href="index.html">ARMINAK CARAVAN<sup>™</sup></a>
+        <address class="footer__addr">
+          <span data-i18n="footer.legal">ARMINAK CARAVAN FOODSTUFF AND BEVERAGES TRADING LTD</span><br>
+          <span data-i18n="footer.addr">KEZAD Free Zone, Abu Dhabi, United Arab Emirates</span>
+        </address>
+      </div>
+
+      <div>
+        <h2 class="footer__h" data-i18n="footer.h.nav">Navigation</h2>
+        <ul class="footer__list">
+          <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+          <li><a href="catalogue.html" data-i18n="nav.catalogue">Catalogue</a></li>
+          <li><a href="insights.html" data-i18n="nav.insights">Insights</a></li>
+          <li><a href="contact.html" data-i18n="nav.contact">Contacts</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="footer__h" data-i18n="footer.h.legal">Legal</h2>
+        <ul class="footer__list">
+          <li><a href="contact.html#terms" data-i18n="footer.terms">Terms of Trading</a></li>
+          <li><a href="contact.html#sgs" data-i18n="footer.sgs">SGS Certification Protocols</a></li>
+          <li><a href="contact.html#privacy" data-i18n="footer.privacy">Privacy Policy</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h2 class="footer__h" data-i18n="footer.h.pref">Preferences</h2>
+        <div class="footer__controls">
+          <div class="lang" role="group" aria-label="Language">
+            <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
+            <button class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
+          </div>
+          <button class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+            <span class="theme-toggle__thumb">
+              <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/></svg>
+              <svg class="i-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.6 14.6A8.6 8.6 0 0 1 9.4 3.4a8.6 8.6 0 1 0 11.2 11.2Z"/></svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© 2026 ARMINAK CARAVAN LTD. <span data-i18n="footer.rights">All rights reserved.</span></span>
+      <span data-i18n="footer.licence">Free Zone Licence #5820194</span>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/products.js"></script>
+<script src="assets/js/i18n-catalogue.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+# ARMINAK CARAVAN — Corporate E-Commerce Website
+
+Static site for **ARMINAK CARAVAN FOODSTUFF AND BEVERAGES TRADING LTD**
+(KEZAD Free Zone, Abu Dhabi). Cinematic caravan hero + minimalist,
+futuristic e-commerce below the fold, with **light and dark themes**.
+
+No build step required to deploy, no frameworks, no UI kits.
+HTML5 + CSS3 + vanilla JS. Copy this folder to any static host.
+
+```
+site/
+├── index.html            Home — hero film, press strip, tabbed product rails,
+│                         shop-by-category, corridors, qualification, CTA
+├── catalogue.html        Shop All — filter sidebar (collections/category),
+│                         sort, 16 product cards, quick-RFQ drawer
+├── product.html          Product page — rendered from ?p=<slug> via products.js
+│                         (packing chips, tonnage stepper, spec accordions, RFQ)
+├── insights.html         Market Insights — featured report + notes grid
+├── contact.html          Contacts — institutional desk, consultation form, map
+├── _build/               Python generators (see "Regenerating" below)
+└── assets/
+    ├── css/main.css      Design system v2 — light/dark tokens at the top
+    ├── js/main.js        Hero state machine, theme, nav, tabs, rails,
+    │                     shop filters/sort, drawer, favourites, forms
+    ├── js/product.js     Product-page renderer
+    ├── js/products.js    GENERATED — full catalogue data (EN + RU)
+    ├── js/i18n.js        EN/RU dictionary + toggle (EN lives in the markup)
+    ├── js/i18n-catalogue.js  GENERATED — RU strings for products
+    ├── video/hero-caravan.mp4  10 s hero film (watermark removed, muted)
+    ├── img/hero-poster.jpg     Final-frame poster (+ -mobile variant)
+    ├── img/products/*.svg      16 neutral line-art placeholders (transparent)
+    └── docs/*.pdf        16 GENERATED branded spec sheets
+```
+
+## Serving locally
+
+```bash
+python3 -m http.server 8899 --directory site
+```
+
+## Light / dark theme
+
+- Default is **light** (white, reference aesthetic). The pill toggle in the
+  nav and footer switches to dark; the choice persists in
+  `localStorage.ac_theme` and is applied pre-paint by an inline head script
+  (no flash).
+- All colours are custom properties in `main.css` — `:root` holds light,
+  `[data-theme="dark"]` overrides. The hero keeps its own fixed cinematic
+  palette and never changes with the theme.
+
+## Hero video state machine (unchanged)
+
+- First visit (desktop): film plays once; content fades up at the cut to the
+  dune-crest silhouette (`HERO_REVEAL_AT = 8.4 s` in `main.js`); film freezes
+  on its final frame; `sessionStorage.hero_visited` set.
+- Repeat visit / <768 px / reduced motion / autoplay refused: poster
+  immediately with a slow 1.00→1.05 drift, content visible at once.
+- Scrolling during playback jumps to the final frame instantly.
+
+## Dropping in real product photography
+
+Cards, category tiles and the product stage are photo-ready:
+
+1. Replace `assets/img/products/<slug>.svg` with your shot (transparent or
+   tile-toned background works best — the grey tile behind it comes from the
+   CSS `--tile` token in both themes).
+2. Update the `art` filename in `_build/build_catalogue.py` if the extension
+   changes, and re-run the pipeline (below).
+
+Prices are intentionally shown as **“On request”** (`shop.onRequest` key) —
+the original brief forbids open prices; the RFQ drawer is the buy action.
+When retail SKUs with public prices arrive, replace that key’s text and the
+`card__price` span content in the generator.
+
+## Regenerating the catalogue (single source of truth)
+
+All product data (EN + RU names, grades, lab specs, commercial terms,
+badges, collections) lives in `_build/build_catalogue.py`. After editing:
+
+```bash
+cd site/_build
+python3 gen_art.py             # placeholder SVGs (skip once real photos exist)
+python3 build_catalogue.py     # PDFs + products.js + i18n-catalogue.js + card partials
+python3 assemble_catalogue.py  # catalogue.html + shared nav/drawer/footer partials
+python3 build_pages.py         # index/product/insights/contact from the shared partials
+```
+
+## EN / RU
+
+English is canonical (in the markup); Russian lives in `assets/js/i18n.js`
+plus the generated catalogue strings. Choice persists in
+`localStorage.ac_lang`. Manrope (Cyrillic subset) is the UI face;
+Cormorant Garamond appears only in the hero and press marks.
+
+## Placeholders to replace before go-live
+
+- WhatsApp number `https://wa.me/971500000000` (home, contact)
+- `trading@arminakcaravan.ae` — forms submit via `mailto:`; swap the
+  `data-mailto` attributes for a POST endpoint when a backend exists
+- Free Zone Licence `#5820194`
+- Insights article links currently route to the contact desk
