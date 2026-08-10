@@ -66,18 +66,35 @@ python3 -m http.server 8899 --directory site
   lift the headline as you scroll away; product tiles and category art get
   view-timeline reveals. All guarded by `@supports` + `prefers-reduced-motion`.
 
+## Video payload
+
+The hero `<video>` ships with `preload="none"` and **no** `autoplay`
+attribute — `main.js` decides the route and calls `play()` only when the film
+will actually be shown. Poster routes (mobile, reduced motion, in-site
+return) therefore transfer **zero** video bytes; the 2.4 MB mp4 is fetched
+only when the film plays or the Replay pill is tapped.
+
 ## Motion pass reversibility
 
-The taste-skill motion pass is one commit on top of the v2 baseline:
+Everything after the v2 baseline is isolated in commits, newest last:
 
 ```bash
-git -C "site/.." log --oneline    # 643abe6 motion pass · 5798fab baseline
-git revert 643abe6                # undo the motion pass, keep history
-# or hard-restore the baseline:
+cd "/Users/mohmmadomar/Desktop/ARMINAK CARAVAN "
+git log --oneline
+#   3bbac6b  review fixes
+#   70933c8  background-tab retry
+#   643abe6  motion pass
+#   5798fab  v2 baseline  <-- pre-motion design
+
+# Undo just the motion work, keep history:
+git revert --no-commit 3bbac6b 70933c8 643abe6 && git commit -m "Revert motion pass"
+
+# Or hard-restore the pre-motion site:
 git checkout 5798fab -- site
 ```
 
-A plain-file snapshot also exists at `../site-backup-v2.zip`.
+A plain-file snapshot also exists at `../site-backup-v2.zip` (unzip over
+`site/` to restore without git).
 
 ## Dropping in real product photography
 
