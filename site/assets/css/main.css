@@ -489,21 +489,21 @@ button, input, select, textarea { font: inherit; color: inherit; }
   pointer-events: none;
   background:
     linear-gradient(to right,
-      rgba(8, 10, 14, 0.78) 0%,
-      rgba(8, 10, 14, 0.55) 34%,
-      rgba(8, 10, 14, 0.12) 66%,
-      rgba(8, 10, 14, 0) 100%),
-    linear-gradient(to bottom, rgba(8, 10, 14, 0.42) 0%, rgba(8, 10, 14, 0) 24%);
+      rgba(8, 10, 14, 0.86) 0%,
+      rgba(8, 10, 14, 0.68) 30%,
+      rgba(8, 10, 14, 0.24) 60%,
+      rgba(8, 10, 14, 0) 88%),
+    linear-gradient(to bottom, rgba(8, 10, 14, 0.45) 0%, rgba(8, 10, 14, 0) 26%);
 }
 
 /* The film melts into the page — white in light mode, near-black in dark. */
 .hero__fade {
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  height: 30%;
+  height: 26%;
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, var(--bg) 88%);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, var(--bg) 82%);
 }
 
 .hero__content {
@@ -511,8 +511,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
   z-index: 3;
   left: var(--gutter);
   right: var(--gutter);
-  top: 50%;
-  transform: translateY(-50%);
+  top: var(--nav-h);
+  bottom: 27%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   max-width: 44rem;
 }
 
@@ -587,12 +590,12 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .hero--revealed .hero__title .line:nth-child(2) > span { transition-delay: 170ms; }
 
 .hero__title .l1 { color: #FFFFFF; }
-.hero__title .l2 { color: rgba(255, 255, 255, 0.46); }
+.hero__title .l2 { color: rgba(255, 255, 255, 0.62); }
 
 .hero__copy {
   font-size: 16px;
   line-height: 1.7;
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(255, 255, 255, 0.8);
   max-width: 46ch;
   margin-bottom: 38px;
 }
@@ -717,6 +720,24 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @keyframes cueSlide {
   0%, 100% { transform: scaleX(0.35); opacity: 0.4; }
   50%      { transform: scaleX(1);    opacity: 1; }
+}
+
+/* Short viewports: the clear band above the dissolve gets tight, so the
+   headline steps down rather than colliding with the nav. */
+@media (max-height: 820px) and (min-width: 769px) {
+  .hero__title { font-size: clamp(32px, 4vw, 54px); margin-bottom: 22px; }
+  .hero__meta { margin-bottom: 20px; }
+  .hero__copy { font-size: 15px; margin-bottom: 28px; }
+  /* Shrink the dissolve as well, so the content band never runs into it. */
+  .hero__fade { height: 20%; }
+  .hero__content { bottom: 22%; }
+}
+
+@media (max-height: 680px) and (min-width: 769px) {
+  .hero__title { font-size: clamp(28px, 3.2vw, 42px); }
+  .hero__copy { display: none; }
+  .hero__fade { height: 18%; }
+  .hero__content { bottom: 20%; }
 }
 
 /* Corridor strip — its own band under the hero, in page colours. */
