@@ -48,14 +48,36 @@ python3 -m http.server 8899 --directory site
   `[data-theme="dark"]` overrides. The hero keeps its own fixed cinematic
   palette and never changes with the theme.
 
-## Hero video state machine (unchanged)
+## Hero video state machine (v3 — interactive)
 
-- First visit (desktop): film plays once; content fades up at the cut to the
-  dune-crest silhouette (`HERO_REVEAL_AT = 8.4 s` in `main.js`); film freezes
-  on its final frame; `sessionStorage.hero_visited` set.
-- Repeat visit / <768 px / reduced motion / autoplay refused: poster
-  immediately with a slow 1.00→1.05 drift, content visible at once.
+- First visit (desktop) **and every manual refresh**: film plays; content
+  fades up at the cut to the dune-crest silhouette (`HERO_REVEAL_AT = 8.4 s`
+  in `main.js`); film freezes on its final frame. Refresh is detected via
+  the Navigation Timing API — in-site navigation still skips the film.
+- In-site return / <768 px / reduced motion / autoplay refused: poster
+  immediately with a slow 1.00→1.05 drift; the hidden video is parked
+  (paused) so it costs nothing.
+- **Replay pill** (bottom-right of the hero) restarts the film from either
+  route — including on mobile and repeat visits.
 - Scrolling during playback jumps to the final frame instantly.
+- **Pointer parallax**: on fine-pointer devices the film drifts a few pixels
+  toward the cursor (rAF lerp, transform-only, disabled for reduced motion).
+- **Scroll exit parallax**: CSS scroll-timelines (zero JS) sink the film and
+  lift the headline as you scroll away; product tiles and category art get
+  view-timeline reveals. All guarded by `@supports` + `prefers-reduced-motion`.
+
+## Motion pass reversibility
+
+The taste-skill motion pass is one commit on top of the v2 baseline:
+
+```bash
+git -C "site/.." log --oneline    # 643abe6 motion pass · 5798fab baseline
+git revert 643abe6                # undo the motion pass, keep history
+# or hard-restore the baseline:
+git checkout 5798fab -- site
+```
+
+A plain-file snapshot also exists at `../site-backup-v2.zip`.
 
 ## Dropping in real product photography
 

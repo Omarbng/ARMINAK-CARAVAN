@@ -90,7 +90,25 @@
       filmActive = true;
       var playing = video.play();
       if (playing && typeof playing.catch === 'function') {
-        playing.catch(function () { usePoster(); });
+        playing.catch(function () {
+          /* Background tabs refuse playback. If that is why we failed,
+             retry once when the page becomes visible; the safety timer
+             still guarantees the headline is never stranded. */
+          if (document.visibilityState === 'hidden') {
+            var onVisible = function () {
+              if (document.visibilityState !== 'visible') return;
+              document.removeEventListener('visibilitychange', onVisible);
+              if (revealed) return;
+              var again = video.play();
+              if (again && typeof again.catch === 'function') {
+                again.catch(function () { usePoster(); });
+              }
+            };
+            document.addEventListener('visibilitychange', onVisible);
+          } else {
+            usePoster();
+          }
+        });
       }
       armSafety();
     }
