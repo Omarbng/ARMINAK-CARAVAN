@@ -631,17 +631,23 @@ button, input, select, textarea { font: inherit; color: inherit; }
   letter-spacing: 0.16em;
   text-transform: uppercase;
   opacity: 0;
+  visibility: hidden;      /* keeps it out of the tab order until revealed */
   pointer-events: none;
   transform: translateY(6px);
   transition: opacity 500ms var(--ease), transform 500ms var(--ease),
-              border-color 300ms var(--ease), background 300ms var(--ease);
+              border-color 300ms var(--ease), background 300ms var(--ease),
+              visibility 0s linear 500ms;
 }
+
+/* The author display rule above outranks the UA [hidden] rule, so restate it. */
+.hero__replay[hidden] { display: none; }
 
 .hero--revealed .hero__replay {
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
   transform: translateY(0);
-  transition-delay: 900ms, 900ms, 0ms, 0ms;
+  transition-delay: 900ms, 900ms, 0ms, 0ms, 0s;
 }
 
 .hero__replay:hover {
@@ -1787,17 +1793,20 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @supports (animation-timeline: scroll()) {
   @media (prefers-reduced-motion: no-preference) {
 
-    /* Hero exits with depth: film sinks slower than the page… */
+    /* Hero exits with depth: film sinks slower than the page…
+       scroll(root) is required — a bare scroll() would bind to .hero,
+       which is overflow:hidden and therefore a scroll container with
+       zero range, leaving these animations permanently inactive. */
     .hero__layer {
       animation: heroExitMedia linear both;
-      animation-timeline: scroll();
+      animation-timeline: scroll(root);
       animation-range: 0 100vh;
     }
 
     /* …while the headline lifts away and dissolves. */
     .hero__content, .hero__cue {
       animation: heroExitContent linear both;
-      animation-timeline: scroll();
+      animation-timeline: scroll(root);
       animation-range: 0 70vh;
     }
 

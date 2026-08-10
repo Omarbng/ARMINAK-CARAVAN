@@ -49,8 +49,9 @@
     var replayBtn = qs('#heroReplay');
     var revealed = false;
     var settled = false;
-    var filmActive = false;   /* false on the poster route — parks the <video autoplay> */
+    var filmActive = false;   /* true only while the film is deliberately running */
     var safety = null;
+    var scrollBase = 0;       /* scroll position when the current run started */
 
     function reveal() {
       if (revealed) return;
@@ -74,7 +75,6 @@
     function usePoster() {
       hero.classList.add('hero--static');
       reveal();
-      /* The hidden <video autoplay> must not keep burning cycles. */
       filmActive = false;
       if (video) { try { video.pause(); } catch (e) {} }
     }
@@ -88,6 +88,10 @@
 
     function startFilm() {
       filmActive = true;
+      /* Scroll-to-skip is measured from here, so a replay requested while
+         the page is already scrolled isn't killed by the next 1px event. */
+      scrollBase = window.scrollY || window.pageYOffset || 0;
+      video.preload = 'auto';
       var playing = video.play();
       if (playing && typeof playing.catch === 'function') {
         playing.catch(function () {
@@ -126,13 +130,15 @@
 
     var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var small = window.innerWidth < MOBILE_BP;
-    var filmCapable = video && !small && !reduced;
 
-    /* Replay: restart the film from the top and run the reveal again.
-       Works from the poster route too, so mobile/repeat visitors can
-       summon the film on demand. */
+    /* Two separate capabilities:
+       replayable — the film can be summoned by an explicit tap (mobile too);
+       autoplays  — the film is allowed to start on its own (desktop only). */
+    var replayable = !!video && !reduced;
+    var autoplays = replayable && !small;
+
     if (replayBtn) {
-      if (!filmCapable) {
+      if (!replayable) {
         replayBtn.hidden = true;
       } else {
         replayBtn.addEventListener('click', function () {
@@ -146,7 +152,7 @@
       }
     }
 
-    if (!filmCapable) { usePoster(); return; }
+    if (!replayable) { usePoster(); return; }
 
     /* Listeners are attached on BOTH routes so a replay summoned from the
        poster still reveals, freezes and honours scroll interruption. */
@@ -157,23 +163,22 @@
     video.addEventListener('error', usePoster);
     video.addEventListener('stalled', function () { if (!revealed) usePoster(); });
 
-    /* The autoplay attribute may race usePoster() — park it again. */
-    video.addEventListener('play', function () {
-      if (!filmActive) { try { video.pause(); } catch (e) {} }
-    });
-
-    /* Scrolling during playback jumps to the final frame. The listener
-       stays attached so replays get the same treatment. */
+    /* Scrolling away during playback jumps to the final frame. Measured as a
+       delta from wherever the run started, so replays behave the same whether
+       the page is at the top or part-way down. */
     function onScroll() {
       if (settled || !filmActive) return;
-      if ((window.scrollY || window.pageYOffset) > 24) {
+      var y = window.scrollY || window.pageYOffset || 0;
+      if (Math.abs(y - scrollBase) > 24) {
         freeze();
         reveal();
       }
     }
     window.addEventListener('scroll', onScroll, { passive: true });
 
-    if (visited && !isReload) { usePoster(); return; }
+    /* Poster route: mobile, or an in-site return within the session.
+       A manual refresh replays the film. */
+    if (!autoplays || (visited && !isReload)) { usePoster(); return; }
 
     startFilm();
   }

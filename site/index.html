@@ -72,8 +72,11 @@
 <section class="hero" id="hero">
   <div class="hero__media">
     <div class="hero__layer">
+      <!-- preload="none" and no autoplay: main.js decides the route and calls
+           play() only when the film is actually going to be shown, so poster
+           routes (mobile, reduced motion, in-site return) never fetch the mp4. -->
       <video class="hero__video" id="heroVideo"
-             muted playsinline autoplay preload="auto"
+             muted playsinline preload="none"
              poster="assets/img/hero-poster.jpg"
              aria-hidden="true" tabindex="-1">
         <source src="assets/video/hero-caravan.mp4" type="video/mp4">
@@ -129,8 +132,13 @@
 <section class="press">
   <div class="shell">
     <span class="label press__tag fade-up" data-i18n="home.pressTag">Quality verified by</span>
+    <!-- The marquee duplicates its marks for a seamless loop, so it is hidden
+         from assistive tech and the real list is exposed here once. -->
+    <ul class="visually-hidden">
+      <li>SGS</li><li>Intertek</li><li>Bureau Veritas</li><li>GAFTA</li>
+    </ul>
   </div>
-  <div class="marquee fade-up stagger-1" aria-label="SGS, Intertek, Bureau Veritas, GAFTA">
+  <div class="marquee fade-up stagger-1" aria-hidden="true">
     <div class="marquee__track">
       <div class="marquee__group">
         <span class="press__mark">SGS</span>
