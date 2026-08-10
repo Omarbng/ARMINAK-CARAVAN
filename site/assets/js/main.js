@@ -46,8 +46,10 @@
     if (!hero) return;
 
     var video = qs('#heroVideo');
+    var replayBtn = qs('#heroReplay');
     var revealed = false;
     var settled = false;
+    var filmActive = false;   /* false on the poster route — parks the <video autoplay> */
     var safety = null;
 
     function reveal() {
@@ -72,41 +74,141 @@
     function usePoster() {
       hero.classList.add('hero--static');
       reveal();
+      /* The hidden <video autoplay> must not keep burning cycles. */
+      filmActive = false;
+      if (video) { try { video.pause(); } catch (e) {} }
+    }
+
+    function armSafety() {
+      if (safety) clearTimeout(safety);
+      safety = setTimeout(function () {
+        if (!revealed) { usePoster(); freeze(); }
+      }, (HERO_REVEAL_AT + 4) * 1000);
+    }
+
+    function startFilm() {
+      filmActive = true;
+      var playing = video.play();
+      if (playing && typeof playing.catch === 'function') {
+        playing.catch(function () { usePoster(); });
+      }
+      armSafety();
     }
 
     var visited = false;
     try { visited = sessionStorage.getItem(SESSION_KEY) === 'true'; } catch (e) {}
 
+    /* A manual refresh replays the film — only in-site navigation skips it. */
+    var isReload = false;
+    try {
+      var navEntries = performance.getEntriesByType && performance.getEntriesByType('navigation');
+      if (navEntries && navEntries.length) isReload = navEntries[0].type === 'reload';
+      else if (performance.navigation) isReload = performance.navigation.type === 1;
+    } catch (e) {}
+
     var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var small = window.innerWidth < MOBILE_BP;
+    var filmCapable = video && !small && !reduced;
 
-    if (!video || visited || small || reduced) { usePoster(); return; }
+    /* Replay: restart the film from the top and run the reveal again.
+       Works from the poster route too, so mobile/repeat visitors can
+       summon the film on demand. */
+    if (replayBtn) {
+      if (!filmCapable) {
+        replayBtn.hidden = true;
+      } else {
+        replayBtn.addEventListener('click', function () {
+          revealed = false;
+          settled = false;
+          hero.classList.remove('hero--revealed');
+          hero.classList.remove('hero--static');
+          try { video.currentTime = 0; } catch (e) {}
+          startFilm();
+        });
+      }
+    }
 
+    if (!filmCapable) { usePoster(); return; }
+
+    /* Listeners are attached on BOTH routes so a replay summoned from the
+       poster still reveals, freezes and honours scroll interruption. */
     video.addEventListener('timeupdate', function () {
-      if (video.currentTime >= HERO_REVEAL_AT) reveal();
+      if (filmActive && video.currentTime >= HERO_REVEAL_AT) reveal();
     });
     video.addEventListener('ended', function () { reveal(); freeze(); });
     video.addEventListener('error', usePoster);
     video.addEventListener('stalled', function () { if (!revealed) usePoster(); });
 
+    /* The autoplay attribute may race usePoster() — park it again. */
+    video.addEventListener('play', function () {
+      if (!filmActive) { try { video.pause(); } catch (e) {} }
+    });
+
+    /* Scrolling during playback jumps to the final frame. The listener
+       stays attached so replays get the same treatment. */
     function onScroll() {
-      if (settled) return;
+      if (settled || !filmActive) return;
       if ((window.scrollY || window.pageYOffset) > 24) {
         freeze();
         reveal();
-        window.removeEventListener('scroll', onScroll);
       }
     }
     window.addEventListener('scroll', onScroll, { passive: true });
 
-    var playing = video.play();
-    if (playing && typeof playing.catch === 'function') {
-      playing.catch(function () { usePoster(); });
+    if (visited && !isReload) { usePoster(); return; }
+
+    startFilm();
+  }
+
+  /* -------------------------------------------------------- HERO PARALLAX -- */
+  /* Fine-pointer only: the film drifts a few pixels toward the cursor.
+     One rAF loop that lerps toward the target and stops itself when idle —
+     transform + scale only, fully compositor-friendly. */
+
+  function initHeroParallax() {
+    var hero = qs('#hero');
+    if (!hero || !window.matchMedia) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+
+    var media = qs('.hero__media', hero);
+    if (!media) return;
+
+    var tx = 0, ty = 0, ta = 0;   /* targets: offset x/y, activation 0..1 */
+    var cx = 0, cy = 0, ca = 0;   /* currents */
+    var raf = null;
+
+    function tick() {
+      cx += (tx - cx) * 0.07;
+      cy += (ty - cy) * 0.07;
+      ca += (ta - ca) * 0.07;
+
+      var scale = 1 + 0.045 * ca;
+      media.style.transform =
+        'translate3d(' + cx.toFixed(2) + 'px,' + cy.toFixed(2) + 'px,0) scale(' + scale.toFixed(4) + ')';
+
+      if (Math.abs(tx - cx) > 0.05 || Math.abs(ty - cy) > 0.05 || Math.abs(ta - ca) > 0.002) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        raf = null;
+        if (ta === 0) media.style.transform = '';
+      }
     }
 
-    safety = setTimeout(function () {
-      if (!revealed) { usePoster(); freeze(); }
-    }, (HERO_REVEAL_AT + 4) * 1000);
+    function kick() { if (!raf) raf = requestAnimationFrame(tick); }
+
+    hero.addEventListener('pointermove', function (e) {
+      var r = hero.getBoundingClientRect();
+      tx = (e.clientX / r.width - 0.5) * 18;
+      ty = ((e.clientY - r.top) / r.height - 0.5) * 12;
+      ta = 1;
+      kick();
+    });
+
+    hero.addEventListener('pointerleave', function () {
+      tx = 0; ty = 0; ta = 0;
+      kick();
+    });
   }
 
   /* ----------------------------------------------------------------- NAV -- */
@@ -507,6 +609,7 @@
     initDrawer();
     initForms();
     initHero();
+    initHeroParallax();
   }
 
   if (document.readyState === 'loading') {

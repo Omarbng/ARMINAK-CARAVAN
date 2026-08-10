@@ -376,7 +376,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
               color 350ms var(--ease), transform 350ms var(--ease), opacity 350ms var(--ease);
 }
 
-.btn:active { transform: translateY(1px); }
+.btn:active { transform: translateY(1px) scale(0.985); }
 
 /* Primary — theme-inverse block, like the reference "Add to cart" */
 .btn--primary,
@@ -465,7 +465,12 @@ button, input, select, textarea { font: inherit; color: inherit; }
   background: var(--hero-navy);
 }
 
-.hero__media { position: absolute; inset: 0; overflow: hidden; }
+/* Two wrappers so effects never fight over one transform:
+   .hero__media  — pointer parallax (JS, rAF)
+   .hero__layer  — scroll exit parallax (CSS scroll timeline)          */
+.hero__media { position: absolute; inset: 0; will-change: transform; }
+
+.hero__layer { position: absolute; inset: 0; overflow: hidden; }
 
 .hero__video, .hero__poster {
   position: absolute;
@@ -603,19 +608,85 @@ button, input, select, textarea { font: inherit; color: inherit; }
   50%      { transform: scaleY(1);   opacity: 1; }
 }
 
+/* Replay control — appears once the headline has revealed */
+.hero__replay {
+  position: absolute;
+  z-index: 3;
+  right: var(--gutter);
+  bottom: 68px;
+  appearance: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid rgba(247, 243, 236, 0.3);
+  border-radius: var(--radius-pill);
+  background: rgba(27, 42, 65, 0.28);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  color: rgba(247, 243, 236, 0.85);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity 500ms var(--ease), transform 500ms var(--ease),
+              border-color 300ms var(--ease), background 300ms var(--ease);
+}
+
+.hero--revealed .hero__replay {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition-delay: 900ms, 900ms, 0ms, 0ms;
+}
+
+.hero__replay:hover {
+  border-color: rgba(247, 243, 236, 0.7);
+  background: rgba(27, 42, 65, 0.45);
+  color: var(--hero-sand);
+}
+
+.hero__replay:active { transform: translateY(1px) scale(0.98); }
+
+.hero__replay svg { transition: transform 600ms var(--ease); }
+.hero__replay:hover svg { transform: rotate(-360deg); }
+
 /* ------------------------------------------------------------ 8. PRESS STRIP */
+/* Kinetic marquee: pure CSS, duplicated track, pauses on hover,
+   collapses to a static centred row under reduced motion.             */
 
 .press { padding: clamp(56px, 6vw, 96px) 0; text-align: center; }
 
 .press__tag { display: block; margin-bottom: clamp(28px, 3vw, 44px); }
 
-.press__row {
+.marquee {
+  position: relative;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent);
+}
+
+.marquee__track {
+  display: flex;
+  width: max-content;
+  animation: marqueeSlide 38s linear infinite;
+  will-change: transform;
+}
+
+.marquee:hover .marquee__track { animation-play-state: paused; }
+
+.marquee__group {
   display: flex;
   align-items: baseline;
-  justify-content: center;
-  gap: clamp(32px, 6vw, 96px);
-  flex-wrap: wrap;
+  gap: clamp(48px, 7vw, 110px);
+  padding-right: clamp(48px, 7vw, 110px);
 }
+
+@keyframes marqueeSlide { to { transform: translate3d(-50%, 0, 0); } }
 
 .press__mark {
   font-family: var(--font-display);
@@ -627,9 +698,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
   white-space: nowrap;
 }
 
-.press__mark:nth-child(2) { font-weight: 600; letter-spacing: 0.04em; }
-.press__mark:nth-child(3) { letter-spacing: 0.3em; font-size: clamp(18px, 2vw, 26px); }
-.press__mark:nth-child(4) { font-weight: 600; letter-spacing: 0.1em; }
+.press__mark:nth-child(4n+2) { font-weight: 600; letter-spacing: 0.04em; }
+.press__mark:nth-child(4n+3) { letter-spacing: 0.3em; font-size: clamp(18px, 2vw, 26px); }
+.press__mark:nth-child(4n)   { font-weight: 600; letter-spacing: 0.1em; }
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee { mask-image: none; -webkit-mask-image: none; }
+  .marquee__track { animation: none; width: 100%; justify-content: center; }
+  .marquee__group { flex-wrap: wrap; justify-content: center; gap: 24px 48px; padding: 0 var(--gutter); }
+  .marquee__group[aria-hidden="true"] { display: none; }
+  .marquee__group .press__mark:nth-child(n+5) { display: none; }
+}
 
 /* --------------------------------------------------------------- 9. TAB RAIL */
 
@@ -753,6 +832,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .card:hover .card__quick, .card__quick:focus-visible { opacity: 1; transform: translateY(0); }
 .card__quick:hover { background: var(--ink); color: var(--bg); }
+.card__quick:active { transform: scale(0.98); }
 
 @media (hover: none) {
   .card__quick { opacity: 1; transform: none; }
@@ -1695,6 +1775,56 @@ button, input, select, textarea { font: inherit; color: inherit; }
   flex-wrap: wrap;
   font-size: 12px;
   color: var(--muted);
+}
+
+/* ------------------------------------------- 20b. SCROLL-DRIVEN ENHANCEMENTS */
+/* CSS scroll timelines — zero JS, compositor-only, and skipped entirely by
+   browsers without support or by users preferring reduced motion.
+   Note: on supporting browsers the category-card art trades its hover zoom
+   for a continuous scroll parallax (an animation always wins over a
+   transition on the same property).                                          */
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+
+    /* Hero exits with depth: film sinks slower than the page… */
+    .hero__layer {
+      animation: heroExitMedia linear both;
+      animation-timeline: scroll();
+      animation-range: 0 100vh;
+    }
+
+    /* …while the headline lifts away and dissolves. */
+    .hero__content, .hero__cue {
+      animation: heroExitContent linear both;
+      animation-timeline: scroll();
+      animation-range: 0 70vh;
+    }
+
+    /* Product tiles settle into place as they enter the viewport. */
+    .card__figure {
+      animation: figRise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 65%;
+    }
+
+    /* Category art drifts against the scroll — quiet parallax. */
+    .catcard__art {
+      animation: catDrift linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 100%;
+    }
+  }
+}
+
+@keyframes heroExitMedia   { to { transform: translate3d(0, 9vh, 0); } }
+@keyframes heroExitContent { to { opacity: 0; transform: translate3d(0, -7vh, 0); } }
+@keyframes figRise {
+  from { opacity: 0.55; transform: translate3d(0, 20px, 0) scale(0.985); }
+}
+@keyframes catDrift {
+  from { transform: translate3d(0, 4.5%, 0); }
+  to   { transform: translate3d(0, -5.5%, 0); }
 }
 
 /* ----------------------------------------------------------------- 21. MOTION */
