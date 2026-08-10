@@ -48,7 +48,44 @@ python3 -m http.server 8899 --directory site
   `[data-theme="dark"]` overrides. The hero keeps its own fixed cinematic
   palette and never changes with the theme.
 
-## Hero video state machine (v3 — interactive)
+## Hero (v4 — futuristic monochrome, ambient loop)
+
+The hero carries no separate brand palette: white type on the film, hierarchy
+from weight and opacity only, Manrope for the headline and **JetBrains Mono**
+for the technical readout. The film dissolves into the page background
+(`--bg`), so it reads as the top of the white/dark site rather than a
+cinematic island. The trade corridor sits below the hero in page colours.
+
+**The film loops forever and never freezes.** `assets/video/hero-caravan.mp4`
+is authored with a crossfaded seam — its last frame matches its first — so the
+native `loop` attribute runs it unbroken with no jump cut and no JS state
+machine. Rebuild that file from a raw clip with:
+
+```bash
+ffmpeg -i raw.mp4 -filter_complex "\
+[0:v]trim=0:1,setpts=PTS-STARTPTS[head];\
+[0:v]trim=1:9,setpts=PTS-STARTPTS[body];\
+[0:v]trim=9:10,setpts=PTS-STARTPTS[tail];\
+[tail][head]blend=all_expr='A*(1-(T/1))+B*(T/1)'[xf];\
+[body][xf]concat=n=2:v=1:a=0[out]" \
+-map "[out]" -an -c:v libx264 -crf 21 -pix_fmt yuv420p -movflags +faststart \
+assets/video/hero-caravan.mp4
+```
+
+A single pill control (bottom-right, page colours) pauses and resumes the
+film; a ring around it tracks the loop position. The headline no longer waits
+on the video — it lands ~80 ms after load.
+
+Route behaviour:
+
+| Context | Film |
+|---|---|
+| Desktop | Autoplays muted and loops |
+| Mobile (< 768 px) | Poster only; the control opts in, so no phone fetches the mp4 unasked |
+| Reduced motion | Poster only; control hidden |
+| Hidden tab | Paused, resumes on return |
+
+## Previous hero state machine (v3 — superseded)
 
 - First visit (desktop) **and every manual refresh**: film plays; content
   fades up at the cut to the dune-crest silhouette (`HERO_REVEAL_AT = 8.4 s`

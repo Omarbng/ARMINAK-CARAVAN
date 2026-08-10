@@ -10,7 +10,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/main.css">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
 <meta property="og:type" content="website">
@@ -72,11 +72,12 @@
 <section class="hero" id="hero">
   <div class="hero__media">
     <div class="hero__layer">
-      <!-- preload="none" and no autoplay: main.js decides the route and calls
-           play() only when the film is actually going to be shown, so poster
-           routes (mobile, reduced motion, in-site return) never fetch the mp4. -->
+      <!-- The mp4 is authored with a crossfaded seam, so native `loop` runs it
+           unbroken with no jump cut. preload="none" and no autoplay attribute:
+           main.js calls play() only when the film will actually be shown, so
+           poster routes (mobile, reduced motion) never fetch it. -->
       <video class="hero__video" id="heroVideo"
-             muted playsinline preload="none"
+             muted playsinline loop preload="none"
              poster="assets/img/hero-poster.jpg"
              aria-hidden="true" tabindex="-1">
         <source src="assets/video/hero-caravan.mp4" type="video/mp4">
@@ -88,36 +89,47 @@
   </div>
 
   <div class="hero__scrim"></div>
+  <div class="hero__fade"></div>
 
   <div class="hero__content">
-    <span class="hero__tag reveal" data-i18n="hero.tag">Abu Dhabi · KEZAD Free Zone</span>
+    <div class="hero__meta reveal">
+      <span class="hero__dot" aria-hidden="true"></span>
+      <span class="hero__coord" id="heroCoord">24.4539° N &nbsp;54.6773° E</span>
+      <span class="hero__sep" aria-hidden="true"></span>
+      <span data-i18n="hero.tag">KEZAD Free Zone · Abu Dhabi</span>
+    </div>
 
-    <h1 class="t-hero hero__title reveal">
-      <span class="l1" data-i18n="hero.l1">Sourced at origin.</span>
-      <span class="l2" data-i18n="hero.l2">Delivered across continents.</span>
+    <h1 class="hero__title">
+      <span class="line"><span class="l1" data-i18n="hero.l1">Sourced at origin.</span></span>
+      <span class="line"><span class="l2" data-i18n="hero.l2">Delivered across continents.</span></span>
     </h1>
 
     <p class="hero__copy reveal" data-i18n="hero.copy">Global supply of agricultural commodities and everyday foodstuff — from the Black Sea, Turkey and Central Asia to ports worldwide.</p>
 
     <div class="hero__actions reveal">
-      <a class="btn btn--brass" href="catalogue.html" data-i18n="hero.cta1">View Catalogue</a>
-      <a class="link-brass" href="contact.html" data-i18n="hero.cta2">Request a Quote →</a>
+      <a class="btn btn--primary" href="catalogue.html" data-i18n="hero.cta1">View Catalogue</a>
+      <a class="link-quiet" href="contact.html" data-i18n="hero.cta2">Request a Quote →</a>
     </div>
   </div>
 
   <div class="hero__cue" aria-hidden="true">
-    <span data-i18n="hero.scroll">Scroll</span><i></i>
+    <i></i><span data-i18n="hero.scroll">Scroll</span>
   </div>
 
-  <button class="hero__replay" id="heroReplay" type="button">
-    <svg viewBox="0 0 16 16" width="13" height="13" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M13.5 8a5.5 5.5 0 1 1-2-4.24"/>
-      <path d="M11.2 1.6l.6 2.5-2.5.6"/>
-    </svg>
-    <span data-i18n="hero.replay">Replay</span>
+  <button class="hero__playback" id="heroPlayback" type="button" aria-pressed="true">
+    <span class="hero__playback-label" data-i18n="hero.pause">Pause</span>
+    <span class="hero__playback-icon">
+      <svg class="i-pause" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1.5" width="2.8" height="9" rx="0.7"/><rect x="7.2" y="1.5" width="2.8" height="9" rx="0.7"/></svg>
+      <svg class="i-play" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.6v8.8l7-4.4z"/></svg>
+      <svg class="hero__playback-ring" viewBox="0 0 44 44" aria-hidden="true">
+        <circle id="heroRing" cx="22" cy="22" r="20.4" stroke-dasharray="128.2" stroke-dashoffset="128.2"/>
+      </svg>
+    </span>
   </button>
+</section>
 
-  <div class="hero__strip">
+<nav class="corridor-strip" aria-label="Trade corridor">
+  <div class="shell">
     <ol>
       <li data-i18n="corridor.n1">Black Sea</li>
       <li data-i18n="corridor.n2">Turkey</li>
@@ -126,7 +138,7 @@
       <li data-i18n="corridor.n5">East Africa</li>
     </ol>
   </div>
-</section>
+</nav>
 
 <!-- ============================================================ PRESS STRIP -->
 <section class="press">

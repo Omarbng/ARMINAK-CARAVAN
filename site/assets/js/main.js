@@ -7,12 +7,7 @@
 
   /* -------------------------------------------------------------- CONFIG -- */
 
-  /* The supplied 10s hero asset cuts to the dune-crest silhouette at ~8.3s.
-     The reveal is timed to that cut. Retime by editing this value. */
-  var HERO_REVEAL_AT = 8.4;
-
   var MOBILE_BP = 768;
-  var SESSION_KEY = 'hero_visited';
   var THEME_KEY = 'ac_theme';
 
   function qs(sel, ctx) { return (ctx || document).querySelector(sel); }
@@ -40,73 +35,74 @@
   }
 
   /* ---------------------------------------------------------------- HERO -- */
+  /* The film is ambience, not a gate: the headline lands immediately and the
+     video loops continuously. The mp4 is authored with a crossfaded seam, so
+     native `loop` runs unbroken — no state machine, no freeze frame. The one
+     control hands playback to the visitor. */
 
   function initHero() {
     var hero = qs('#hero');
     if (!hero) return;
 
     var video = qs('#heroVideo');
-    var replayBtn = qs('#heroReplay');
-    var revealed = false;
-    var settled = false;
-    var filmActive = false;   /* true only while the film is deliberately running */
-    var safety = null;
-    var scrollBase = 0;       /* scroll position when the current run started */
+    var toggle = qs('#heroPlayback');
+    var ring = qs('#heroRing');
+    var label = toggle && qs('.hero__playback-label', toggle);
 
-    function reveal() {
-      if (revealed) return;
-      revealed = true;
-      hero.classList.add('hero--revealed');
-      if (safety) { clearTimeout(safety); safety = null; }
-      try { sessionStorage.setItem(SESSION_KEY, 'true'); } catch (e) {}
+    var RING_LEN = 128.2;   /* circumference baked into the markup */
+
+    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var small = window.innerWidth < MOBILE_BP;
+    var playable = !!video && !reduced;
+
+    var running = false;
+    var raf = null;
+
+    function syncToggle() {
+      if (!toggle) return;
+      toggle.setAttribute('aria-pressed', String(running));
+      toggle.setAttribute('aria-label', running ? 'Pause background film' : 'Play background film');
+      if (label) {
+        label.setAttribute('data-i18n', running ? 'hero.pause' : 'hero.play');
+        if (window.ACI18N) window.ACI18N.retranslate(toggle);
+        else label.textContent = running ? 'Pause' : 'Play';
+      }
     }
 
-    function freeze() {
-      settled = true;
-      if (!video) return;
-      try {
-        if (video.duration && isFinite(video.duration)) {
-          video.currentTime = Math.max(0, video.duration - 0.05);
-        }
-      } catch (e) {}
-      video.pause();
+    /* Progress ring tracks the position within the loop. */
+    function tick() {
+      var d = video.duration;
+      if (ring && d && isFinite(d)) {
+        ring.style.strokeDashoffset = (RING_LEN * (1 - (video.currentTime / d))).toFixed(1);
+      }
+      raf = requestAnimationFrame(tick);
     }
+    function startRing() { if (!raf && ring) raf = requestAnimationFrame(tick); }
+    function stopRing() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
 
     function usePoster() {
       hero.classList.add('hero--static');
-      reveal();
-      filmActive = false;
+      running = false;
+      stopRing();
       if (video) { try { video.pause(); } catch (e) {} }
+      syncToggle();
     }
 
-    function armSafety() {
-      if (safety) clearTimeout(safety);
-      safety = setTimeout(function () {
-        if (!revealed) { usePoster(); freeze(); }
-      }, (HERO_REVEAL_AT + 4) * 1000);
-    }
-
-    function startFilm() {
-      filmActive = true;
-      /* Scroll-to-skip is measured from here, so a replay requested while
-         the page is already scrolled isn't killed by the next 1px event. */
-      scrollBase = window.scrollY || window.pageYOffset || 0;
+    function play() {
+      hero.classList.remove('hero--static');
+      running = true;
       video.preload = 'auto';
-      var playing = video.play();
-      if (playing && typeof playing.catch === 'function') {
-        playing.catch(function () {
-          /* Background tabs refuse playback. If that is why we failed,
-             retry once when the page becomes visible; the safety timer
-             still guarantees the headline is never stranded. */
+      video.classList.add('is-active');
+
+      var p = video.play();
+      if (p && typeof p.catch === 'function') {
+        p.catch(function () {
+          /* Background tabs refuse playback; retry once when visible. */
           if (document.visibilityState === 'hidden') {
             var onVisible = function () {
               if (document.visibilityState !== 'visible') return;
               document.removeEventListener('visibilitychange', onVisible);
-              if (revealed) return;
-              var again = video.play();
-              if (again && typeof again.catch === 'function') {
-                again.catch(function () { usePoster(); });
-              }
+              if (running) play();
             };
             document.addEventListener('visibilitychange', onVisible);
           } else {
@@ -114,73 +110,82 @@
           }
         });
       }
-      armSafety();
+
+      startRing();
+      syncToggle();
     }
 
-    var visited = false;
-    try { visited = sessionStorage.getItem(SESSION_KEY) === 'true'; } catch (e) {}
-
-    /* A manual refresh replays the film — only in-site navigation skips it. */
-    var isReload = false;
-    try {
-      var navEntries = performance.getEntriesByType && performance.getEntriesByType('navigation');
-      if (navEntries && navEntries.length) isReload = navEntries[0].type === 'reload';
-      else if (performance.navigation) isReload = performance.navigation.type === 1;
-    } catch (e) {}
-
-    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var small = window.innerWidth < MOBILE_BP;
-
-    /* Two separate capabilities:
-       replayable — the film can be summoned by an explicit tap (mobile too);
-       autoplays  — the film is allowed to start on its own (desktop only). */
-    var replayable = !!video && !reduced;
-    var autoplays = replayable && !small;
-
-    if (replayBtn) {
-      if (!replayable) {
-        replayBtn.hidden = true;
-      } else {
-        replayBtn.addEventListener('click', function () {
-          revealed = false;
-          settled = false;
-          hero.classList.remove('hero--revealed');
-          hero.classList.remove('hero--static');
-          try { video.currentTime = 0; } catch (e) {}
-          startFilm();
-        });
-      }
+    function pause() {
+      running = false;
+      try { video.pause(); } catch (e) {}
+      stopRing();
+      syncToggle();
     }
 
-    if (!replayable) { usePoster(); return; }
+    /* --- wiring ------------------------------------------------------- */
 
-    /* Listeners are attached on BOTH routes so a replay summoned from the
-       poster still reveals, freezes and honours scroll interruption. */
-    video.addEventListener('timeupdate', function () {
-      if (filmActive && video.currentTime >= HERO_REVEAL_AT) reveal();
-    });
-    video.addEventListener('ended', function () { reveal(); freeze(); });
+    if (toggle) {
+      if (!playable) toggle.hidden = true;
+      else toggle.addEventListener('click', function () { running ? pause() : play(); });
+    }
+
+    /* Text lands right away — nothing waits on the film. */
+    setTimeout(function () { hero.classList.add('hero--revealed'); }, 80);
+
+    if (!playable) { usePoster(); return; }
+
     video.addEventListener('error', usePoster);
-    video.addEventListener('stalled', function () { if (!revealed) usePoster(); });
 
-    /* Scrolling away during playback jumps to the final frame. Measured as a
-       delta from wherever the run started, so replays behave the same whether
-       the page is at the top or part-way down. */
-    function onScroll() {
-      if (settled || !filmActive) return;
-      var y = window.scrollY || window.pageYOffset || 0;
-      if (Math.abs(y - scrollBase) > 24) {
-        freeze();
-        reveal();
+    /* Don't burn a decoder on a hero nobody is looking at. */
+    document.addEventListener('visibilitychange', function () {
+      if (!running) return;
+      if (document.visibilityState === 'hidden') {
+        try { video.pause(); } catch (e) {}
+        stopRing();
+      } else {
+        var p = video.play();
+        if (p && typeof p.catch === 'function') p.catch(function () {});
+        startRing();
       }
+    });
+
+    /* Mobile starts on the poster: the visitor opts in with the control, so no
+       phone pays for the film unless it is asked for. */
+    if (small) { usePoster(); return; }
+
+    play();
+  }
+
+  /* ------------------------------------------------------- HERO SCRAMBLE -- */
+  /* Decodes the coordinate readout once on load. Purely decorative: the final
+     text is already in the markup, so it survives a JS-less render. */
+
+  function initScramble() {
+    var el = qs('#heroCoord');
+    if (!el) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var final = el.textContent;
+    var chars = final.split('');
+    var glyphs = '0123456789ABCDEF°NEW.';
+    var settle = chars.map(function () { return Math.floor(Math.random() * 16) + 8; });
+    var frame = 0;
+
+    function isFixed(ch) { return ch === ' ' || ch === ' '; }
+
+    function step() {
+      var out = '';
+      var done = 0;
+      for (var i = 0; i < chars.length; i++) {
+        if (isFixed(chars[i]) || frame >= settle[i]) { out += chars[i]; done++; }
+        else out += glyphs[Math.floor(Math.random() * glyphs.length)];
+      }
+      el.textContent = out;
+      frame++;
+      if (done < chars.length) requestAnimationFrame(step);
     }
-    window.addEventListener('scroll', onScroll, { passive: true });
 
-    /* Poster route: mobile, or an in-site return within the session.
-       A manual refresh replays the film. */
-    if (!autoplays || (visited && !isReload)) { usePoster(); return; }
-
-    startFilm();
+    requestAnimationFrame(step);
   }
 
   /* -------------------------------------------------------- HERO PARALLAX -- */
@@ -632,6 +637,7 @@
     initDrawer();
     initForms();
     initHero();
+    initScramble();
     initHeroParallax();
   }
 

@@ -24,15 +24,10 @@
   --badge-sale:    #C93B2F;
   --focus:         #111214;
 
-  /* Hero constants — independent of theme */
-  --hero-sand:  #F7F3EC;
-  --hero-brass: #B08D57;
-  --hero-brass-hover: #8F7245;
-  --hero-navy:  #1B2A41;
-
   /* Type */
-  --font-display: "Cormorant Garamond", "Times New Roman", serif; /* hero + press marks only */
-  --font-ui: "Manrope", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-display: "Cormorant Garamond", "Times New Roman", serif; /* press marks only */
+  --font-ui: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Rhythm */
   --nav-h: 76px;
@@ -105,14 +100,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* ------------------------------------------------------------ 3. TYPOGRAPHY */
 
-.t-hero {
-  font-family: var(--font-display);
-  font-weight: 300;
-  font-size: clamp(40px, 6.05vw, 88px);
-  line-height: 1.05;
-  letter-spacing: -0.01em;
-}
-
 .t-section {
   font-size: clamp(28px, 3vw, 42px);
   font-weight: 600;
@@ -137,7 +124,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
   color: var(--muted);
 }
 
-.label--sand { color: rgba(247, 243, 236, 0.85); }
 
 .body-copy { font-size: 15px; line-height: 1.7; color: var(--muted); }
 .body-copy--ink { color: var(--ink-soft); }
@@ -315,10 +301,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* Over-hero (transparent on video) */
 .nav--over .nav__mark,
 .nav--over .nav__link,
-.nav--over .lang__btn { color: var(--hero-sand); }
-.nav--over .theme-toggle { border-color: rgba(247, 243, 236, 0.35); }
-.nav--over .theme-toggle__thumb { background: var(--hero-sand); color: var(--hero-navy); }
-.nav--over .nav__burger span { background: var(--hero-sand); }
+.nav--over .lang__btn { color: #FFFFFF; }
+.nav--over .theme-toggle { border-color: rgba(255, 255, 255, 0.35); }
+.nav--over .theme-toggle__thumb { background: #FFFFFF; color: #0E0F10; }
+.nav--over .nav__burger span { background: #FFFFFF; }
 
 /* Scrolled */
 .nav--scrolled {
@@ -429,40 +415,40 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .link-brass:hover, .link-quiet:hover { border-color: var(--ink); gap: 12px; }
 
-/* Hero overrides — the film keeps its brass */
-.hero .btn--brass {
-  background: var(--hero-brass);
-  border-color: var(--hero-brass);
-  color: var(--hero-navy);
-  opacity: 1;
-  height: 56px;
-  border-radius: 2px;
-  font-size: 13px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+/* Hero action styling — monochrome, matches the site's button system */
+.hero .btn--primary {
+  background: #FFFFFF;
+  border-color: #FFFFFF;
+  color: #0E0F10;
+  height: 54px;
+  border-radius: var(--radius-s);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
 }
-.hero .btn--brass:hover { background: var(--hero-brass-hover); border-color: var(--hero-brass-hover); }
+.hero .btn--primary:hover { background: rgba(255, 255, 255, 0.86); border-color: rgba(255, 255, 255, 0.86); opacity: 1; }
 
-.hero .link-brass {
-  color: var(--hero-brass);
-  border-bottom-color: var(--hero-brass);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
+.hero .link-quiet {
+  color: rgba(255, 255, 255, 0.9);
+  border-bottom-color: rgba(255, 255, 255, 0.35);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0;
 }
-.hero .link-brass:hover { color: #D6BE96; border-color: #D6BE96; }
+.hero .link-quiet:hover { color: #FFFFFF; border-color: #FFFFFF; }
 
 /* ------------------------------------------------------------------ 7. HERO */
-/* Unchanged from v1 — fixed cinematic palette. */
+/* Futuristic monochrome. No accent colour: hierarchy comes from weight and
+   opacity alone, so the hero reads as part of the white/dark site rather than
+   a separate cinematic world. The film dissolves into the page background. */
 
 .hero {
   position: relative;
   width: 100%;
-  height: 100vh;
-  height: 100svh;
-  min-height: 620px;
+  min-height: 100svh;
   overflow: hidden;
-  background: var(--hero-navy);
+  background: #0B0D10;
 }
 
 /* Two wrappers so effects never fight over one transform:
@@ -480,159 +466,159 @@ button, input, select, textarea { font: inherit; color: inherit; }
   object-position: center 46%;
 }
 
-.hero__poster { opacity: 0; transition: opacity 600ms var(--ease); z-index: 1; }
+/* The mp4 is authored with a crossfaded seam, so `loop` runs it unbroken.
+   It fades in once decoding has actually started. */
+.hero__video { opacity: 0; transition: opacity 900ms var(--ease); }
+.hero__video.is-active { opacity: 1; }
+
+.hero__poster { opacity: 0; transition: opacity 700ms var(--ease); z-index: 1; }
 
 .hero--static .hero__poster {
   opacity: 1;
-  animation: heroDrift 10s var(--ease) forwards;
+  animation: heroDrift 14s var(--ease) forwards;
 }
-.hero--static .hero__video { display: none; }
+.hero--static .hero__video { opacity: 0; }
 
-@keyframes heroDrift { from { transform: scale(1); } to { transform: scale(1.05); } }
+@keyframes heroDrift { from { transform: scale(1); } to { transform: scale(1.06); } }
 
+/* Legibility wash on the left + a soft top vignette under the nav. */
 .hero__scrim {
   position: absolute;
   inset: 0;
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(to top,
-              rgba(27, 42, 65, 0.88) 0%,
-              rgba(27, 42, 65, 0.4) 45%,
-              rgba(27, 42, 65, 0.2) 100%);
+  background:
+    linear-gradient(to right,
+      rgba(8, 10, 14, 0.78) 0%,
+      rgba(8, 10, 14, 0.55) 34%,
+      rgba(8, 10, 14, 0.12) 66%,
+      rgba(8, 10, 14, 0) 100%),
+    linear-gradient(to bottom, rgba(8, 10, 14, 0.42) 0%, rgba(8, 10, 14, 0) 24%);
+}
+
+/* The film melts into the page — white in light mode, near-black in dark. */
+.hero__fade {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 30%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 0%, var(--bg) 88%);
 }
 
 .hero__content {
   position: absolute;
   z-index: 3;
   left: var(--gutter);
-  bottom: 128px;
-  max-width: 640px;
+  right: var(--gutter);
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 44rem;
 }
 
-.hero__tag {
-  display: block;
-  margin-bottom: 28px;
+/* Technical micro-label: mono, live dot, machine coordinates. */
+.hero__meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 30px;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
-  color: var(--hero-brass);
+  color: rgba(255, 255, 255, 0.62);
 }
 
-.hero__title { margin-bottom: 28px; }
-.hero__title span { display: block; }
-.hero__title .l1 { color: var(--hero-sand); }
-.hero__title .l2 { color: var(--hero-brass); }
+.hero__dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  flex: 0 0 auto;
+  position: relative;
+}
+.hero__dot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #FFFFFF;
+  animation: dotPing 2.8s var(--ease) infinite;
+}
+@keyframes dotPing {
+  0%   { transform: scale(1); opacity: 0.7; }
+  70%  { transform: scale(3.6); opacity: 0; }
+  100% { transform: scale(3.6); opacity: 0; }
+}
+
+.hero__coord { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.hero__sep {
+  width: 18px; height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+  flex: 0 0 auto;
+}
+
+/* Headline — Manrope, tight, monochrome. Line 2 recedes by opacity. */
+.hero__title {
+  margin: 0 0 28px;
+  font-family: var(--font-ui);
+  font-weight: 600;
+  font-size: clamp(38px, 5.1vw, 74px);
+  line-height: 1.02;
+  letter-spacing: -0.042em;
+}
+
+/* Each line rises out of its own mask. */
+.hero__title .line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+  margin-bottom: -0.06em;
+}
+.hero__title .line > span {
+  display: block;
+  transform: translateY(110%);
+  transition: transform 1100ms var(--ease);
+}
+.hero--revealed .hero__title .line > span { transform: translateY(0); }
+.hero--revealed .hero__title .line:nth-child(1) > span { transition-delay: 60ms; }
+.hero--revealed .hero__title .line:nth-child(2) > span { transition-delay: 170ms; }
+
+.hero__title .l1 { color: #FFFFFF; }
+.hero__title .l2 { color: rgba(255, 255, 255, 0.46); }
 
 .hero__copy {
   font-size: 16px;
-  line-height: 1.72;
-  color: rgba(247, 243, 236, 0.85);
-  max-width: 540px;
-  margin-bottom: 40px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.72);
+  max-width: 46ch;
+  margin-bottom: 38px;
 }
 
-.hero__actions { display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
+.hero__actions { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
 
-.hero__strip {
+/* Playback control — the film never stops, this only hands over control. */
+.hero__playback {
   position: absolute;
-  z-index: 3;
-  left: 0; right: 0; bottom: 0;
-  border-top: 1px solid rgba(176, 141, 87, 0.2);
-  padding: 20px var(--gutter);
-}
-
-.hero__strip ol {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 10px 26px;
-  font-size: 11px;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(214, 190, 150, 0.82);
-}
-
-.hero__strip li { display: flex; align-items: center; gap: 26px; }
-.hero__strip li:not(:last-child)::after {
-  content: "";
-  width: 3px; height: 3px;
-  border-radius: 50%;
-  background: var(--hero-brass);
-  opacity: 0.7;
-}
-
-.hero__content .reveal { opacity: 0; transform: translateY(24px); }
-
-.hero--revealed .hero__content .reveal {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 700ms var(--ease), transform 700ms var(--ease);
-}
-.hero--revealed .hero__content .reveal:nth-child(1) { transition-delay: 0ms; }
-.hero--revealed .hero__content .reveal:nth-child(2) { transition-delay: 90ms; }
-.hero--revealed .hero__content .reveal:nth-child(3) { transition-delay: 180ms; }
-.hero--revealed .hero__content .reveal:nth-child(4) { transition-delay: 270ms; }
-
-.hero__strip { opacity: 0; transform: translateY(12px); }
-.hero--revealed .hero__strip {
-  opacity: 1;
-  transform: translateY(0);
-  transition: opacity 700ms var(--ease) 360ms, transform 700ms var(--ease) 360ms;
-}
-
-.hero__cue {
-  position: absolute;
-  z-index: 3;
+  z-index: 4;
   right: var(--gutter);
-  bottom: 128px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(247, 243, 236, 0.64);
-  opacity: 0;
-}
-.hero--revealed .hero__cue { opacity: 1; transition: opacity 900ms var(--ease) 600ms; }
-.hero__cue i {
-  display: block;
-  width: 1px; height: 44px;
-  background: linear-gradient(to bottom, var(--hero-brass), transparent);
-  animation: cueDrop 2.6s var(--ease) infinite;
-  transform-origin: top;
-}
-@keyframes cueDrop {
-  0%, 100% { transform: scaleY(0.4); opacity: 0.4; }
-  50%      { transform: scaleY(1);   opacity: 1; }
-}
-
-/* Replay control — appears once the headline has revealed */
-.hero__replay {
-  position: absolute;
-  z-index: 3;
-  right: var(--gutter);
-  bottom: 68px;
+  bottom: 22px;
   appearance: none;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border: 1px solid rgba(247, 243, 236, 0.3);
+  gap: 10px;
+  padding: 5px 5px;
+  /* It sits where the film has faded into the page, so it wears page
+     tokens rather than video-overlay whites. */
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-pill);
-  background: rgba(27, 42, 65, 0.28);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  color: rgba(247, 243, 236, 0.85);
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  background: transparent;
+  color: var(--ink);
   opacity: 0;
-  visibility: hidden;      /* keeps it out of the tab order until revealed */
-  pointer-events: none;
+  visibility: hidden;
   transform: translateY(6px);
   transition: opacity 500ms var(--ease), transform 500ms var(--ease),
               border-color 300ms var(--ease), background 300ms var(--ease),
@@ -640,26 +626,139 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 /* The author display rule above outranks the UA [hidden] rule, so restate it. */
-.hero__replay[hidden] { display: none; }
+.hero__playback[hidden] { display: none; }
 
-.hero--revealed .hero__replay {
+.hero--revealed .hero__playback {
   opacity: 1;
   visibility: visible;
-  pointer-events: auto;
   transform: translateY(0);
-  transition-delay: 900ms, 900ms, 0ms, 0ms, 0s;
+  transition-delay: 700ms, 700ms, 0ms, 0ms, 0s;
 }
 
-.hero__replay:hover {
-  border-color: rgba(247, 243, 236, 0.7);
-  background: rgba(27, 42, 65, 0.45);
-  color: var(--hero-sand);
+.hero__playback:hover { border-color: var(--ink); }
+.hero__playback:active { transform: scale(0.97); }
+
+.hero__playback-icon {
+  position: relative;
+  width: 30px; height: 30px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+.hero__playback-icon svg { width: 12px; height: 12px; fill: currentColor; }
+
+/* Only one glyph shows at a time, driven by aria-pressed. */
+.hero__playback .i-pause { display: block; }
+.hero__playback .i-play  { display: none; }
+.hero__playback[aria-pressed="false"] .i-pause { display: none; }
+.hero__playback[aria-pressed="false"] .i-play  { display: block; }
+
+.hero__playback-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding-right: 8px;
+  white-space: nowrap;
 }
 
-.hero__replay:active { transform: translateY(1px) scale(0.98); }
+/* Progress ring around the control tracks the loop position. */
+.hero__playback-ring {
+  position: absolute;
+  inset: -6px;
+  width: 42px; height: 42px;
+  pointer-events: none;
+  transform: rotate(-90deg);
+}
+.hero__playback-ring circle {
+  fill: none;
+  stroke: var(--ink);
+  stroke-opacity: 0.55;
+  stroke-width: 1.4;
+  stroke-linecap: round;
+}
 
-.hero__replay svg { transition: transform 600ms var(--ease); }
-.hero__replay:hover svg { transform: rotate(-360deg); }
+/* Staggered entrance for everything except the masked headline. */
+.hero__content .reveal { opacity: 0; transform: translateY(18px); }
+
+.hero--revealed .hero__content .reveal {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 800ms var(--ease), transform 800ms var(--ease);
+}
+.hero--revealed .hero__content .reveal:nth-child(1) { transition-delay: 0ms; }
+.hero--revealed .hero__content .reveal:nth-child(3) { transition-delay: 320ms; }
+.hero--revealed .hero__content .reveal:nth-child(4) { transition-delay: 400ms; }
+
+.hero__cue {
+  position: absolute;
+  z-index: 3;
+  left: var(--gutter);
+  bottom: 30px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0;
+}
+.hero--revealed .hero__cue { opacity: 1; transition: opacity 900ms var(--ease) 800ms; }
+.hero__cue i {
+  display: block;
+  width: 34px; height: 1px;
+  background: linear-gradient(to right, var(--muted), transparent);
+  animation: cueSlide 2.8s var(--ease) infinite;
+  transform-origin: left;
+}
+@keyframes cueSlide {
+  0%, 100% { transform: scaleX(0.35); opacity: 0.4; }
+  50%      { transform: scaleX(1);    opacity: 1; }
+}
+
+/* Corridor strip — its own band under the hero, in page colours. */
+.corridor-strip {
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg);
+}
+
+.corridor-strip ol {
+  display: flex;
+  align-items: center;
+  gap: 10px 26px;
+  flex-wrap: wrap;
+  padding: 18px 0;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.corridor-strip li { display: flex; align-items: center; gap: 26px; }
+.corridor-strip li:not(:last-child)::after {
+  content: "";
+  width: 3px; height: 3px;
+  border-radius: 50%;
+  background: var(--muted);
+  opacity: 0.6;
+}
+
+@media (max-width: 768px) {
+  .corridor-strip ol {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    font-size: 10px;
+    gap: 18px;
+  }
+  .corridor-strip ol::-webkit-scrollbar { display: none; }
+  .corridor-strip li { gap: 18px; white-space: nowrap; }
+}
 
 /* ------------------------------------------------------------ 8. PRESS STRIP */
 /* Kinetic marquee: pure CSS, duplicated track, pauses on hover,
@@ -1972,23 +2071,16 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
   body { font-size: 15px; }
 
-  .hero { min-height: 560px; }
-  .hero__content { bottom: 116px; max-width: 100%; padding-right: 22px; }
-  .hero__copy { font-size: 15px; margin-bottom: 32px; }
-  .hero__actions { gap: 20px; }
+  .hero { min-height: 600px; }
+  .hero__content { max-width: 100%; }
+  .hero__copy { font-size: 15px; margin-bottom: 30px; }
+  .hero__actions { gap: 16px; }
   .hero__actions .btn { width: 100%; }
   .hero__cue { display: none; }
-
-  .hero__strip { padding: 14px var(--gutter); }
-  .hero__strip ol {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    scrollbar-width: none;
-    font-size: 10px;
-    gap: 18px;
-  }
-  .hero__strip ol::-webkit-scrollbar { display: none; }
-  .hero__strip li { gap: 18px; white-space: nowrap; }
+  .hero__meta { font-size: 10px; gap: 9px; margin-bottom: 24px; }
+  .hero__sep { display: none; }
+  .hero__playback { bottom: 18px; right: 22px; }
+  .hero__playback-label { display: none; }
 
   .qualify__item { grid-template-columns: 1fr; gap: 8px; }
 
@@ -2033,7 +2125,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
   .fade-up { opacity: 1; transform: none; }
   .hero__content .reveal { opacity: 1; transform: none; }
-  .hero__strip { opacity: 1; transform: none; }
+  .hero__title .line > span { transform: none; }
+  .hero__dot::after { animation: none; }
   .corridor__route { stroke-dashoffset: 0; }
   .corridor__node { opacity: 1; }
   .hero--static .hero__poster { animation: none; }
@@ -2043,6 +2136,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* -------------------------------------------------------------------- 24. PRINT */
 
 @media print {
-  .nav, .hero__strip, .drawer, .drawer-backdrop, .hero__cue, .theme-toggle { display: none !important; }
+  .nav, .drawer, .drawer-backdrop, .hero__cue, .hero__playback, .theme-toggle { display: none !important; }
   .fade-up { opacity: 1; transform: none; }
 }
