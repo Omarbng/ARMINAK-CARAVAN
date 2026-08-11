@@ -85,6 +85,53 @@ Route behaviour:
 | Reduced motion | Poster only; control hidden |
 | Hidden tab | Paused, resumes on return |
 
+## Brand palette (per the client specification)
+
+The brief mandates *warm sand gold / amber, deep earthy desert tones, fresh
+white and dark navy blue*. All of it lives in CSS custom properties at the
+top of `main.css` — change it there, nowhere else.
+
+| Role | Light | Dark |
+|---|---|---|
+| Ground | `#FFFFFF` fresh white | `#10141C` deep earthy navy |
+| Product surfaces | `#F7F3EC` warm sand | `#1B212D` |
+| Ink | `#1B2A41` deep navy | `#F2EDE3` warm off-white |
+| Accent | `#B08D57` sand gold / amber | `#C9A570` |
+| Inverse bands (footer, CTA) | navy on sand text | sand on navy text |
+
+The hero keeps its own fixed film treatment — the video never re-tints with
+the theme — but carries the brand through the sand-gold headline line, the
+amber status dot and the brass primary button.
+
+**To undo the whole palette restoration:**
+
+```bash
+git reset --hard pre-brand-palette     # tag at the monochrome state
+```
+
+The branch `backup/monochrome-v4` points at the same commit, and Vercel can
+roll back to any previous deployment from its dashboard.
+
+## Enquiry delivery
+
+`FORM_ENDPOINT` at the top of `assets/js/main.js` is empty, so forms currently
+fall back to `mailto:`. To deliver straight to the inbox (what the brief asks
+for), create a free endpoint — Web3Forms, Formspree or a Vercel function —
+and paste the URL into `FORM_ENDPOINT`; put any public submission key in
+`FORM_KEY`. Loading, success and error states are already built.
+
+## Publishing a market note
+
+Add an entry to `ARTICLES` in `_build/build_articles.py` (EN + RU) and run:
+
+```bash
+python3 _build/build_articles.py
+```
+
+It writes `<slug>.html` with its own title, description and Article JSON-LD,
+plus the Russian strings into `assets/js/i18n-articles.js`. Remember to add
+the new URL to `sitemap.xml`.
+
 ## Previous hero state machine (v3 — superseded)
 
 - First visit (desktop) **and every manual refresh**: film plays; content
