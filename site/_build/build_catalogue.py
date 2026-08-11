@@ -98,7 +98,7 @@ CATEGORIES = [
 
   {"slug": "flaxseed-food-grade", "art": "flaxseed",
    "en": "Flaxseed", "ru": "Семена льна",
-   "grade_en": "Brown · Food Grade", "grade_ru": "Коричневый · пищевой",
+   "grade_en": "Brown · Food Grade", "grade_ru": "Коричневые · пищевые",
    "origin_en": "Kazakhstan · Russia", "origin_ru": "Казахстан · Россия",
    "metrics_en": ["Oil content 40% min · Moisture 9% max", "Purity 99% min", "Big bags / 25 kg bags"],
    "metrics_ru": ["Масличность 40% мин · Влажность 9% макс", "Чистота 99% мин", "Биг-бэги / мешки 25 кг"],
@@ -128,7 +128,7 @@ CATEGORIES = [
    "metrics_en": ["FFA 2% max · Moisture 0.2% max", "Peroxide value 5 meq/kg max", "Flexitank / ISO tank / drums"],
    "metrics_ru": ["Кислотность 2% макс · Влага 0,2% макс", "Перекисное число 5 мэкв/кг макс", "Флекситанк / ISO-танк / бочки"],
    "spec": [
-     ("Free Fatty Acids", "2% max", "Кислотное число (олеиновая)", "2% макс"),
+     ("Free Fatty Acids", "2% max", "Кислотное число (по олеиновой кислоте)", "2% макс"),
      ("Moisture & Volatiles", "0.2% max", "Влага и летучие вещества", "0,2% макс"),
      ("Insoluble Impurities", "0.1% max", "Нерастворимые примеси", "0,1% макс"),
      ("Peroxide Value", "5 meq/kg max", "Перекисное число", "5 мэкв/кг макс"),
@@ -147,7 +147,7 @@ CATEGORIES = [
    "metrics_en": ["FFA 0.1% max · Moisture 0.1% max", "Peroxide value 2 meq/kg max", "Flexitank / bottled private label"],
    "metrics_ru": ["Кислотность 0,1% макс · Влага 0,1% макс", "Перекисное число 2 мэкв/кг макс", "Флекситанк / бутылка СТМ"],
    "spec": [
-     ("Free Fatty Acids", "0.1% max", "Кислотное число (олеиновая)", "0,1% макс"),
+     ("Free Fatty Acids", "0.1% max", "Кислотное число (по олеиновой кислоте)", "0,1% макс"),
      ("Moisture & Volatiles", "0.1% max", "Влага и летучие вещества", "0,1% макс"),
      ("Peroxide Value", "2 meq/kg max", "Перекисное число", "2 мэкв/кг макс"),
      ("Colour (Lovibond)", "2R / 20Y max", "Цветность (Ловибонд)", "2R / 20Y макс"),
@@ -171,7 +171,7 @@ CATEGORIES = [
      ("Moisture", "14.5% max", "Влажность", "14,5% макс"),
      ("Wet Gluten", "26% min", "Клейковина сырая", "26% мин"),
      ("Falling Number", "250 sec min", "Число падения", "250 сек мин"),
-     ("Granulation", "180 µm", "Гранулометрия", "180 мкм")],
+     ("Granulation", "180 µm", "Крупность помола", "180 мкм")],
    "meta": [
      ("Origin", "Turkey · Kazakhstan", "Происхождение", "Турция · Казахстан"),
      ("Packing", "25 / 50 kg bags · big bags", "Упаковка", "Мешки 25 / 50 кг · биг-бэг"),
@@ -268,7 +268,7 @@ CATEGORIES = [
    "metrics_ru": ["Минерализация 150–500 мг/л · pH 7,0–7,6", "Нитраты 10 мг/л макс", "ПЭТ 0,5 / 1,5 л"],
    "spec": [
      ("Total Dissolved Solids", "150–500 mg/l", "Общая минерализация", "150–500 мг/л"),
-     ("pH", "7.0–7.6", "Водородный показатель", "7,0–7,6"),
+     ("pH", "7.0–7.6", "pH", "7,0–7,6"),
      ("Nitrates", "10 mg/l max", "Нитраты", "10 мг/л макс"),
      ("Packing", "0.5 / 1.5 l PET", "Упаковка", "ПЭТ 0,5 / 1,5 л"),
      ("Shelf Life", "12 months", "Срок годности", "12 месяцев"),
@@ -297,7 +297,7 @@ CATEGORIES = [
      ("Moisture", "0.04% max", "Влажность", "0,04% макс"),
      ("Ash Content", "0.04% max", "Зольность", "0,04% макс"),
      ("Sulphur Dioxide", "20 mg/kg max", "Диоксид серы", "20 мг/кг макс"),
-     ("Granulation", "0.6–0.8 mm", "Гранулометрия", "0,6–0,8 мм")],
+     ("Granulation", "0.6–0.8 mm", "Крупность помола", "0,6–0,8 мм")],
    "meta": [
      ("Origin", "Brazil · India", "Происхождение", "Бразилия · Индия"),
      ("Packing", "50 kg bags / 1 MT big bags", "Упаковка", "Мешки 50 кг / биг-бэг 1 т"),
@@ -306,12 +306,12 @@ CATEGORIES = [
 
   {"slug": "durum-wheat-pasta", "art": "pasta",
    "en": "Durum Wheat Pasta", "ru": "Макаронные изделия из твёрдых сортов",
-   "grade_en": "100% Semolina", "grade_ru": "100% семолина",
+   "grade_en": "100% Semolina", "grade_ru": "100% семолины",
    "origin_en": "Turkey · Italy", "origin_ru": "Турция · Италия",
    "metrics_en": ["Protein 12% min · Moisture 12.5% max", "Cooking loss 6% max", "400 / 500 g retail · 5 kg catering"],
    "metrics_ru": ["Белок 12% мин · Влажность 12,5% макс", "Потери при варке 6% макс", "400 / 500 г ритейл · 5 кг HoReCa"],
    "spec": [
-     ("Raw Material", "100% durum semolina", "Сырьё", "100% семолина твёрдых сортов"),
+     ("Raw Material", "100% durum semolina", "Сырьё", "100% семолина из твёрдых сортов пшеницы"),
      ("Protein", "12% min", "Белок", "12% мин"),
      ("Moisture", "12.5% max", "Влажность", "12,5% макс"),
      ("Ash Content", "0.9% max", "Зольность", "0,9% макс"),
@@ -325,14 +325,14 @@ CATEGORIES = [
 
   {"slug": "tomato-paste-28-30", "art": "tomato-paste",
    "en": "Tomato Paste", "ru": "Томатная паста",
-   "grade_en": "28/30% · Hot Break", "grade_ru": "28/30% · горячий отжим",
+   "grade_en": "28/30% · Hot Break", "grade_ru": "28/30% · горячего отжима",
    "origin_en": "Turkey · Iran", "origin_ru": "Турция · Иран",
    "metrics_en": ["Brix 28–30% · pH 4.2–4.4", "Bostwick 4–6 cm / 30 sec", "220 kg aseptic drums"],
    "metrics_ru": ["Брикс 28–30% · pH 4,2–4,4", "Боствик 4–6 см / 30 сек", "Асептические бочки 220 кг"],
    "spec": [
      ("Brix (at 20 °C)", "28–30%", "Брикс (при 20 °C)", "28–30%"),
-     ("pH", "4.2–4.4", "Водородный показатель", "4,2–4,4"),
-     ("Process", "Hot break", "Способ производства", "Горячий отжим"),
+     ("pH", "4.2–4.4", "pH", "4,2–4,4"),
+     ("Process", "Hot break", "Способ производства", "Горячего отжима (hot break)"),
      ("Bostwick", "4–6 cm / 30 sec", "Консистенция по Боствику", "4–6 см / 30 сек"),
      ("Mould (Howard)", "40% max", "Плесень (метод Говарда)", "40% макс"),
      ("Packing", "220 kg aseptic drum", "Упаковка", "Асептическая бочка 220 кг")],
@@ -376,6 +376,16 @@ GREY = (0.361, 0.392, 0.439)
 # Characters outside cp1252 that appear in the trade data.
 _FOLD = {0x2212: "-", 0x2011: "-", 0x00A0: " ", 0x2009: " "}
 
+
+
+def ru_val(v):
+    """Russian spec convention: 'не менее 12,5%', not '12,5% мин'."""
+    v = v.strip()
+    if v.endswith(" мин"):
+        return "не менее " + v[:-4].strip()
+    if v.endswith(" макс"):
+        return "не более " + v[:-5].strip()
+    return v
 
 def esc(s):
     out = s.translate(_FOLD).encode("cp1252", "replace").decode("cp1252")
@@ -659,8 +669,8 @@ def build_products_js():
                     "name": item["ru"], "grade": item["grade_ru"],
                     "origin": item["origin_ru"], "catName": c["ru"],
                     "metrics": item["metrics_ru"],
-                    "spec": [[pr, vr] for (_, _, pr, vr) in item["spec"]],
-                    "meta": [[pr, vr] for (_, _, pr, vr) in item["meta"]],
+                    "spec": [[pr, ru_val(vr)] for (_, _, pr, vr) in item["spec"]],
+                    "meta": [[pr, ru_val(vr)] for (_, _, pr, vr) in item["meta"]],
                 },
             }
     return order, data
@@ -677,13 +687,13 @@ def build_i18n():
             d[f"p.{s}.grade"] = item["grade_ru"]
             d[f"p.{s}.origin"] = item["origin_ru"]
             for i, m in enumerate(item["metrics_ru"]):
-                d[f"p.{s}.m{i}"] = m
+                d[f"p.{s}.m{i}"] = m.replace(" мин", " (мин.)").replace(" макс", " (макс.)")
             for i, (_, _, pr, vr) in enumerate(item["spec"]):
                 d[f"p.{s}.sp{i}"] = pr
-                d[f"p.{s}.sv{i}"] = vr
+                d[f"p.{s}.sv{i}"] = ru_val(vr)
             for i, (_, _, pr, vr) in enumerate(item["meta"]):
                 d[f"p.{s}.mp{i}"] = pr
-                d[f"p.{s}.mv{i}"] = vr
+                d[f"p.{s}.mv{i}"] = ru_val(vr)
     return d
 
 

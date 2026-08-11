@@ -447,6 +447,12 @@
       });
 
       if (countEl) countEl.textContent = countEl.getAttribute('data-tpl').replace('%n', shown);
+      /* The noun has to agree with the count in Russian. */
+      var wordEl = qs('#shopCountWord');
+      if (wordEl && window.ACI18N && window.ACI18N.plural) {
+        var w = window.ACI18N.plural('shop.products', shown);
+        if (w) wordEl.textContent = w;
+      }
       if (emptyEl) emptyEl.classList.toggle('is-visible', shown === 0);
     }
 
@@ -469,6 +475,7 @@
     }
 
     catBoxes.concat(colBoxes).forEach(function (b) { b.addEventListener('change', apply); });
+    document.addEventListener('ac:lang', apply);
     if (sortSel) sortSel.addEventListener('change', sortCards);
 
     /* Collapsible filter groups */

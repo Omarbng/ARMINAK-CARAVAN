@@ -82,7 +82,7 @@ PAGE = '''<!doctype html>
 
       <div>
         <div class="shop__toolbar">
-          <span class="shop__count"><span id="shopCount" class="tabular" data-tpl="%n">16</span>&nbsp;<span data-i18n="shop.products">products</span></span>
+          <span class="shop__count"><span id="shopCount" class="tabular" data-tpl="%n">16</span>&nbsp;<span id="shopCountWord" data-i18n="shop.products">products</span></span>
           <label class="sort">
             <span data-i18n="shop.sortBy">Sort by</span>
             <select id="shopSort">

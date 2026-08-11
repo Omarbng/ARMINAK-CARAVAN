@@ -649,7 +649,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
   place-items: center;
   flex: 0 0 auto;
 }
-.hero__playback-icon svg { width: 12px; height: 12px; fill: currentColor; }
+/* Glyphs only — the ring must keep its own box, so exclude it here.
+   ".hero__playback-icon svg" would otherwise outrank ".hero__playback-ring"
+   on specificity and squash the ring to 12px. */
+.hero__playback-icon > svg:not(.hero__playback-ring) {
+  width: 12px; height: 12px;
+  fill: currentColor;
+}
 
 /* Only one glyph shows at a time, driven by aria-pressed. */
 .hero__playback .i-pause { display: block; }
@@ -668,20 +674,24 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 /* Progress ring around the control tracks the loop position. */
+/* Concentric with the glyph: fills the icon box exactly, starts at 12 o'clock. */
 .hero__playback-ring {
   position: absolute;
-  inset: -6px;
-  width: 42px; height: 42px;
+  inset: 0;
+  width: 100%; height: 100%;
   pointer-events: none;
   transform: rotate(-90deg);
+  overflow: visible;
 }
 .hero__playback-ring circle {
   fill: none;
   stroke: var(--ink);
-  stroke-opacity: 0.55;
-  stroke-width: 1.4;
+  stroke-opacity: 0.5;
+  stroke-width: 2;
   stroke-linecap: round;
+  transition: stroke-opacity 300ms var(--ease);
 }
+.hero__playback:hover .hero__playback-ring circle { stroke-opacity: 0.85; }
 
 /* Staggered entrance for everything except the masked headline. */
 .hero__content .reveal { opacity: 0; transform: translateY(18px); }

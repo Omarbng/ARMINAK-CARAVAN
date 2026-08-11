@@ -16,15 +16,18 @@
 
   function lang() { return (window.ACI18N && window.ACI18N.current()) || 'en'; }
 
+  /* The name and grade already sit in the eyebrow and the H1 above, so the
+     description states origin and the contractual basis instead of repeating
+     them — the old version produced "…сырое, сырое · гидратированное". */
   function desc(loc) {
     if (loc === 'ru') {
-      return 'Контрактный товар: ' + data.ru.name.toLowerCase() + ', ' + data.ru.grade.toLowerCase() +
-        '. Происхождение — ' + data.ru.origin + '. Каждая партия фиксируется по лабораторным параметрам ' +
-        'ниже и подтверждается независимой инспекцией в порту погрузки.';
+      return 'Происхождение: ' + data.ru.origin + '. Качество и количество каждой партии ' +
+        'фиксируются в контракте по лабораторным параметрам ниже и подтверждаются ' +
+        'независимой инспекцией в порту погрузки.';
     }
-    return 'Contract-grade ' + data.en.name.toLowerCase() + ', ' + data.en.grade.toLowerCase() +
-      '. Originated ' + data.en.origin + '. Every consignment is fixed to the laboratory ' +
-      'parameters below and certified by independent inspection at the load port.';
+    return 'Origin: ' + data.en.origin + '. Quality and quantity of every consignment are ' +
+      'fixed in the contract to the laboratory parameters below and certified by ' +
+      'independent inspection at the load port.';
   }
 
   function table(rows) {
