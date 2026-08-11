@@ -55,6 +55,7 @@
     /* ------------------------------------------------------- ribbon ------ */
     'ribbon.i1': 'Независимый контроль качества — SGS / Intertek',
     'ribbon.i2': 'Надёжная логистика по нескольким маршрутам',
+    'ribbon.seo': 'Мировая торговля пшеницей, поставки ячменя в ОАЭ и контейнерные программы по продовольствию — отгрузки из Абу-Даби в страны Залива, Восточную Африку и Центральную Азию.',
     'ribbon.i3': 'Прозрачные банковские инструменты — аккредитив, CAD',
 
     /* ------------------------------------------------------ closing ------ */
@@ -82,7 +83,7 @@
     'shop.collections': 'Подборки',
     'shop.category': 'Категория',
     'shop.colNew': 'Новинки',
-    'shop.colBest': 'Хиты продаж',
+    'shop.colBest': 'Основная линейка',
     'shop.colPl': 'СТМ / Private Label',
     'shop.products': 'позиций',
     'shop.sortBy': 'Сортировка',
@@ -93,12 +94,12 @@
     'shop.quickRfq': 'Быстрый запрос',
     'shop.onRequest': 'Цена по запросу',
     'shop.badgeNew': 'Новинка',
-    'shop.badgeBest': 'Хит',
+    'shop.badgeBest': 'Основная линейка',
 
     /* --------------------------------------------------------- home ------ */
     'home.pressTag': 'Качество подтверждают',
     'home.trending': 'Популярное',
-    'home.bestsellers': 'Хиты продаж',
+    'home.bestsellers': 'Основная линейка',
     'home.new': 'Новинки',
     'home.shopAll': 'Смотреть все →',
     'home.byCat': 'Категории',
@@ -142,6 +143,9 @@
     'form.submitRfq': 'Отправить запрос на расчёт',
     'form.submitConsult': 'Записаться на консультацию',
     'form.note': 'При отправке откроется ваш почтовый клиент с запросом на адрес торгового отдела. Цены и ставки фрахта предоставляются только по официальному письменному запросу.',
+    'form.sending': 'Отправка…',
+    'form.sent': 'Спасибо — запрос поступил в торговый отдел. Отвечаем в течение одного рабочего дня.',
+    'form.failed': 'Не удалось отправить запрос. Открываем ваш почтовый клиент…',
     'form.status': 'Запрос подготовлен в вашем почтовом клиенте. Отправьте письмо, чтобы оно поступило в торговый отдел.',
 
     /* ----------------------------------------------------- insights ------ */
@@ -172,6 +176,8 @@
     'ins.n4.title': 'Аккредитив или CAD: выбор инструмента расчётов',
     'ins.n4.date': '11 июня 2026',
     'ins.n4.excerpt': 'Практическое сравнение стоимости, сроков и документарного риска для новых контрагентов.',
+    'ins.back': '← Вся аналитика',
+    'ins.request': 'Запросить материал →',
     'ins.read': 'Читать заметку →',
     'ins.cta.title': 'Получать еженедельную сводку',
     'ins.cta.copy': 'Аналитические сводки и резюме обзоров рассылаются зарегистрированным контрагентам. Напишите в торговый отдел, чтобы попасть в список рассылки.',
@@ -185,6 +191,8 @@
     'con.address': 'Юридический адрес',
     'con.licence': 'Лицензия',
     'con.licenceVal': 'Лицензия свободной зоны №5820194',
+    'con.office': 'Офис',
+    'con.officeVal': 'KEZAD Business Centre, Абу-Даби — посещение по предварительной записи',
     'con.email': 'Электронная почта',
     'con.hours': 'Часы работы',
     'con.hoursVal': 'Воскресенье–четверг, 09:00–18:00 (GST, UTC+4)',
@@ -205,7 +213,26 @@
     'legal.docsBody': 'Стандартный комплект, сопровождающий каждую отгрузку, включает коммерческий инвойс, упаковочный лист, коносамент, сертификат происхождения, фитосанитарный или ветеринарный сертификат (при необходимости), а также независимые сертификаты качества и веса.'
   };
 
+  /* Article bodies are whole HTML blocks, swapped wholesale rather than
+     per-node: the Russian text has a different sentence structure. */
+  function translateArticle(ru) {
+    var body = document.querySelector('[data-article]');
+    if (!body || !window.__RU_ARTICLES) return;
+    var key = 'a.' + body.getAttribute('data-article') + '.body';
+    if (!body.hasAttribute('data-en-body')) body.setAttribute('data-en-body', body.innerHTML);
+    body.innerHTML = ru ? (window.__RU_ARTICLES[key] || body.getAttribute('data-en-body'))
+                        : body.getAttribute('data-en-body');
+  }
+
   /* Merge the generated catalogue strings. */
+  if (window.__RU_ARTICLES) {
+    for (var ak in window.__RU_ARTICLES) {
+      if (Object.prototype.hasOwnProperty.call(window.__RU_ARTICLES, ak)) {
+        RU[ak] = window.__RU_ARTICLES[ak];
+      }
+    }
+  }
+
   if (window.__RU_CATALOGUE) {
     for (var k in window.__RU_CATALOGUE) {
       if (Object.prototype.hasOwnProperty.call(window.__RU_CATALOGUE, k)) {
@@ -260,6 +287,7 @@
     current = lang === 'ru' ? 'ru' : 'en';
     document.documentElement.lang = current;
     translate(document, current === 'ru');
+    translateArticle(current === 'ru');
 
     each(document, '.lang__btn', function (b) {
       b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === current));

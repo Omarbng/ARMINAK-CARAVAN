@@ -14,8 +14,8 @@ PAGE = '''<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Shop All — Grain, Oils, Dairy &amp; Foodstuff | ARMINAK CARAVAN</title>
-<meta name="description" content="Browse the full ARMINAK CARAVAN catalogue — milling wheat, feed barley, corn, flaxseed, sunflower and rapeseed oil, flour, rice, dairy, sugar ICUMSA 45, pasta, tomato paste and pulses.">
-<meta name="theme-color" content="#111214">
+<meta name="description" content="Barley supply UAE and global wheat trading — browse the full ARMINAK CARAVAN catalogue — milling wheat, feed barley, corn, flaxseed, sunflower and rapeseed oil, flour, rice, dairy, sugar ICUMSA 45, pasta, tomato paste and pulses.">
+<meta name="theme-color" content="#1B2A41">
 <script>(function(){try{var t=localStorage.getItem('ac_theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}})();</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,6 +23,11 @@ PAGE = '''<!doctype html>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/main.css">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://arminakcaravan.ae/catalogue.html">
+<link rel="alternate" hreflang="en" href="https://arminakcaravan.ae/catalogue.html">
+<link rel="alternate" hreflang="ru" href="https://arminakcaravan.ae/catalogue.html?lang=ru">
+<link rel="alternate" hreflang="x-default" href="https://arminakcaravan.ae/catalogue.html">
+<meta property="og:site_name" content="ARMINAK CARAVAN">
 </head>
 
 <body>
@@ -59,7 +64,7 @@ PAGE = '''<!doctype html>
               </label>
               <label class="check">
                 <input type="checkbox" data-filter-col="bestsellers">
-                <span data-i18n="shop.colBest">Bestsellers</span>
+                <span data-i18n="shop.colBest">Core Line</span>
               </label>
               <label class="check">
                 <input type="checkbox" data-filter-col="private-label">

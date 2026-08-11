@@ -178,6 +178,25 @@ CATEGORIES = [
      ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
      ("Minimum lot", "500 MT", "Минимальная партия", "500 тонн")]},
 
+{"slug": "durum-wheat-pasta", "art": "pasta",
+   "en": "Durum Wheat Pasta", "ru": "Макаронные изделия из твёрдых сортов",
+   "grade_en": "100% Semolina", "grade_ru": "100% семолины",
+   "origin_en": "Turkey · Italy", "origin_ru": "Турция · Италия",
+   "metrics_en": ["Protein 12% min · Moisture 12.5% max", "Cooking loss 6% max", "400 / 500 g retail · 5 kg catering"],
+   "metrics_ru": ["Белок 12% мин · Влажность 12,5% макс", "Потери при варке 6% макс", "400 / 500 г ритейл · 5 кг HoReCa"],
+   "spec": [
+     ("Raw Material", "100% durum semolina", "Сырьё", "100% семолина из твёрдых сортов пшеницы"),
+     ("Protein", "12% min", "Белок", "12% мин"),
+     ("Moisture", "12.5% max", "Влажность", "12,5% макс"),
+     ("Ash Content", "0.9% max", "Зольность", "0,9% макс"),
+     ("Cooking Loss", "6% max", "Потери при варке", "6% макс"),
+     ("Shelf Life", "36 months", "Срок годности", "36 месяцев")],
+   "meta": [
+     ("Origin", "Turkey · Italy", "Происхождение", "Турция · Италия"),
+     ("Packing", "400 / 500 g · 5 kg catering", "Упаковка", "400 / 500 г · 5 кг HoReCa"),
+     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
+     ("Minimum lot", "1 × 40' FCL", "Минимальная партия", "1 × 40-футовый контейнер")]},
+
   {"slug": "long-grain-white-rice", "art": "rice",
    "en": "Long Grain White Rice", "ru": "Рис длиннозёрный шлифованный",
    "grade_en": "5% Broken", "grade_ru": "5% дроблёных",
@@ -304,26 +323,7 @@ CATEGORIES = [
      ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
      ("Minimum lot", "12 500 MT", "Минимальная партия", "12 500 тонн")]},
 
-  {"slug": "durum-wheat-pasta", "art": "pasta",
-   "en": "Durum Wheat Pasta", "ru": "Макаронные изделия из твёрдых сортов",
-   "grade_en": "100% Semolina", "grade_ru": "100% семолины",
-   "origin_en": "Turkey · Italy", "origin_ru": "Турция · Италия",
-   "metrics_en": ["Protein 12% min · Moisture 12.5% max", "Cooking loss 6% max", "400 / 500 g retail · 5 kg catering"],
-   "metrics_ru": ["Белок 12% мин · Влажность 12,5% макс", "Потери при варке 6% макс", "400 / 500 г ритейл · 5 кг HoReCa"],
-   "spec": [
-     ("Raw Material", "100% durum semolina", "Сырьё", "100% семолина из твёрдых сортов пшеницы"),
-     ("Protein", "12% min", "Белок", "12% мин"),
-     ("Moisture", "12.5% max", "Влажность", "12,5% макс"),
-     ("Ash Content", "0.9% max", "Зольность", "0,9% макс"),
-     ("Cooking Loss", "6% max", "Потери при варке", "6% макс"),
-     ("Shelf Life", "36 months", "Срок годности", "36 месяцев")],
-   "meta": [
-     ("Origin", "Turkey · Italy", "Происхождение", "Турция · Италия"),
-     ("Packing", "400 / 500 g · 5 kg catering", "Упаковка", "400 / 500 г · 5 кг HoReCa"),
-     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
-     ("Minimum lot", "1 × 40' FCL", "Минимальная партия", "1 × 40-футовый контейнер")]},
-
-  {"slug": "tomato-paste-28-30", "art": "tomato-paste",
+    {"slug": "tomato-paste-28-30", "art": "tomato-paste",
    "en": "Tomato Paste", "ru": "Томатная паста",
    "grade_en": "28/30% · Hot Break", "grade_ru": "28/30% · горячего отжима",
    "origin_en": "Turkey · Iran", "origin_ru": "Турция · Иран",
@@ -586,13 +586,19 @@ def spec_template(item, indent="        "):
 
 
 def card_html(item, cat_id, cat_en):
+    """Card per the brief: photo, name + grade, key technical specs,
+    and two buttons — Spec PDF and RFQ Price.
+
+    The container is an <article>, not an <a>: a wrapping anchor cannot
+    legally contain the PDF download link. Whole-card navigation comes from
+    a stretched link on the title instead."""
     slug = item["slug"]
     badge = BADGES.get(slug)
     badge_html = ""
     if badge == "new":
         badge_html = '\n          <span class="card__badge" data-i18n="shop.badgeNew">New</span>'
     elif badge == "best":
-        badge_html = '\n          <span class="card__badge" data-i18n="shop.badgeBest">Bestseller</span>'
+        badge_html = '\n          <span class="card__badge" data-i18n="shop.badgeBest">Core Line</span>'
 
     collections = []
     if badge == "new":
@@ -602,10 +608,15 @@ def card_html(item, cat_id, cat_en):
     if slug in PRIVATE_LABEL:
         collections.append("private-label")
 
-    return f'''      <a class="card fade-up" href="product.html?p={slug}"
-         data-product="{item["en"]}" data-grade="{item["grade_en"]}"
-         data-product-key="p.{slug}.name" data-grade-key="p.{slug}.grade"
-         data-cat="{cat_id}" data-name="{item["en"]}" data-collections="{' '.join(collections)}">
+    metrics = "\n".join(
+        f'          <span data-i18n="p.{slug}.m{i}">{m}</span>'
+        for i, m in enumerate(item["metrics_en"])
+    )
+
+    return f'''      <article class="card fade-up"
+               data-product="{item["en"]}" data-grade="{item["grade_en"]}"
+               data-product-key="p.{slug}.name" data-grade-key="p.{slug}.grade"
+               data-cat="{cat_id}" data-name="{item["en"]}" data-collections="{' '.join(collections)}">
         <div class="card__figure">{badge_html}
           <button type="button" class="card__fav" aria-label="Save to favourites">{HEART}</button>
           <img class="card__art" src="assets/img/products/{item["art"]}.svg" alt="" loading="lazy" width="400" height="500">
@@ -613,13 +624,24 @@ def card_html(item, cat_id, cat_en):
         </div>
 
         <div class="card__row">
-          <h3 class="card__title" data-i18n="p.{slug}.name">{item["en"]}</h3>
+          <h3 class="card__title">
+            <a class="card__link" href="product.html?p={slug}" data-i18n="p.{slug}.name">{item["en"]}</a>
+          </h3>
           <span class="card__price" data-i18n="shop.onRequest">On request</span>
         </div>
-        <span class="card__cat" data-i18n="cat.c.{cat_id}">{cat_en}</span>
+        <span class="card__grade" data-i18n="p.{slug}.grade">{item["grade_en"]}</span>
+
+        <div class="card__metrics">
+{metrics}
+        </div>
+
+        <div class="card__actions">
+          <a class="btn btn--ghost btn--sm" href="assets/docs/{slug}.pdf" download data-i18n="cat.spec">Spec PDF</a>
+          <button type="button" class="link-quiet card__rfq" data-drawer-trigger data-i18n="cat.rfq">RFQ Price →</button>
+        </div>
 
 {spec_template(item)}
-      </a>'''
+      </article>'''
 
 
 def build_cards():

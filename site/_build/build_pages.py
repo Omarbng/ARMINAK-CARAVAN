@@ -21,7 +21,7 @@ HEAD = '''<!doctype html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>%TITLE%</title>
 <meta name="description" content="%DESC%">
-<meta name="theme-color" content="#111214">
+<meta name="theme-color" content="#1B2A41">
 <script>(function(){try{var t=localStorage.getItem('ac_theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}})();</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -29,6 +29,14 @@ HEAD = '''<!doctype html>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Cormorant+Garamond:wght@300;400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/main.css">
 <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="canonical" href="https://arminakcaravan.ae/%SLUG%">
+<link rel="alternate" hreflang="en" href="https://arminakcaravan.ae/%SLUG%">
+<link rel="alternate" hreflang="ru" href="https://arminakcaravan.ae/%SLUG%?lang=ru">
+<link rel="alternate" hreflang="x-default" href="https://arminakcaravan.ae/%SLUG%">
+<meta property="og:site_name" content="ARMINAK CARAVAN">
+<meta property="og:locale" content="en_AE">
+<meta property="og:locale:alternate" content="ru_RU">
+<meta name="twitter:card" content="summary_large_image">
 %EXTRA%</head>
 
 <body>
@@ -43,7 +51,7 @@ SCRIPTS = '''<script src="assets/js/products.js"></script>
 
 # ============================================================== INDEX =====
 
-INDEX = HEAD.replace("%TITLE%", "ARMINAK CARAVAN — Global Supply of Agricultural Commodities &amp; Foodstuff | Abu Dhabi") \
+INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Global Supply of Agricultural Commodities &amp; Foodstuff | Abu Dhabi") \
             .replace("%DESC%", "ARMINAK CARAVAN FOODSTUFF AND BEVERAGES TRADING LTD — global supply of grain, oils, dairy, sugar and everyday foodstuff from the Black Sea, Turkey and Central Asia. KEZAD Free Zone, Abu Dhabi.") \
             .replace("%EXTRA%", '''<meta property="og:type" content="website">
 <meta property="og:title" content="ARMINAK CARAVAN — Sourced at origin. Delivered across continents.">
@@ -55,12 +63,21 @@ INDEX = HEAD.replace("%TITLE%", "ARMINAK CARAVAN — Global Supply of Agricultur
   "@type": "Organization",
   "name": "ARMINAK CARAVAN FOODSTUFF AND BEVERAGES TRADING LTD",
   "url": "https://arminakcaravan.ae/",
-  "description": "Global supply of agricultural commodities and everyday foodstuff.",
+  "description": "Global wheat trading and barley supply UAE. Grain, vegetable oils, dairy, sugar and everyday foodstuff supplied from the Black Sea, Turkey and Central Asia.",
+  "email": "trading@arminakcaravan.ae",
   "address": {
     "@type": "PostalAddress",
+    "streetAddress": "KEZAD Free Zone",
     "addressLocality": "Abu Dhabi",
-    "addressRegion": "KEZAD Free Zone",
     "addressCountry": "AE"
+  },
+  "areaServed": ["AE", "SA", "KE", "TZ", "UZ", "KZ", "TR"],
+  "knowsLanguage": ["en", "ru", "ar"],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "sales",
+    "email": "trading@arminakcaravan.ae",
+    "availableLanguage": ["English", "Russian", "Arabic"]
   }
 }
 </script>
@@ -182,7 +199,7 @@ INDEX = HEAD.replace("%TITLE%", "ARMINAK CARAVAN — Global Supply of Agricultur
     <div class="rowhead fade-up">
       <div class="tabs" role="tablist">
         <button type="button" class="tabs__btn is-active" data-tab="trending" data-i18n="home.trending">Trending</button>
-        <button type="button" class="tabs__btn" data-tab="bestsellers" data-i18n="home.bestsellers">Bestsellers</button>
+        <button type="button" class="tabs__btn" data-tab="bestsellers" data-i18n="home.bestsellers">Core Line</button>
         <button type="button" class="tabs__btn" data-tab="new" data-i18n="home.new">New</button>
       </div>
       <a class="link-quiet" href="catalogue.html" data-i18n="home.shopAll">Shop all →</a>
@@ -244,6 +261,7 @@ INDEX = HEAD.replace("%TITLE%", "ARMINAK CARAVAN — Global Supply of Agricultur
       <div class="ribbon__item fade-up stagger-1" data-i18n="ribbon.i2">Reliable multi-corridor logistics</div>
       <div class="ribbon__item fade-up stagger-2" data-i18n="ribbon.i3">Transparent banking instruments — L/C, CAD</div>
     </div>
+    <p class="ribbon__seo fade-up" data-i18n="ribbon.seo">Global wheat trading, barley supply UAE, and full-container foodstuff programmes shipped from Abu Dhabi to the Gulf, East Africa and Central Asia.</p>
   </div>
 </section>
 
@@ -380,7 +398,7 @@ INDEX = HEAD.replace("%TITLE%", "ARMINAK CARAVAN — Global Supply of Agricultur
 
 # ============================================================ PRODUCT =====
 
-PRODUCT = HEAD.replace("%TITLE%", "Product — ARMINAK CARAVAN") \
+PRODUCT = HEAD.replace("%SLUG%", "product.html").replace("%TITLE%", "Product — ARMINAK CARAVAN") \
               .replace("%DESC%", "Technical specification, packing and commercial terms.") \
               .replace("%EXTRA%", "") + NAV_CAT + '''
 
@@ -476,7 +494,7 @@ end = INSIGHTS_MAIN.index('</main>') + len('</main>')
 INSIGHTS_BODY = INSIGHTS_MAIN[start:end].replace('section--navy', 'section--inverse') \
                                         .replace('btn--brass', 'btn--primary')
 
-INSIGHTS = HEAD.replace("%TITLE%", "Market Insights — Grain, Oils &amp; Freight Analysis | ARMINAK CARAVAN") \
+INSIGHTS = HEAD.replace("%SLUG%", "insights.html").replace("%TITLE%", "Market Insights — Grain, Oils &amp; Freight Analysis | ARMINAK CARAVAN") \
                .replace("%DESC%", "Weekly market notes from ARMINAK CARAVAN on Black Sea grain, vegetable oils, freight corridors and trade finance.") \
                .replace("%EXTRA%", "") + NAV_INS + "\n\n" + INSIGHTS_BODY + "\n\n" + FOOTER + "\n\n" + \
                SCRIPTS.replace('<script src="assets/js/products.js"></script>\n', '') + '''</body>
@@ -492,7 +510,7 @@ CONTACT_BODY = CONTACT_MAIN[start:end].replace('section--sand2', 'section--tight
                                       .replace('btn--brass', 'btn--primary') \
                                       .replace(' style="height:56px;padding:0 28px;font-size:13px"', '')
 
-CONTACT = HEAD.replace("%TITLE%", "Contacts &amp; Institutional Desk | ARMINAK CARAVAN, KEZAD Free Zone Abu Dhabi") \
+CONTACT = HEAD.replace("%SLUG%", "contact.html").replace("%TITLE%", "Contacts &amp; Institutional Desk | ARMINAK CARAVAN, KEZAD Free Zone Abu Dhabi") \
               .replace("%DESC%", "Contact ARMINAK CARAVAN — KEZAD Free Zone, Abu Dhabi. Institutional contact desk, WhatsApp trading line and consultation booking.") \
               .replace("%EXTRA%", "") + NAV_CON + "\n\n" + CONTACT_BODY + "\n\n" + FOOTER + "\n\n" + \
               SCRIPTS.replace('<script src="assets/js/products.js"></script>\n', '') + '''</body>

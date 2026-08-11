@@ -374,7 +374,11 @@
              '</dt><dd data-i18n="p.' + slug + '.mv' + i + '">' + row[1] + '</dd></div>';
     }).join('');
 
-    return '<a class="card" href="product.html?p=' + slug + '"' +
+    var metrics = p.en.metrics.map(function (m, i) {
+      return '<span data-i18n="p.' + slug + '.m' + i + '">' + m + '</span>';
+    }).join('');
+
+    return '<article class="card"' +
       ' data-product="' + p.en.name + '" data-grade="' + p.en.grade + '"' +
       ' data-product-key="p.' + slug + '.name" data-grade-key="p.' + slug + '.grade"' +
       ' data-cat="' + p.cat + '" data-name="' + p.en.name + '">' +
@@ -385,10 +389,15 @@
       '<button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>' +
       '</div>' +
       '<div class="card__row">' +
-      '<h3 class="card__title" data-i18n="p.' + slug + '.name">' + p.en.name + '</h3>' +
+      '<h3 class="card__title"><a class="card__link" href="product.html?p=' + slug + '" data-i18n="p.' + slug + '.name">' + p.en.name + '</a></h3>' +
       '<span class="card__price" data-i18n="shop.onRequest">On request</span>' +
       '</div>' +
-      '<span class="card__cat" data-i18n="cat.c.' + p.cat + '">' + p.en.catName + '</span>' +
+      '<span class="card__grade" data-i18n="p.' + slug + '.grade">' + p.en.grade + '</span>' +
+      '<div class="card__metrics">' + metrics + '</div>' +
+      '<div class="card__actions">' +
+      '<a class="btn btn--ghost btn--sm" href="assets/docs/' + slug + '.pdf" download data-i18n="cat.spec">Spec PDF</a>' +
+      '<button type="button" class="link-quiet card__rfq" data-drawer-trigger data-i18n="cat.rfq">RFQ Price →</button>' +
+      '</div>' +
       '<template class="card__spec">' +
       '<table class="spec"><thead><tr>' +
       '<th scope="col" data-i18n="cat.param">Parameter</th>' +
@@ -396,7 +405,7 @@
       '</tr></thead><tbody>' + spec + '</tbody></table>' +
       '<dl class="drawer__meta">' + meta + '</dl>' +
       '</template>' +
-      '</a>';
+      '</article>';
   }
 
   function renderRail(rail) {
@@ -595,11 +604,22 @@
   }
 
   /* --------------------------------------------------------------- FORMS -- */
-  /* Static site: enquiries open the operator's mail client, per the brief.
-     Swap for a POST endpoint when a backend exists. */
+  /* Enquiries POST to FORM_ENDPOINT so they land in the company inbox without
+     depending on the visitor having a mail client. Until an endpoint is set,
+     it falls back to the mailto: behaviour so no lead is ever dropped.
+
+     To go live: create a free form endpoint (Web3Forms, Formspree, or a
+     Vercel function) and paste the URL below. If the service needs an access
+     key, put it in FORM_KEY — it is a public submission key, not a secret. */
+
+  var FORM_ENDPOINT = '';
+  var FORM_KEY = '';
 
   function initForms() {
     qsa('form[data-mailto]').forEach(function (form) {
+      var statusEl = qs('.form__status', form);
+      var submitBtn = qs('button[type="submit"]', form);
+      var submitKey = submitBtn && submitBtn.getAttribute('data-i18n');
 
       function labelFor(name) {
         var field = form.elements[name];
@@ -610,21 +630,66 @@
         return name;
       }
 
+      function say(stateKey, fallback, tone) {
+        if (!statusEl) return;
+        statusEl.setAttribute('data-i18n', stateKey);
+        statusEl.textContent = fallback;
+        statusEl.classList.remove('is-error', 'is-ok');
+        if (tone) statusEl.classList.add(tone);
+        statusEl.classList.add('is-visible');
+        if (window.ACI18N) window.ACI18N.retranslate(statusEl.parentNode);
+      }
+
+      function busy(on) {
+        if (!submitBtn) return;
+        submitBtn.disabled = on;
+        submitBtn.classList.toggle('is-busy', on);
+        if (on) {
+          submitBtn.setAttribute('data-i18n', 'form.sending');
+          submitBtn.textContent = 'Sending…';
+        } else if (submitKey) {
+          submitBtn.setAttribute('data-i18n', submitKey);
+        }
+        if (window.ACI18N) window.ACI18N.retranslate(form);
+      }
+
+      function fallbackToMail(payload) {
+        var lines = Object.keys(payload).map(function (k) { return k + ': ' + payload[k]; });
+        window.location.href = 'mailto:' + form.getAttribute('data-mailto') +
+          '?subject=' + encodeURIComponent(form.getAttribute('data-subject') || 'Enquiry') +
+          '&body=' + encodeURIComponent(lines.join('\n'));
+        say('form.status', 'Your enquiry has been prepared in your mail client. Send it to reach the trading desk.');
+      }
+
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         if (typeof form.reportValidity === 'function' && !form.reportValidity()) return;
 
-        var lines = [];
+        var payload = {};
         new FormData(form).forEach(function (value, key) {
-          if (String(value).trim() !== '') lines.push(labelFor(key) + ': ' + value);
+          if (String(value).trim() !== '') payload[labelFor(key)] = value;
         });
+        payload.subject = form.getAttribute('data-subject') || 'Enquiry';
 
-        window.location.href = 'mailto:' + form.getAttribute('data-mailto') +
-          '?subject=' + encodeURIComponent(form.getAttribute('data-subject') || 'Enquiry') +
-          '&body=' + encodeURIComponent(lines.join('\n'));
+        if (!FORM_ENDPOINT) { fallbackToMail(payload); return; }
 
-        var status = qs('.form__status', form);
-        if (status) status.classList.add('is-visible');
+        if (FORM_KEY) payload.access_key = FORM_KEY;
+        busy(true);
+
+        fetch(FORM_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
+        }).then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          busy(false);
+          form.reset();
+          say('form.sent', 'Thank you — your enquiry has reached the trading desk. We reply within one business day.', 'is-ok');
+        }).catch(function () {
+          busy(false);
+          say('form.failed', 'The enquiry could not be sent. Opening your mail client instead…', 'is-error');
+          setTimeout(function () { fallbackToMail(payload); }, 1200);
+        });
       });
     });
   }
