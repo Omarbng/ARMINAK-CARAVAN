@@ -24,7 +24,7 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="ARMINAK CARAVAN — Sourced at origin. Delivered across continents.">
 <meta property="og:description" content="Global supply of agricultural commodities and everyday foodstuff. KEZAD Free Zone, Abu Dhabi.">
-<meta property="og:image" content="assets/img/hero-poster.jpg">
+<meta property="og:image" content="assets/img/og-cover.svg">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -53,6 +53,7 @@
 
 <body>
 <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+<div class="sand-edges" aria-hidden="true"></div>
 <header class="nav" id="nav">
   <div class="nav__inner">
     <button class="nav__burger" id="navBurger" aria-expanded="false" aria-controls="navMenu" aria-label="Menu">
@@ -87,25 +88,74 @@
 
 <!-- ================================================================== HERO -->
 <section class="hero" id="hero">
+  <!-- No video: the client asked for a still scene, and the mp4 behaved
+       differently on phone and desktop. The scene is inline SVG so it takes
+       its colours from the theme, weighs a few KB and is identical on every
+       device. The gold dust is a canvas layer that settles after the reveal. -->
   <div class="hero__media">
     <div class="hero__layer">
-      <!-- The mp4 is authored with a crossfaded seam, so native `loop` runs it
-           unbroken with no jump cut. preload="none" and no autoplay attribute:
-           main.js calls play() only when the film will actually be shown, so
-           poster routes (mobile, reduced motion) never fetch it. -->
-      <video class="hero__video" id="heroVideo"
-             muted playsinline loop preload="none"
-             poster="assets/img/hero-poster.jpg"
-             aria-hidden="true" tabindex="-1">
-        <source src="assets/video/hero-caravan.mp4" type="video/mp4">
-      </video>
-      <img class="hero__poster" id="heroPoster"
-           src="assets/img/hero-poster.jpg"
-           alt="A caravan crossing the dune crest at sunset.">
+      <svg class="hero__scene" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice"
+           role="img" aria-labelledby="heroSceneTitle">
+        <title id="heroSceneTitle">A loaded camel caravan crossing the dunes</title>
+        <path class="dune dune--far" d="M0,560 C 220,520 380,566 560,556 C 760,545 900,500 1080,516
+              C 1280,534 1420,568 1600,548 L1600,900 L0,900 Z"/>
+        <path class="dune dune--mid" d="M0,660 C 260,620 420,666 640,654 C 860,642 1020,606 1240,620
+              C 1400,630 1500,654 1600,646 L1600,900 L0,900 Z"/>
+        <path class="dune dune--near" d="M0,812 C 300,776 520,822 760,812 C 1000,802 1240,760 1600,782
+              L1600,900 L0,900 Z"/>
+        <g class="hero__caravan">
+  <g transform="translate(792.0,786.0) scale(0.920)">
+    <path d="M -9,0 C -8,-30 -6,-56 -4,-78 C -3,-86 -1,-92 2,-93 C 6,-94 9,-89 10,-78 C 12,-56 14,-30 15,0 Z"/>
+    <path d="M 2,-93 C -2,-94 -5,-100 -2,-105 C 1,-111 8,-111 11,-105 C 13,-100 10,-94 6,-93 Z"/>
+    <path d="M -2,-105 C -7,-101 -9,-92 -8,-83 L -2,-83 C -3,-92 -2,-100 1,-103 Z"/>
+    <path d="M 9,-84 C 17,-83 25,-80 31,-76 L 30,-71 C 23,-75 16,-78 9,-79 Z"/>
+  </g>
+  <g transform="translate(846.0,786.0) scale(0.920,0.920)">
+    <path d="M 64.0,-72.0 C 66.0,-44.6 62.0,-20.2 59.0,0 L 54.0,0 C 57.0,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
+    <path d="M 56.0,-70.0 C 58.0,-43.4 57.2,-19.6 59.0,0 L 54.0,0 C 52.2,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
+    <path d="M 32.0,-66.0 C 30.0,-40.9 33.6,-18.5 36.0,0 L 31.0,0 C 28.6,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
+    <path d="M 24.0,-65.0 C 22.0,-40.3 22.8,-18.2 21.0,0 L 16.0,0 C 17.8,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
+    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
+    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
+    <path d="M 22,-96 C 20,-106 24,-116 32,-122 L 40,-130 L 56,-130 C 62,-126 64,-114 61,-104 C 59,-96 57,-88 55,-80 L 47,-80 C 49,-88 50,-94 50,-100 L 30,-102 C 30,-94 31,-88 33,-80 L 25,-80 C 23,-88 22,-92 22,-96 Z"/>
+  </g>
+  <g transform="translate(996.0,786.0) scale(0.920,0.920)">
+    <path d="M 64.0,-72.0 C 66.0,-44.6 65.2,-20.2 67.0,0 L 62.0,0 C 60.2,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
+    <path d="M 56.0,-70.0 C 58.0,-43.4 54.4,-19.6 52.0,0 L 47.0,0 C 49.4,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
+    <path d="M 32.0,-66.0 C 30.0,-40.9 30.8,-18.5 29.0,0 L 24.0,0 C 25.8,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
+    <path d="M 24.0,-65.0 C 22.0,-40.3 25.6,-18.2 28.0,0 L 23.0,0 C 20.6,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
+    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
+    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
+    <path d="M 23,-98 C 21,-108 25,-118 33,-124 L 36,-136 L 56,-134 C 63,-130 65,-115 62,-105 C 60,-97 58,-89 56,-81 L 48,-81 C 50,-89 51,-95 51,-101 L 31,-103 C 31,-95 32,-89 34,-81 L 26,-81 C 24,-89 23,-94 23,-98 Z"/>
+  </g>
+  <g transform="translate(1146.0,786.0) scale(0.920,0.920)">
+    <path d="M 64.0,-72.0 C 66.0,-44.6 63.2,-20.2 62.0,0 L 57.0,0 C 58.2,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
+    <path d="M 56.0,-70.0 C 58.0,-43.4 58.0,-19.6 61.0,0 L 56.0,0 C 53.0,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
+    <path d="M 32.0,-66.0 C 30.0,-40.9 32.8,-18.5 34.0,0 L 29.0,0 C 27.8,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
+    <path d="M 24.0,-65.0 C 22.0,-40.3 22.0,-18.2 19.0,0 L 14.0,0 C 17.0,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
+    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
+    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
+    <path d="M 21,-94 C 19,-102 24,-111 33,-117 L 42,-124 L 56,-124 C 61,-120 63,-108 60,-100 C 58,-93 56,-86 54,-78 L 46,-78 C 48,-86 49,-92 49,-98 L 29,-100 C 29,-92 30,-86 32,-78 L 24,-78 C 22,-86 21,-90 21,-94 Z"/>
+  </g>
+  <g transform="translate(1296.0,786.0) scale(0.920,0.920)">
+    <path d="M 64.0,-72.0 C 66.0,-44.6 65.6,-20.2 68.0,0 L 63.0,0 C 60.6,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
+    <path d="M 56.0,-70.0 C 58.0,-43.4 55.2,-19.6 54.0,0 L 49.0,0 C 50.2,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
+    <path d="M 32.0,-66.0 C 30.0,-40.9 30.4,-18.5 28.0,0 L 23.0,0 C 25.4,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
+    <path d="M 24.0,-65.0 C 22.0,-40.3 24.8,-18.2 26.0,0 L 21.0,0 C 19.8,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
+    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
+    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
+    <path d="M 22,-96 C 20,-106 24,-116 32,-122 L 40,-130 L 56,-130 C 62,-126 64,-114 61,-104 C 59,-96 57,-88 55,-80 L 47,-80 C 49,-88 50,-94 50,-100 L 30,-102 C 30,-94 31,-88 33,-80 L 25,-80 C 23,-88 22,-92 22,-96 Z"/>
+  </g>
+  <path d="M 938.0,659.0 Q 974.4,672.6 1010.7,668.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.75"/>
+  <path d="M 1088.0,659.0 Q 1124.4,672.6 1160.7,668.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.75"/>
+  <path d="M 1238.0,659.0 Q 1274.4,672.6 1310.7,668.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.75"/>
+  <path d="M 808.3,708.7 Q 829.1,679.7 850.0,662.7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.75"/>
+        </g>
+      </svg>
+      <canvas class="hero__dust" id="heroDust" aria-hidden="true"></canvas>
     </div>
   </div>
 
-  <div class="hero__scrim"></div>
   <div class="hero__fade"></div>
 
   <div class="hero__content">
@@ -132,17 +182,6 @@
   <div class="hero__cue" aria-hidden="true">
     <i></i><span data-i18n="hero.scroll">Scroll</span>
   </div>
-
-  <button class="hero__playback" id="heroPlayback" type="button" aria-pressed="true">
-    <span class="hero__playback-label" data-i18n="hero.pause">Pause</span>
-    <span class="hero__playback-icon">
-      <svg class="i-pause" viewBox="0 0 12 12" aria-hidden="true"><rect x="2" y="1.5" width="2.8" height="9" rx="0.7"/><rect x="7.2" y="1.5" width="2.8" height="9" rx="0.7"/></svg>
-      <svg class="i-play" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.6v8.8l7-4.4z"/></svg>
-      <svg class="hero__playback-ring" viewBox="0 0 44 44" aria-hidden="true">
-        <circle id="heroRing" cx="22" cy="22" r="20.4" stroke-dasharray="128.2" stroke-dashoffset="128.2"/>
-      </svg>
-    </span>
-  </button>
 </section>
 
 <nav class="corridor-strip" aria-label="Trade corridor">
@@ -285,6 +324,46 @@
         <path class="corridor__route" id="corridorRoute"
               d="M90 118 C180 106 250 138 350 168 C450 198 520 106 620 94 C720 82 790 160 880 206 C970 252 1040 250 1120 272"/>
 
+        <g class="corridor__caravan" id="corridorCaravan">
+  <g transform="translate(0.0,0.0) scale(0.170)">
+    <path d="M -9,0 C -8,-30 -6,-56 -4,-78 C -3,-86 -1,-92 2,-93 C 6,-94 9,-89 10,-78 C 12,-56 14,-30 15,0 Z"/>
+    <path d="M 2,-93 C -2,-94 -5,-100 -2,-105 C 1,-111 8,-111 11,-105 C 13,-100 10,-94 6,-93 Z"/>
+    <path d="M -2,-105 C -7,-101 -9,-92 -8,-83 L -2,-83 C -3,-92 -2,-100 1,-103 Z"/>
+    <path d="M 9,-84 C 17,-83 25,-80 31,-76 L 30,-71 C 23,-75 16,-78 9,-79 Z"/>
+  </g>
+  <g transform="translate(9.0,0.0) scale(0.170,0.170)">
+    <path d="M 64.0,-72.0 C 66.0,-44.6 62.0,-20.2 59.0,0 L 54.0,0 C 57.0,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
+    <path d="M 56.0,-70.0 C 58.0,-43.4 57.2,-19.6 59.0,0 L 54.0,0 C 52.2,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
+    <path d="M 32.0,-66.0 C 30.0,-40.9 33.6,-18.5 36.0,0 L 31.0,0 C 28.6,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
+    <path d="M 24.0,-65.0 C 22.0,-40.3 22.8,-18.2 21.0,0 L 16.0,0 C 17.8,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
+    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
+    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
+    <path d="M 22,-96 C 20,-106 24,-116 32,-122 L 40,-130 L 56,-130 C 62,-126 64,-114 61,-104 C 59,-96 57,-88 55,-80 L 47,-80 C 49,-88 50,-94 50,-100 L 30,-102 C 30,-94 31,-88 33,-80 L 25,-80 C 23,-88 22,-92 22,-96 Z"/>
+  </g>
+  <g transform="translate(29.0,0.0) scale(0.170,0.170)">
+    <path d="M 64.0,-72.0 C 66.0,-44.6 65.2,-20.2 67.0,0 L 62.0,0 C 60.2,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
+    <path d="M 56.0,-70.0 C 58.0,-43.4 54.4,-19.6 52.0,0 L 47.0,0 C 49.4,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
+    <path d="M 32.0,-66.0 C 30.0,-40.9 30.8,-18.5 29.0,0 L 24.0,0 C 25.8,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
+    <path d="M 24.0,-65.0 C 22.0,-40.3 25.6,-18.2 28.0,0 L 23.0,0 C 20.6,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
+    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
+    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
+    <path d="M 23,-98 C 21,-108 25,-118 33,-124 L 36,-136 L 56,-134 C 63,-130 65,-115 62,-105 C 60,-97 58,-89 56,-81 L 48,-81 C 50,-89 51,-95 51,-101 L 31,-103 C 31,-95 32,-89 34,-81 L 26,-81 C 24,-89 23,-94 23,-98 Z"/>
+  </g>
+  <g transform="translate(49.0,0.0) scale(0.170,0.170)">
+    <path d="M 64.0,-72.0 C 66.0,-44.6 63.2,-20.2 62.0,0 L 57.0,0 C 58.2,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
+    <path d="M 56.0,-70.0 C 58.0,-43.4 58.0,-19.6 61.0,0 L 56.0,0 C 53.0,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
+    <path d="M 32.0,-66.0 C 30.0,-40.9 32.8,-18.5 34.0,0 L 29.0,0 C 27.8,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
+    <path d="M 24.0,-65.0 C 22.0,-40.3 22.0,-18.2 19.0,0 L 14.0,0 C 17.0,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
+    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
+    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
+    <path d="M 21,-94 C 19,-102 24,-111 33,-117 L 42,-124 L 56,-124 C 61,-120 63,-108 60,-100 C 58,-93 56,-86 54,-78 L 46,-78 C 48,-86 49,-92 49,-98 L 29,-100 C 29,-92 30,-86 32,-78 L 24,-78 C 22,-86 21,-90 21,-94 Z"/>
+  </g>
+        </g>
+          <animateMotion id="corridorWalk" dur="14s" begin="corridorRoute.mouseover; 3s" repeatCount="indefinite"
+                         rotate="auto" keyPoints="0;1" keyTimes="0;1" calcMode="linear">
+            <mpath href="#corridorRoute"/>
+          </animateMotion>
+
         <g class="corridor__node">
           <circle class="corridor__pulse" cx="90" cy="118" r="4"/>
           <circle class="corridor__dot" cx="90" cy="118" r="4"/>
@@ -327,14 +406,71 @@
       </svg>
     </figure>
 
+    <!-- Mobile keeps the same idea as the desktop route rather than dropping
+         to a plain list: one drawn line, the same five waypoints, the caravan
+         walking down it. -->
     <div class="corridor__stack fade-up">
-      <ol>
-        <li><h3 data-i18n="corridor.n1">Black Sea</h3><p data-i18n="corridor.r1">Origination</p></li>
-        <li><h3 data-i18n="corridor.n2">Turkey</h3><p data-i18n="corridor.r2">Origination</p></li>
-        <li><h3 data-i18n="corridor.n3">Central Asia</h3><p data-i18n="corridor.r3">Origination</p></li>
-        <li><h3 data-i18n="corridor.n4">Jebel Ali</h3><p data-i18n="corridor.r4">Transhipment hub</p></li>
-        <li><h3 data-i18n="corridor.n5">East Africa</h3><p data-i18n="corridor.r5">Delivery</p></li>
-      </ol>
+      <svg class="corridor__svg-v" viewBox="0 0 300 620" role="img" aria-labelledby="corridorTitleV">
+        <title id="corridorTitleV">Trade corridor from the Black Sea to East Africa</title>
+        <path class="corridor__ghost" d="M46 30 C 92 128 18 214 46 310 C 74 406 20 500 46 590"/>
+        <path class="corridor__route" id="corridorRouteV"
+              d="M46 30 C 92 128 18 214 46 310 C 74 406 20 500 46 590"/>
+        <g class="corridor__caravan" id="corridorCaravanV">
+  <g transform="translate(0.0,0.0) scale(0.170)">
+    <path d="M -9,0 C -8,-30 -6,-56 -4,-78 C -3,-86 -1,-92 2,-93 C 6,-94 9,-89 10,-78 C 12,-56 14,-30 15,0 Z"/>
+    <path d="M 2,-93 C -2,-94 -5,-100 -2,-105 C 1,-111 8,-111 11,-105 C 13,-100 10,-94 6,-93 Z"/>
+    <path d="M -2,-105 C -7,-101 -9,-92 -8,-83 L -2,-83 C -3,-92 -2,-100 1,-103 Z"/>
+    <path d="M 9,-84 C 17,-83 25,-80 31,-76 L 30,-71 C 23,-75 16,-78 9,-79 Z"/>
+  </g>
+  <g transform="translate(9.0,0.0) scale(0.170,0.170)">
+    <path d="M 64.0,-72.0 C 66.0,-44.6 62.0,-20.2 59.0,0 L 54.0,0 C 57.0,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
+    <path d="M 56.0,-70.0 C 58.0,-43.4 57.2,-19.6 59.0,0 L 54.0,0 C 52.2,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
+    <path d="M 32.0,-66.0 C 30.0,-40.9 33.6,-18.5 36.0,0 L 31.0,0 C 28.6,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
+    <path d="M 24.0,-65.0 C 22.0,-40.3 22.8,-18.2 21.0,0 L 16.0,0 C 17.8,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
+    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
+    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
+    <path d="M 22,-96 C 20,-106 24,-116 32,-122 L 40,-130 L 56,-130 C 62,-126 64,-114 61,-104 C 59,-96 57,-88 55,-80 L 47,-80 C 49,-88 50,-94 50,-100 L 30,-102 C 30,-94 31,-88 33,-80 L 25,-80 C 23,-88 22,-92 22,-96 Z"/>
+  </g>
+  <g transform="translate(29.0,0.0) scale(0.170,0.170)">
+    <path d="M 64.0,-72.0 C 66.0,-44.6 65.2,-20.2 67.0,0 L 62.0,0 C 60.2,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
+    <path d="M 56.0,-70.0 C 58.0,-43.4 54.4,-19.6 52.0,0 L 47.0,0 C 49.4,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
+    <path d="M 32.0,-66.0 C 30.0,-40.9 30.8,-18.5 29.0,0 L 24.0,0 C 25.8,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
+    <path d="M 24.0,-65.0 C 22.0,-40.3 25.6,-18.2 28.0,0 L 23.0,0 C 20.6,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
+    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
+    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
+    <path d="M 23,-98 C 21,-108 25,-118 33,-124 L 36,-136 L 56,-134 C 63,-130 65,-115 62,-105 C 60,-97 58,-89 56,-81 L 48,-81 C 50,-89 51,-95 51,-101 L 31,-103 C 31,-95 32,-89 34,-81 L 26,-81 C 24,-89 23,-94 23,-98 Z"/>
+  </g>
+  <g transform="translate(49.0,0.0) scale(0.170,0.170)">
+    <path d="M 64.0,-72.0 C 66.0,-44.6 63.2,-20.2 62.0,0 L 57.0,0 C 58.2,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
+    <path d="M 56.0,-70.0 C 58.0,-43.4 58.0,-19.6 61.0,0 L 56.0,0 C 53.0,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
+    <path d="M 32.0,-66.0 C 30.0,-40.9 32.8,-18.5 34.0,0 L 29.0,0 C 27.8,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
+    <path d="M 24.0,-65.0 C 22.0,-40.3 22.0,-18.2 19.0,0 L 14.0,0 C 17.0,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
+    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
+    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
+    <path d="M 21,-94 C 19,-102 24,-111 33,-117 L 42,-124 L 56,-124 C 61,-120 63,-108 60,-100 C 58,-93 56,-86 54,-78 L 46,-78 C 48,-86 49,-92 49,-98 L 29,-100 C 29,-92 30,-86 32,-78 L 24,-78 C 22,-86 21,-90 21,-94 Z"/>
+  </g>
+        </g>
+          <animateMotion dur="16s" begin="6s" repeatCount="indefinite" rotate="auto">
+            <mpath href="#corridorRouteV"/>
+          </animateMotion>
+        </g>
+
+        <g class="corridor__node"><circle class="corridor__dot" cx="46" cy="30" r="5"/>
+          <text class="corridor__label" x="72" y="28" data-i18n="corridor.n1">Black Sea</text>
+          <text class="corridor__sublabel" x="72" y="45" data-i18n="corridor.r1">Origination</text></g>
+        <g class="corridor__node"><circle class="corridor__dot" cx="55" cy="170" r="5"/>
+          <text class="corridor__label" x="81" y="168" data-i18n="corridor.n2">Turkey</text>
+          <text class="corridor__sublabel" x="81" y="185" data-i18n="corridor.r2">Origination</text></g>
+        <g class="corridor__node"><circle class="corridor__dot" cx="46" cy="310" r="5"/>
+          <text class="corridor__label" x="72" y="308" data-i18n="corridor.n3">Central Asia</text>
+          <text class="corridor__sublabel" x="72" y="325" data-i18n="corridor.r3">Origination</text></g>
+        <g class="corridor__node"><circle class="corridor__dot" cx="52" cy="450" r="5"/>
+          <text class="corridor__label" x="78" y="448" data-i18n="corridor.n4">Jebel Ali</text>
+          <text class="corridor__sublabel" x="78" y="465" data-i18n="corridor.r4">Transhipment hub</text></g>
+        <g class="corridor__node"><circle class="corridor__dot" cx="46" cy="590" r="5"/>
+          <text class="corridor__label" x="72" y="588" data-i18n="corridor.n5">East Africa</text>
+          <text class="corridor__sublabel" x="72" y="605" data-i18n="corridor.r5">Delivery</text></g>
+      </svg>
     </div>
 
     <dl class="corridor__legend fade-up">

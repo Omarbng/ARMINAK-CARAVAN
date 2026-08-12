@@ -24,6 +24,7 @@
       qsa('.theme-toggle').forEach(function (b) {
         b.setAttribute('aria-pressed', String(theme === 'dark'));
       });
+      document.dispatchEvent(new CustomEvent('ac:theme', { detail: { theme: theme } }));
     }
 
     qsa('.theme-toggle').forEach(function (btn) {
@@ -35,125 +36,134 @@
   }
 
   /* ---------------------------------------------------------------- HERO -- */
-  /* The film is ambience, not a gate: the headline lands immediately and the
-     video loops continuously. The mp4 is authored with a crossfaded seam, so
-     native `loop` runs unbroken — no state machine, no freeze frame. The one
-     control hands playback to the visitor. */
+  /* Gold dust drifts, the loaded caravan develops out of it, the dust thins to
+     an ambient trace and the headline rises. No video, so phone and desktop
+     behave identically — which is what the client reported as broken.
+
+     The particle field is purpose-built rather than particles.js: ~3KB instead
+     of ~25KB, no dependency, and it can be tuned to look like desert wind
+     instead of a node graph. */
 
   function initHero() {
     var hero = qs('#hero');
     if (!hero) return;
 
-    var video = qs('#heroVideo');
-    var toggle = qs('#heroPlayback');
-    var ring = qs('#heroRing');
-    var label = toggle && qs('.hero__playback-label', toggle);
+    var canvas = qs('#heroDust');
+    var reduced = window.matchMedia &&
+                  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    var RING_LEN = 128.2;   /* circumference baked into the markup */
-
-    var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var small = window.innerWidth < MOBILE_BP;
-    var playable = !!video && !reduced;
-
-    var running = false;
-    var raf = null;
-
-    function syncToggle() {
-      if (!toggle) return;
-      toggle.setAttribute('aria-pressed', String(running));
-      toggle.setAttribute('aria-label', running ? 'Pause background film' : 'Play background film');
-      if (label) {
-        label.setAttribute('data-i18n', running ? 'hero.pause' : 'hero.play');
-        if (window.ACI18N) window.ACI18N.retranslate(toggle);
-        else label.textContent = running ? 'Pause' : 'Play';
-      }
-    }
-
-    /* Progress ring tracks the position within the loop. */
-    function tick() {
-      var d = video.duration;
-      if (ring && d && isFinite(d)) {
-        ring.style.strokeDashoffset = (RING_LEN * (1 - (video.currentTime / d))).toFixed(1);
-      }
-      raf = requestAnimationFrame(tick);
-    }
-    function startRing() { if (!raf && ring) raf = requestAnimationFrame(tick); }
-    function stopRing() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
-
-    function usePoster() {
-      hero.classList.add('hero--static');
-      running = false;
-      stopRing();
-      if (video) { try { video.pause(); } catch (e) {} }
-      syncToggle();
-    }
-
-    function play() {
-      hero.classList.remove('hero--static');
-      running = true;
-      video.preload = 'auto';
-      video.classList.add('is-active');
-
-      var p = video.play();
-      if (p && typeof p.catch === 'function') {
-        p.catch(function () {
-          /* Background tabs refuse playback; retry once when visible. */
-          if (document.visibilityState === 'hidden') {
-            var onVisible = function () {
-              if (document.visibilityState !== 'visible') return;
-              document.removeEventListener('visibilitychange', onVisible);
-              if (running) play();
-            };
-            document.addEventListener('visibilitychange', onVisible);
-          } else {
-            usePoster();
-          }
-        });
-      }
-
-      startRing();
-      syncToggle();
-    }
-
-    function pause() {
-      running = false;
-      try { video.pause(); } catch (e) {}
-      stopRing();
-      syncToggle();
-    }
-
-    /* --- wiring ------------------------------------------------------- */
-
-    if (toggle) {
-      if (!playable) toggle.hidden = true;
-      else toggle.addEventListener('click', function () { running ? pause() : play(); });
-    }
-
-    /* Text lands right away — nothing waits on the film. */
-    setTimeout(function () { hero.classList.add('hero--revealed'); }, 80);
-
-    if (!playable) { usePoster(); return; }
-
-    video.addEventListener('error', usePoster);
-
-    /* Don't burn a decoder on a hero nobody is looking at. */
-    document.addEventListener('visibilitychange', function () {
-      if (!running) return;
-      if (document.visibilityState === 'hidden') {
-        try { video.pause(); } catch (e) {}
-        stopRing();
-      } else {
-        var p = video.play();
-        if (p && typeof p.catch === 'function') p.catch(function () {});
-        startRing();
-      }
+    /* The scene is already in the markup — reveal it on the next frame so the
+       transition actually runs instead of being skipped on first paint. */
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { hero.classList.add('hero--revealed'); });
     });
 
-    /* Mobile starts on the poster: the visitor opts in with the control, so no
-       phone pays for the film unless it is asked for. */
-    if (small) { usePoster(); return; }
+    if (!canvas || reduced || !canvas.getContext) return;
 
-    play();
+    var ctx = canvas.getContext('2d', { alpha: true });
+    if (!ctx) return;
+
+    var grains = [];
+    var raf = null;
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var w = 0, h = 0;
+    var started = 0;
+
+    /* Dense while the caravan develops, then settling to a light trace. */
+    var STORM_MS = 2600;
+
+    function resize() {
+      var r = hero.getBoundingClientRect();
+      w = Math.max(1, Math.round(r.width));
+      h = Math.max(1, Math.round(r.height));
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      seed();
+    }
+
+    function seed() {
+      /* Scale the field to the area so a phone does not run desktop counts. */
+      var target = Math.round(Math.min(190, Math.max(50, (w * h) / 9000)));
+      grains = [];
+      for (var i = 0; i < target; i++) grains.push(grain(true));
+    }
+
+    function grain(anywhere) {
+      return {
+        x: anywhere ? Math.random() * w : -20 - Math.random() * 120,
+        y: Math.random() * h,
+        r: 0.35 + Math.random() * 1.5,
+        vx: 14 + Math.random() * 46,          /* px per second, blowing right */
+        vy: -5 + Math.random() * 10,
+        a: 0.08 + Math.random() * 0.42,
+        drift: Math.random() * Math.PI * 2
+      };
+    }
+
+    var accent = getComputedStyle(document.documentElement)
+                   .getPropertyValue('--accent').trim() || '#B08D57';
+
+    function draw(now) {
+      if (!started) started = now;
+      var elapsed = now - started;
+
+      /* Storm settles into an ambient trace. */
+      var intensity = elapsed < STORM_MS
+        ? 1 - 0.72 * (elapsed / STORM_MS)
+        : 0.28;
+
+      ctx.clearRect(0, 0, w, h);
+      ctx.fillStyle = accent;
+
+      var dt = 1 / 60;
+      for (var i = 0; i < grains.length; i++) {
+        var g = grains[i];
+        g.drift += 0.012;
+        g.x += g.vx * dt;
+        g.y += (g.vy + Math.sin(g.drift) * 6) * dt;
+
+        if (g.x - g.r > w || g.y < -30 || g.y > h + 30) grains[i] = grain(false);
+
+        ctx.globalAlpha = g.a * intensity;
+        ctx.beginPath();
+        ctx.arc(g.x, g.y, g.r, 0, 6.2832);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+      raf = requestAnimationFrame(draw);
+    }
+
+    function start() { if (!raf) raf = requestAnimationFrame(draw); }
+    function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+
+    resize();
+    start();
+
+    var rt = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(rt);
+      rt = setTimeout(resize, 180);
+    });
+
+    /* Don't animate a hero nobody is looking at. */
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden') stop(); else start();
+    });
+
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        entries[0].isIntersecting ? start() : stop();
+      }, { threshold: 0 }).observe(hero);
+    }
+
+    /* Theme flip repaints the dust in the new accent. */
+    document.addEventListener('ac:theme', function () {
+      accent = getComputedStyle(document.documentElement)
+                 .getPropertyValue('--accent').trim() || accent;
+    });
   }
 
   /* ------------------------------------------------------- HERO SCRAMBLE -- */
@@ -249,19 +259,10 @@
     var burger = qs('#navBurger');
     var menu = qs('#navMenu');
 
+    /* The hero is a light scene, so the nav no longer needs an over-video
+       state — it just picks up its blurred background once the page moves. */
     function onScroll() {
-      var y = window.scrollY || window.pageYOffset;
-      if (hero) {
-        if (y < hero.offsetHeight - nav.offsetHeight) {
-          nav.classList.add('nav--over');
-          nav.classList.remove('nav--scrolled');
-        } else {
-          nav.classList.remove('nav--over');
-          nav.classList.add('nav--scrolled');
-        }
-      } else {
-        nav.classList.toggle('nav--scrolled', y > 8);
-      }
+      nav.classList.toggle('nav--scrolled', (window.scrollY || window.pageYOffset) > 8);
     }
 
     onScroll();

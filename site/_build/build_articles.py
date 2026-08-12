@@ -187,7 +187,7 @@ PAGE = '''<!doctype html>
 <meta property="og:type" content="article">
 <meta property="og:title" content="{title_en}">
 <meta property="og:description" content="{desc_en}">
-<meta property="og:image" content="assets/img/editorial-terminal.svg">
+<meta property="og:image" content="assets/img/og-cover.svg">
 <script type="application/ld+json">
 {{
   "@context": "https://schema.org",
@@ -205,6 +205,7 @@ PAGE = '''<!doctype html>
 
 <body>
 <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+<div class="sand-edges" aria-hidden="true"></div>
 {nav}
 
 <main id="main">
