@@ -95,15 +95,22 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
        device. The gold dust is a canvas layer that settles after the reveal. -->
   <div class="hero__media">
     <div class="hero__layer">
-      <svg class="hero__scene" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice"
-           role="img" aria-labelledby="heroSceneTitle">
-        <title id="heroSceneTitle">A loaded camel caravan crossing the dunes</title>
+      <!-- The scene is split into two stacked SVGs so the sand can live
+           BETWEEN them: veils drift behind the caravan, grain streaks whip
+           past in front. Same viewBox and slice, so they align exactly. -->
+      <svg class="hero__scene hero__scene--dunes" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice"
+           aria-hidden="true" focusable="false">
         <path class="dune dune--far" d="M0,560 C 220,520 380,566 560,556 C 760,545 900,500 1080,516
               C 1280,534 1420,568 1600,548 L1600,900 L0,900 Z"/>
         <path class="dune dune--mid" d="M0,660 C 260,620 420,666 640,654 C 860,642 1020,606 1240,620
               C 1400,630 1500,654 1600,646 L1600,900 L0,900 Z"/>
         <path class="dune dune--near" d="M0,812 C 300,776 520,822 760,812 C 1000,802 1240,760 1600,782
               L1600,900 L0,900 Z"/>
+      </svg>
+      <canvas class="hero__sand" id="heroSandBack" aria-hidden="true"></canvas>
+      <svg class="hero__scene hero__scene--caravan" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice"
+           role="img" aria-labelledby="heroSceneTitle">
+        <title id="heroSceneTitle">A loaded camel caravan crossing the dunes</title>
         <g class="hero__caravan">
   <g transform="translate(792.0,786.0) scale(0.920)">
     <path d="M -9,0 C -8,-30 -6,-56 -4,-78 C -3,-86 -1,-92 2,-93 C 6,-94 9,-89 10,-78 C 12,-56 14,-30 15,0 Z"/>

@@ -51,7 +51,9 @@
     host.appendChild(canvas);
 
     var sand = window.ACSand(canvas, host, {
-      base: 0.72, open: 0.72, openMs: 1,   /* ambient, no entry gust */
+      mode: 'veil',
+      base: 0.62, open: 0.62, openMs: 1,   /* ambient, no entry gust */
+      wind: 0.07,                          /* gentler than the hero storm */
       scale: 0.6,                          /* soft veil — half res is invisible */
       fps: 20,                             /* ambient margin texture, no fast motion */
       seed: 11.3
@@ -104,36 +106,60 @@
 
     if (!canvas || reduced || !canvas.getContext) return;
 
-    /* Real sand first: a GPU shader of wind-driven veils and grains. Only if
-       WebGL is missing do we fall back to the canvas-2D dust below. */
+    /* Real sand: two GL layers sandwiching the caravan. The veil (suspension)
+       drifts behind it, shaped by the dune lines; the streaks (saltation)
+       whip past in front, hugging the near dune. Both surge with the same
+       travelling gust wave. Only if WebGL is missing do we fall back to the
+       canvas-2D dust below. */
     if (window.ACSand) {
-      var sand = window.ACSand(canvas, hero);
-      if (sand) {
+      var back = qs('#heroSandBack');
+      var dunesSvg = qs('.hero__scene--dunes', hero);
+      var ground = dunesSvg ? {
+        near: dunesSvg.querySelector('.dune--near'),
+        mid: dunesSvg.querySelector('.dune--mid'),
+        viewBox: [1600, 900]
+      } : null;
+
+      var veil = back ? window.ACSand(back, hero, {
+        mode: 'veil', ground: ground, seed: 3.7,
+        open: 1.5, base: 1.0, openMs: 3400, fps: 30, wind: 0.13
+      }) : null;
+      var streaks = window.ACSand(canvas, hero, {
+        mode: 'streaks', ground: ground, seed: 3.7,
+        open: 1.6, base: 1.0, openMs: 3400, fps: 30
+      });
+
+      var layers = [veil, streaks].filter(Boolean);
+      if (layers.length) {
         function accentHex() {
           return getComputedStyle(document.documentElement)
                    .getPropertyValue('--accent').trim() || '#B08D57';
         }
-        sand.setColor(accentHex());
-        sand.resize();
-        sand.start();
+        layers.forEach(function (l) { l.setColor(accentHex()); l.resize(); l.start(); });
 
         var srt = null;
         window.addEventListener('resize', function () {
           clearTimeout(srt);
-          srt = setTimeout(sand.resize, 180);
+          srt = setTimeout(function () { layers.forEach(function (l) { l.resize(); }); }, 180);
         });
         document.addEventListener('visibilitychange', function () {
-          document.visibilityState === 'hidden' ? sand.stop() : sand.start();
+          layers.forEach(function (l) {
+            document.visibilityState === 'hidden' ? l.stop() : l.start();
+          });
         });
         if ('IntersectionObserver' in window) {
           new IntersectionObserver(function (e) {
-            e[0].isIntersecting ? sand.start() : sand.stop();
+            layers.forEach(function (l) { e[0].isIntersecting ? l.start() : l.stop(); });
           }, { threshold: 0 }).observe(hero);
         }
-        document.addEventListener('ac:theme', function () { sand.setColor(accentHex()); });
-        return;
+        document.addEventListener('ac:theme', function () {
+          layers.forEach(function (l) { l.setColor(accentHex()); });
+        });
+        if (streaks) return;               /* front canvas is taken by GL */
       }
     }
+    /* Canvas-2D fallback needs the CSS mask that keeps dust off the headline. */
+    canvas.classList.add('hero__dust--fallback');
 
     var ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;

@@ -590,14 +590,18 @@ button, input, select, textarea { font: inherit; color: inherit; }
   filter: blur(0);
 }
 
-.hero__dust {
+.hero__dust,
+.hero__sand {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   pointer-events: none;
-  /* Concentrated around the dunes and the caravan, thinning to nothing over
-     the headline — grains sitting on the type read as a dirty screen. */
+}
+
+/* Only the canvas-2D fallback needs a CSS mask — the WebGL layers shape
+   themselves around the dune lines and the text column in the shader/sim. */
+.hero__dust--fallback {
   -webkit-mask-image: radial-gradient(88% 92% at 84% 98%,
       #000 0%, rgba(0,0,0,0.72) 30%, rgba(0,0,0,0.20) 56%, transparent 74%);
   mask-image: radial-gradient(88% 92% at 84% 98%,
@@ -745,7 +749,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* Reduced motion: land on the finished frame, no development, no dust. */
 @media (prefers-reduced-motion: reduce) {
   .hero__caravan { opacity: 1; transform: none; filter: none; transition: none; }
-  .hero__dust { display: none; }
+  .hero__dust, .hero__sand { display: none; }
 }
 
 @media (max-height: 820px) and (min-width: 769px) {
