@@ -35,6 +35,50 @@
     });
   }
 
+  /* --------------------------------------------------------- SAND EDGES -- */
+  /* The client asked for sand at the screen edges on every page. This used to
+     be a tiled SVG of dots; dots read as snow, so the real shader runs here
+     too — low intensity, half resolution, masked to the margins by CSS. The
+     SVG stays as the fallback when WebGL is missing. */
+
+  function initSandEdges() {
+    var host = qs('.sand-edges');
+    if (!host || !window.ACSand) return;
+    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var canvas = document.createElement('canvas');
+    canvas.className = 'sand-edges__gl';
+    host.appendChild(canvas);
+
+    var sand = window.ACSand(canvas, host, {
+      base: 0.72, open: 0.72, openMs: 1,   /* ambient, no entry gust */
+      scale: 0.6,                          /* soft veil — half res is invisible */
+      fps: 20,                             /* ambient margin texture, no fast motion */
+      seed: 11.3
+    });
+    if (!sand) { host.removeChild(canvas); return; }   /* keep the SVG dots */
+
+    host.classList.add('sand-edges--gl');
+
+    function accentHex() {
+      return getComputedStyle(document.documentElement)
+               .getPropertyValue('--sand').trim() || '#C7A87A';
+    }
+    sand.setColor(accentHex());
+    sand.resize();
+    sand.start();
+
+    var rt = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(rt);
+      rt = setTimeout(sand.resize, 180);
+    });
+    document.addEventListener('visibilitychange', function () {
+      document.visibilityState === 'hidden' ? sand.stop() : sand.start();
+    });
+    document.addEventListener('ac:theme', function () { sand.setColor(accentHex()); });
+  }
+
   /* ---------------------------------------------------------------- HERO -- */
   /* Gold dust drifts, the loaded caravan develops out of it, the dust thins to
      an ambient trace and the headline rises. No video, so phone and desktop
@@ -59,6 +103,37 @@
     });
 
     if (!canvas || reduced || !canvas.getContext) return;
+
+    /* Real sand first: a GPU shader of wind-driven veils and grains. Only if
+       WebGL is missing do we fall back to the canvas-2D dust below. */
+    if (window.ACSand) {
+      var sand = window.ACSand(canvas, hero);
+      if (sand) {
+        function accentHex() {
+          return getComputedStyle(document.documentElement)
+                   .getPropertyValue('--accent').trim() || '#B08D57';
+        }
+        sand.setColor(accentHex());
+        sand.resize();
+        sand.start();
+
+        var srt = null;
+        window.addEventListener('resize', function () {
+          clearTimeout(srt);
+          srt = setTimeout(sand.resize, 180);
+        });
+        document.addEventListener('visibilitychange', function () {
+          document.visibilityState === 'hidden' ? sand.stop() : sand.start();
+        });
+        if ('IntersectionObserver' in window) {
+          new IntersectionObserver(function (e) {
+            e[0].isIntersecting ? sand.start() : sand.stop();
+          }, { threshold: 0 }).observe(hero);
+        }
+        document.addEventListener('ac:theme', function () { sand.setColor(accentHex()); });
+        return;
+      }
+    }
 
     var ctx = canvas.getContext('2d', { alpha: true });
     if (!ctx) return;
@@ -112,21 +187,21 @@
     function seed() {
       /* Enough grains to actually read as blowing sand, still scaled to the
          viewport so a phone runs a fraction of a desktop field. */
-      var target = Math.round(Math.min(620, Math.max(150, (w * h) / 2300)));
+      var target = Math.round(Math.min(300, Math.max(90, (w * h) / 4800)));
       grains = [];
       for (var i = 0; i < target; i++) grains.push(grain(true));
     }
 
     function grain(anywhere) {
-      var big = Math.random() < 0.16;          /* a few larger, closer motes */
+      var big = Math.random() < 0.10;          /* a few larger, closer motes */
       return {
         x: anywhere ? Math.random() * w : -40 - Math.random() * 160,
         y: Math.random() * h,
-        r: big ? 3.5 + Math.random() * 5.5 : 1.1 + Math.random() * 2.6,
+        r: big ? 2.4 + Math.random() * 3.0 : 0.8 + Math.random() * 1.6,
         vx: 26 + Math.random() * 88,           /* px/s, blowing right */
         vy: -9 + Math.random() * 18,
-        a: big ? 0.10 + Math.random() * 0.16
-               : 0.22 + Math.random() * 0.45,
+        a: big ? 0.07 + Math.random() * 0.10
+               : 0.14 + Math.random() * 0.26,
         drift: Math.random() * Math.PI * 2,
         sway: 4 + Math.random() * 12
       };
@@ -139,8 +214,8 @@
       /* Opens as a gust, settles to a persistent drift rather than nothing —
          the client wants the sand present throughout, not just on entry. */
       var intensity = elapsed < STORM_MS
-        ? 1 - 0.45 * (elapsed / STORM_MS)
-        : 0.55;
+        ? 1 - 0.5 * (elapsed / STORM_MS)
+        : 0.5;
 
       ctx.clearRect(0, 0, w, h);
 
@@ -719,6 +794,7 @@
 
   function boot() {
     initTheme();
+    initSandEdges();
     initNav();
     initCorridor();
     initReveal();

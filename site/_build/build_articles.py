@@ -243,6 +243,7 @@ PAGE = '''<!doctype html>
 
 <script src="assets/js/i18n-articles.js"></script>
 <script src="assets/js/i18n.js"></script>
+<script src="assets/js/sand.js"></script>
 <script src="assets/js/main.js"></script>
 </body>
 </html>
