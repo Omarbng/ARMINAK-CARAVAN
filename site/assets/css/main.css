@@ -126,32 +126,32 @@ button, input, select, textarea { font: inherit; color: inherit; }
   pointer-events: none;
   background-image: url("../img/sand-grains.svg");
   background-repeat: repeat;
-  background-size: 320px 320px;
-  opacity: 0.55;
+  background-size: 300px 300px;
+  opacity: 0.85;
   -webkit-mask-image: linear-gradient(to right,
-      #000 0%, rgba(0,0,0,0.55) 9%, transparent 24%,
-      transparent 76%, rgba(0,0,0,0.55) 91%, #000 100%);
+      #000 0%, rgba(0,0,0,0.8) 6%, rgba(0,0,0,0.35) 16%, transparent 30%,
+      transparent 70%, rgba(0,0,0,0.35) 84%, rgba(0,0,0,0.8) 94%, #000 100%);
   mask-image: linear-gradient(to right,
-      #000 0%, rgba(0,0,0,0.55) 9%, transparent 24%,
-      transparent 76%, rgba(0,0,0,0.55) 91%, #000 100%);
+      #000 0%, rgba(0,0,0,0.8) 6%, rgba(0,0,0,0.35) 16%, transparent 30%,
+      transparent 70%, rgba(0,0,0,0.35) 84%, rgba(0,0,0,0.8) 94%, #000 100%);
   animation: sandDrift 90s linear infinite;
 }
 
 [data-theme="dark"] .sand-edges {
   background-image: url("../img/sand-grains-dark.svg");
-  opacity: 0.4;
+  opacity: 0.5;
 }
 
 /* Barely-there drift, so the edges read as moving air rather than wallpaper. */
 @keyframes sandDrift {
   from { background-position: 0 0; }
-  to   { background-position: 320px -160px; }
+  to   { background-position: 300px -150px; }
 }
 
 @media (max-width: 768px) {
   /* Narrow screens have no side margin to spare — tighten to a thin frame. */
   .sand-edges {
-    opacity: 0.42;
+    opacity: 0.65;
     -webkit-mask-image: linear-gradient(to right,
         #000 0%, transparent 15%, transparent 85%, #000 100%);
     mask-image: linear-gradient(to right,

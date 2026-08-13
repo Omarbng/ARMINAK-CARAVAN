@@ -68,9 +68,34 @@
     var dpr = Math.min(window.devicePixelRatio || 1, 2);
     var w = 0, h = 0;
     var started = 0;
+    var sprite = null;
 
-    /* Dense while the caravan develops, then settling to a light trace. */
-    var STORM_MS = 2600;
+    /* Dense while the caravan develops, then settling to a visible drift. */
+    var STORM_MS = 3200;
+
+    function rgb() {
+      var hex = (getComputedStyle(document.documentElement)
+                  .getPropertyValue('--accent').trim() || '#B08D57').replace('#', '');
+      if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
+      var n = parseInt(hex, 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    }
+
+    /* A soft pre-rendered mote. Drawing a blurred sprite reads as airborne
+       dust; hard-edged arcs read as confetti and vanish at small sizes. */
+    function buildSprite() {
+      var c = rgb();
+      var SP = 64;
+      sprite = document.createElement('canvas');
+      sprite.width = sprite.height = SP;
+      var sc = sprite.getContext('2d');
+      var g = sc.createRadialGradient(SP / 2, SP / 2, 0, SP / 2, SP / 2, SP / 2);
+      g.addColorStop(0,    'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',1)');
+      g.addColorStop(0.35, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0.6)');
+      g.addColorStop(1,    'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0)');
+      sc.fillStyle = g;
+      sc.fillRect(0, 0, SP, SP);
+    }
 
     function resize() {
       var r = hero.getBoundingClientRect();
@@ -85,52 +110,51 @@
     }
 
     function seed() {
-      /* Scale the field to the area so a phone does not run desktop counts. */
-      var target = Math.round(Math.min(190, Math.max(50, (w * h) / 9000)));
+      /* Enough grains to actually read as blowing sand, still scaled to the
+         viewport so a phone runs a fraction of a desktop field. */
+      var target = Math.round(Math.min(620, Math.max(150, (w * h) / 2300)));
       grains = [];
       for (var i = 0; i < target; i++) grains.push(grain(true));
     }
 
     function grain(anywhere) {
+      var big = Math.random() < 0.16;          /* a few larger, closer motes */
       return {
-        x: anywhere ? Math.random() * w : -20 - Math.random() * 120,
+        x: anywhere ? Math.random() * w : -40 - Math.random() * 160,
         y: Math.random() * h,
-        r: 0.35 + Math.random() * 1.5,
-        vx: 14 + Math.random() * 46,          /* px per second, blowing right */
-        vy: -5 + Math.random() * 10,
-        a: 0.08 + Math.random() * 0.42,
-        drift: Math.random() * Math.PI * 2
+        r: big ? 3.5 + Math.random() * 5.5 : 1.1 + Math.random() * 2.6,
+        vx: 26 + Math.random() * 88,           /* px/s, blowing right */
+        vy: -9 + Math.random() * 18,
+        a: big ? 0.10 + Math.random() * 0.16
+               : 0.22 + Math.random() * 0.45,
+        drift: Math.random() * Math.PI * 2,
+        sway: 4 + Math.random() * 12
       };
     }
-
-    var accent = getComputedStyle(document.documentElement)
-                   .getPropertyValue('--accent').trim() || '#B08D57';
 
     function draw(now) {
       if (!started) started = now;
       var elapsed = now - started;
 
-      /* Storm settles into an ambient trace. */
+      /* Opens as a gust, settles to a persistent drift rather than nothing —
+         the client wants the sand present throughout, not just on entry. */
       var intensity = elapsed < STORM_MS
-        ? 1 - 0.72 * (elapsed / STORM_MS)
-        : 0.28;
+        ? 1 - 0.45 * (elapsed / STORM_MS)
+        : 0.55;
 
       ctx.clearRect(0, 0, w, h);
-      ctx.fillStyle = accent;
 
       var dt = 1 / 60;
       for (var i = 0; i < grains.length; i++) {
         var g = grains[i];
-        g.drift += 0.012;
+        g.drift += 0.014;
         g.x += g.vx * dt;
-        g.y += (g.vy + Math.sin(g.drift) * 6) * dt;
+        g.y += (g.vy + Math.sin(g.drift) * g.sway) * dt;
 
-        if (g.x - g.r > w || g.y < -30 || g.y > h + 30) grains[i] = grain(false);
+        if (g.x - g.r > w || g.y < -60 || g.y > h + 60) grains[i] = grain(false);
 
-        ctx.globalAlpha = g.a * intensity;
-        ctx.beginPath();
-        ctx.arc(g.x, g.y, g.r, 0, 6.2832);
-        ctx.fill();
+        ctx.globalAlpha = Math.min(1, g.a * intensity);
+        ctx.drawImage(sprite, g.x - g.r, g.y - g.r, g.r * 2, g.r * 2);
       }
       ctx.globalAlpha = 1;
       raf = requestAnimationFrame(draw);
@@ -139,6 +163,7 @@
     function start() { if (!raf) raf = requestAnimationFrame(draw); }
     function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
 
+    buildSprite();
     resize();
     start();
 
@@ -148,7 +173,6 @@
       rt = setTimeout(resize, 180);
     });
 
-    /* Don't animate a hero nobody is looking at. */
     document.addEventListener('visibilitychange', function () {
       if (document.visibilityState === 'hidden') stop(); else start();
     });
@@ -159,11 +183,7 @@
       }, { threshold: 0 }).observe(hero);
     }
 
-    /* Theme flip repaints the dust in the new accent. */
-    document.addEventListener('ac:theme', function () {
-      accent = getComputedStyle(document.documentElement)
-                 .getPropertyValue('--accent').trim() || accent;
-    });
+    document.addEventListener('ac:theme', buildSprite);
   }
 
   /* ------------------------------------------------------- HERO SCRAMBLE -- */
