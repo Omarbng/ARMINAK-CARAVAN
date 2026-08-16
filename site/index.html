@@ -31,6 +31,10 @@
      settled, which is the correct fallback. -->
 <script>(function(){try{
   if (location.hash) return;
+  /* Once per session. Coming back to the home page from Catalogue and sitting
+     through the window again is the intro turning into a toll booth. Session,
+     not local, so it still plays for a genuinely new visit. */
+  if (sessionStorage.getItem('ac_intro') === '1') return;
   var m = window.matchMedia;
   if (m && m('(prefers-reduced-motion: reduce)').matches) return;
   if (!(window.CSS && CSS.supports && CSS.supports('clip-path', 'inset(10% round 10px)'))) return;

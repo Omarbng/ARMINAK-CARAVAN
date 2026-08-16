@@ -204,6 +204,10 @@
       if (fast) hero.classList.add('hero--fast');
       root.classList.remove('ac-intro', 'ac-mounted');
       hero.classList.add('hero--revealed', 'hero--settled');
+      /* Read back by the pre-paint script in the <head>, which is what
+         actually decides whether the next page load gets the window.
+         Private mode can throw on write; then the intro simply replays. */
+      try { sessionStorage.setItem('ac_intro', '1'); } catch (e) {}
       document.dispatchEvent(new CustomEvent('ac:herosettled'));
     }
 
