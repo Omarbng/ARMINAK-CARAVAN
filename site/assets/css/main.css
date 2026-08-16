@@ -24,6 +24,10 @@
   --sand:          #C7A87A;   /* the grains at the edges */
   --hairline:      rgba(27, 42, 65, 0.13);
   --hairline-soft: rgba(27, 42, 65, 0.07);
+  /* Kept as definitions only — nothing consumes these any more. They existed
+     so a band could flip against the theme, which is precisely what stopped
+     the pages reading as one document, so reaching for them again is almost
+     certainly the wrong move. */
   --inverse-bg:    #1B2A41;
   --inverse-ink:   #F7F4ED;
   --inverse-muted: rgba(247, 244, 237, 0.62);
@@ -45,6 +49,14 @@
 
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --dur: 600ms;
+
+  /* Numbered manifest. Three sections list things — the corridor waypoints,
+     the client qualification, the footer columns — and each had invented its
+     own numeral size, gutter and row height, which is most of why the lower
+     page read as assembled rather than designed. One spec, three call sites. */
+  --idx-size:   11px;   /* mono numeral */
+  --idx-gutter: 46px;   /* fixed column the numeral sits in */
+  --idx-row-y:  15px;   /* vertical padding either side of a row */
 }
 
 /* Dark — the premium matte alternative the client offered as option two.
@@ -273,15 +285,21 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .section { padding: clamp(72px, 8vw, 128px) 0; }
 .section--tight { padding: clamp(48px, 5vw, 80px) 0; }
 
+/* Was a hard --inverse-bg slab, which flipped against the theme exactly like
+   the footer did. A closing band still needs to read as an ending, so it takes
+   the one-shade-up surface and a hairline at each edge instead of a colour
+   reversal — punctuation, not a different room. */
 .section--inverse {
-  background: var(--inverse-bg);
-  color: var(--inverse-ink);
+  background: var(--tile);
+  color: var(--ink);
+  border-top: 1px solid var(--hairline-soft);
+  border-bottom: 1px solid var(--hairline-soft);
 }
-.section--inverse h1, .section--inverse h2, .section--inverse h3 { color: var(--inverse-ink); }
+.section--inverse h1, .section--inverse h2, .section--inverse h3 { color: var(--ink); }
 
 /* Legacy aliases from v1 markup */
-.section--navy { background: var(--inverse-bg); color: var(--inverse-ink); }
-.section--navy h1, .section--navy h2, .section--navy h3 { color: var(--inverse-ink); }
+.section--navy { background: var(--tile); color: var(--ink); }
+.section--navy h1, .section--navy h2, .section--navy h3 { color: var(--ink); }
 .section--sand2 { background: var(--tile); }
 
 .hairline { height: 1px; border: 0; margin: 0; background: var(--hairline); }
@@ -591,12 +609,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .btn--ghost:hover, .btn--outline-ink:hover { border-color: var(--ink); }
 
-.btn--outline-sand {   /* inverse sections */
+/* Was styled for a navy ground; the closing band is now page-coloured, so this
+   is simply the outline button and stays an alias rather than a second look. */
+.btn--outline-sand {
   background: transparent;
-  border-color: var(--inverse-muted);
-  color: var(--inverse-ink);
+  border-color: var(--hairline);
+  color: var(--ink);
 }
-.btn--outline-sand:hover { border-color: var(--inverse-ink); }
+.btn--outline-sand:hover { border-color: var(--ink); }
 
 .section--inverse .btn--primary,
 .section--navy .btn--brass {
@@ -626,13 +646,12 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .link-brass:hover, .link-quiet:hover { border-color: var(--ink); gap: 12px; }
 
-/* On the navy closing band a quiet link inherits --ink and disappears into the
-   background. It only became reachable when the second button there was
-   demoted to a link, so this pairs with that change. */
+/* The closing band is page-coloured now, so a quiet link needs nothing special
+   to be legible there — only the hairline it shares with every other one. */
 .section--inverse .link-quiet,
 .closing__alt {
-  color: var(--inverse-ink);
-  border-bottom-color: var(--inverse-muted);
+  color: var(--ink);
+  border-bottom-color: var(--hairline);
 }
 .section--inverse .link-quiet:hover,
 .closing__alt:hover { color: var(--accent); border-color: var(--accent); }
@@ -2180,23 +2199,29 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 .qualify__title { max-width: 20ch; }
-/* The client's four points are one-liners, so the rhythm is tighter than the
-   paragraph-length copy this strip originally carried. */
-.qualify__list { display: flex; flex-direction: column; gap: 20px; }
+
+/* Same manifest spec as the corridor waypoints and the footer columns: one
+   numeral column, one row height, one hairline. The gap is folded into the
+   row padding so the rules land on an even rhythm instead of floating between
+   double-spaced rows. */
+.qualify__list { display: flex; flex-direction: column; }
 
 .qualify__item {
   display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: 0 8px;
+  grid-template-columns: var(--idx-gutter) 1fr;
+  gap: 0;
   align-items: baseline;
-  padding-bottom: 20px;
+  padding: var(--idx-row-y) 0;
   border-bottom: 1px solid var(--hairline-soft);
 }
+.qualify__item:first-child { padding-top: 0; }
 .qualify__item:last-child { border-bottom: 0; padding-bottom: 0; }
 
 .qualify__num {
-  font-size: 13px;
-  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: var(--idx-size);
+  font-weight: 500;
+  letter-spacing: 0.06em;
   color: var(--accent);
   font-variant-numeric: tabular-nums;
 }
@@ -2345,12 +2370,25 @@ button, input, select, textarea { font: inherit; color: inherit; }
   color: var(--muted);
 }
 
-.corridor__lanes { width: 100%; border-collapse: collapse; }
+/* The waypoints are a manifest, and the site now has one way of setting a
+   manifest — see --idx-* in section 1. Same numeral column, same row height,
+   same hairline as the qualification list and the footer columns, so three
+   sections that were each inventing their own list read as one document.
+   The numerals are generated rather than marked up: they are the row's index,
+   not content, and the RU translation must not have to carry them. */
+/* Starts at -1 so the head row absorbs the first increment and Black Sea
+   reads 01. */
+.corridor__lanes { width: 100%; border-collapse: collapse; counter-reset: lane -1; }
+.corridor__lanes tr { counter-increment: lane; }
+
 .corridor__lanes th, .corridor__lanes td {
   text-align: left;
-  padding: 13px 10px 13px 0;
+  padding: var(--idx-row-y) 10px var(--idx-row-y) 0;
   border-bottom: 1px solid var(--hairline-soft);
 }
+.corridor__lanes tr:last-child td { border-bottom: 0; }
+
+/* Column heads read as the manifest's own label row, not as table furniture. */
 .corridor__lanes th {
   font-family: var(--font-mono);
   font-size: 10px;
@@ -2358,13 +2396,38 @@ button, input, select, textarea { font: inherit; color: inherit; }
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
+  padding-bottom: 10px;
+  border-bottom-color: var(--hairline);
 }
-.corridor__lanes td { font-size: 14px; }
+
+.corridor__lanes td { font-size: 14.5px; color: var(--ink); }
+
+/* Waypoint cell carries the index in its own fixed gutter, so the names align
+   with each other and not with the digits. */
+.corridor__lanes tr:not(:first-child) td:first-child {
+  position: relative;
+  padding-left: var(--idx-gutter);
+  font-weight: 600;
+}
+.corridor__lanes tr:not(:first-child) td:first-child::before {
+  content: counter(lane, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  font-family: var(--font-mono);
+  font-size: var(--idx-size);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+/* The head row is counted too — offset so Black Sea reads 01, not 02. */
+.corridor__lanes { counter-reset: lane -1; }
+
 .corridor__lanes td.role {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.08em;
-  color: var(--accent);
+  color: var(--muted);
   text-transform: uppercase;
 }
 
@@ -2476,7 +2539,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* Closing CTA band */
 .closing { text-align: center; }
 .closing__title { max-width: 22ch; margin: 0 auto 18px; }
-.closing__copy { max-width: 52ch; margin: 0 auto 40px; color: var(--inverse-muted); font-size: 15.5px; }
+.closing__copy { max-width: 52ch; margin: 0 auto 40px; color: var(--muted); font-size: 15.5px; }
 .closing__actions { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; }
 .closing__note {
   margin-top: 36px;
@@ -2484,42 +2547,45 @@ button, input, select, textarea { font: inherit; color: inherit; }
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--inverse-muted);
+  color: var(--muted);
 }
 
 /* ----------------------------------------------------------------- 20. FOOTER */
-/* The closing plate of a trading dossier: a live desk readout, four numbered
+/* The closing plate of a trading dossier: a live desk readout, numbered
    manifest columns, the wordmark struck across the base, and a registry strip.
-   The band is inverse, and inverse flips with the theme (navy on the light
-   site, ivory on the dark one) — so every colour here resolves through
-   footer-scoped tokens rather than the global --accent, which does not carry
-   enough contrast against the ivory band. */
+   Every colour resolves through footer-scoped --f-* tokens. That indirection
+   still earns its place now the band follows the theme: the gold needs a
+   different value on ivory than on the dark ground, and one variable is a
+   better place for that than forty call sites. */
 
+/* The band used to be --inverse-bg, which meant it flipped AGAINST the theme:
+   navy under the light site, ivory under the dark one. So on the dark site the
+   page ended in a bright slab, and the two themes each had a footer belonging
+   to the other. It reads as a different site bolted to the bottom, and it is
+   the single biggest reason the pages did not feel like one document.
+
+   It now sits on the page ground and follows the theme, separated by the
+   dashed rule rather than by a colour change — which is what every other
+   surface here already does ("surfaces only a shade apart", section 1. */
 .footer {
-  --f-accent:  #B08D57;                      /* gold on the navy band */
-  --f-ink:     var(--inverse-ink);
-  --f-muted:   rgba(247, 244, 237, 0.68);
-  --f-line:    rgba(247, 244, 237, 0.15);
-  --f-line-s:  rgba(247, 244, 237, 0.08);
-  --f-plate:   rgba(247, 244, 237, 0.11);
+  --f-accent:  var(--accent-hover);          /* 4.1:1 on ivory; plain --accent is 2.1:1 */
+  --f-ink:     var(--ink);
+  --f-muted:   var(--muted);
+  --f-line:    var(--hairline);
+  --f-line-s:  var(--hairline-soft);
+  --f-plate:   var(--hairline-soft);
 
   position: relative;
-  background: var(--inverse-bg);
+  background: var(--bg);
   color: var(--f-ink);
   padding: clamp(56px, 6vw, 96px) 0 32px;
-  transition: background 400ms var(--ease);
+  transition: background 400ms var(--ease), color 400ms var(--ease);
   overflow: hidden;                          /* the wordmark plate bleeds */
 }
 
-/* On the dark site the band inverts to ivory, so the gold has to come down
-   with it — #B08D57 on #F7F4ED is 2.1:1 and unreadable. This is 5.0:1. */
-[data-theme="dark"] .footer {
-  --f-accent:  #7D6339;
-  --f-muted:   rgba(27, 42, 65, 0.72);
-  --f-line:    rgba(27, 42, 65, 0.15);
-  --f-line-s:  rgba(27, 42, 65, 0.08);
-  --f-plate:   rgba(27, 42, 65, 0.10);
-}
+/* Dark ground takes the lifted gold — --accent-hover goes the wrong way there,
+   darker against an already dark field. */
+[data-theme="dark"] .footer { --f-accent: var(--accent); }
 
 /* Top edge: the corridor route line from section 19, dashed and faded at both
    ends so the band arrives rather than starts. */
@@ -2619,10 +2685,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
   padding: clamp(38px, 4vw, 58px) 0 clamp(20px, 2vw, 30px);
 }
 
+/* Third call site of the manifest spec. The numeral takes the same fixed
+   gutter as the corridor waypoints and the qualification rows, so the column
+   heads start on the same vertical as those lists rather than 10px off it. */
 .footer__h {
-  display: flex;
+  display: grid;
+  grid-template-columns: var(--idx-gutter) 1fr;
   align-items: baseline;
-  gap: 10px;
   margin-bottom: 20px;
   padding-bottom: 11px;
   border-bottom: 1px solid var(--f-line-s);
@@ -2635,11 +2704,16 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .footer__h i {
   font-family: var(--font-mono);
   font-style: normal;
-  font-size: 10px;
+  font-size: var(--idx-size);
   font-weight: 500;
   letter-spacing: 0.06em;
   color: var(--f-accent);
 }
+
+/* Everything under a head aligns with that head's label, not with its numeral.
+   The numeral column stays empty below the first row, which is what makes the
+   gutter read as a margin rather than as an indent. */
+.footer__col > *:not(.footer__h) { padding-left: var(--idx-gutter); }
 
 .footer__list li + li { margin-top: 11px; }
 
@@ -2779,7 +2853,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .footer .lang__btn[aria-pressed="true"] { color: var(--f-accent); }
 .footer .theme-toggle { border-color: var(--f-line); }
 .footer .theme-toggle:hover { border-color: var(--f-accent); }
-.footer .theme-toggle__thumb { background: var(--inverse-ink); color: var(--inverse-bg); }
+/* The band is page-coloured now, so the toggle is just the toggle. */
 
 .footer__copy a {
   border-bottom: 1px solid var(--hairline);
@@ -3212,6 +3286,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .nav__panelLang { display: flex; justify-content: center; width: 100%; margin-top: 22px; }
   .nav__panelLang .lang__btn { font-size: 13px; padding: 8px 12px; }
   .nav__side .lang { display: none; }
+
+  /* A 46px numeral gutter is a lot of a 375px column, so the manifest tightens
+     rather than pushing its content into a two-word measure. */
+  :root { --idx-gutter: 34px; --idx-row-y: 13px; }
 
   .nav__cta { display: none; }
 
