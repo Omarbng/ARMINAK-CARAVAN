@@ -281,6 +281,8 @@
     }
     play();
 
+    mountHeroSand(hero, mqMobile);
+
     /* Rotating a phone, or dragging a desktop window across 768px, otherwise
        strands the wrong cut for the rest of the session — a 9:16 crop stretched
        across a laptop, or the reverse. The poster swaps itself through
@@ -316,6 +318,84 @@
         else video.pause();
       }, { threshold: 0 }).observe(hero);
     }
+  }
+
+  /* The sand over the film, rendered live rather than baked or filmed.
+     Two layers, because wind-blown sand is two different things and drawing
+     only the second is what made the old version look like light streaking
+     past the camera:
+
+       veil   — suspension. The fine fraction hanging in the air, which is
+                what actually reads as "there is sand in this shot": it lowers
+                contrast and warms the plate. Does most of the work, and you
+                are not meant to notice it as an object.
+       grain  — saltation. The heavier fraction skipping along the surface.
+                An accent on top of the veil, dense and faint. See sand.js —
+                a thousand near-invisible dashes, not two hundred bright ones.
+
+     Desktop only: two more full-screen GL passes is a battery tax on a phone,
+     and the portrait crop is mostly sky and dune face anyway. Skipped whole
+     under reduced motion and Data Saver, since initHero has already returned
+     by then and never calls this. */
+  function mountHeroSand(hero, mqMobile) {
+    if (!window.ACSand || mqMobile.matches) return;
+
+    var wrap = document.createElement('div');
+    wrap.className = 'hero__sandwrap';
+    wrap.setAttribute('aria-hidden', 'true');
+
+    var layers = [
+      { cls: 'hero__sand hero__sand--veil',  opts: { mode: 'veil',    base: 0.72, open: 1.30, openMs: 3200, wind: 0.11, scale: 0.7, fps: 30, seed: 4.1 } },
+      { cls: 'hero__sand hero__sand--grain', opts: { mode: 'streaks', base: 0.95, open: 1.25, openMs: 2600, fps: 45, seed: 9.2 } }
+    ];
+
+    var made = [];
+    layers.forEach(function (L) {
+      var canvas = document.createElement('canvas');
+      canvas.className = L.cls;
+      wrap.appendChild(canvas);
+      var s = window.ACSand(canvas, hero, L.opts);
+      if (s) made.push({ sand: s, canvas: canvas });
+      else wrap.removeChild(canvas);
+    });
+
+    if (!made.length) return;            /* no WebGL: the film stands alone */
+    hero.appendChild(wrap);
+
+    function sandHex() {
+      return getComputedStyle(document.documentElement)
+               .getPropertyValue('--sand').trim() || '#C7A87A';
+    }
+
+    made.forEach(function (m) {
+      m.sand.setColor(sandHex());
+      m.sand.resize();
+      m.sand.start();
+      m.canvas.classList.add('is-ready');
+    });
+
+    var rt = null;
+    window.addEventListener('resize', function () {
+      clearTimeout(rt);
+      rt = setTimeout(function () {
+        made.forEach(function (m) { m.sand.resize(); });
+      }, 180);
+    });
+
+    /* Nothing to draw while the hero is off screen or the tab is hidden. */
+    function run(on) {
+      made.forEach(function (m) { on ? m.sand.start() : m.sand.stop(); });
+    }
+    document.addEventListener('visibilitychange', function () {
+      run(document.visibilityState === 'visible');
+    });
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(function (e) { run(e[0].isIntersecting); },
+                               { threshold: 0 }).observe(hero);
+    }
+    document.addEventListener('ac:theme', function () {
+      made.forEach(function (m) { m.sand.setColor(sandHex()); });
+    });
   }
 
   function now() {
@@ -454,10 +534,13 @@
      One rAF loop that lerps toward the target and stops itself when idle —
      transform + scale only, fully compositor-friendly.
 
-     v1 moved the sand on this same loop at nearly twice the distance, so the
-     grains read as nearer to the camera than the dunes. With the storm baked
-     into the film there is no separate layer left to move, and the depth is
-     now whatever the render itself carries. */
+     The sand rides the same loop at nearly twice the distance. Grains hanging
+     in the air are the closest thing to the camera, so they have to travel
+     further than the dunes behind them or the two layers read as one flat
+     picture with specks painted on. The extra scale is not decoration: it
+     covers the edge the larger offset would otherwise drag into frame. */
+
+  var SAND_DEPTH = 1.8;
 
   function initHeroParallax() {
     var hero = qs('#hero');
@@ -467,6 +550,10 @@
 
     var media = qs('.hero__media', hero);
     if (!media) return;
+
+    /* Mounted by initHero a moment earlier, and absent on phones, Data Saver
+       and machines without WebGL — so it is optional, not assumed. */
+    var sand = qs('.hero__sandwrap', hero);
 
     var tx = 0, ty = 0, ta = 0;   /* targets: offset x/y, activation 0..1 */
     var cx = 0, cy = 0, ca = 0;   /* currents */
@@ -481,11 +568,21 @@
       media.style.transform =
         'translate3d(' + cx.toFixed(2) + 'px,' + cy.toFixed(2) + 'px,0) scale(' + scale.toFixed(4) + ')';
 
+      if (sand) {
+        var sScale = 1 + 0.045 * SAND_DEPTH * ca;
+        sand.style.transform =
+          'translate3d(' + (cx * SAND_DEPTH).toFixed(2) + 'px,' +
+                           (cy * SAND_DEPTH).toFixed(2) + 'px,0) scale(' + sScale.toFixed(4) + ')';
+      }
+
       if (Math.abs(tx - cx) > 0.05 || Math.abs(ty - cy) > 0.05 || Math.abs(ta - ca) > 0.002) {
         raf = requestAnimationFrame(tick);
       } else {
         raf = null;
-        if (ta === 0) media.style.transform = '';
+        if (ta === 0) {
+          media.style.transform = '';
+          if (sand) sand.style.transform = '';
+        }
       }
     }
 

@@ -457,21 +457,36 @@
       return groundPx[i] + (groundPx[Math.min(COLS - 1, i + 1)] - groundPx[i]) * fr;
     }
 
+    /* Grain, not scratch. The first pass at this drew ~200 grains, stretched
+       each to a 46px tail at 1.3–2.8px wide and drew it at up to 0.9 alpha.
+       That is a 20:1 bright sliver, and two hundred of them are individually
+       resolvable — so it read as light streaking past, which is exactly what
+       it looked like. Real saltation is the opposite on every axis: far more
+       grains, far shorter, far fainter, and no single one legible.
+
+       Height is exponential rather than a 18% coin flip. Saltation is a
+       boundary-layer effect — the overwhelming majority of moving sand is in
+       the first few centimetres above the surface, thinning fast with height,
+       and that gradient is most of what makes it read as sand rather than
+       snow or rain. */
     function spawnStreak(anywhere) {
-      var lifted = Math.random() < 0.18;     /* a few ride higher in the air */
+      var u = Math.random();
       return {
         x: anywhere ? Math.random() * cssW : -20 - Math.random() * 120,
-        lift: lifted ? 8 + Math.random() * 26 : 1 + Math.random() * 5,
+        lift: 0.5 + 34 * u * u * u,          /* exponential-ish: hugs the ground */
         y: 0, vy: 0, vx: 0,
         jit: 0.7 + Math.random() * 0.6,
-        w: 1.3 + Math.random() * 1.5,
-        a0: 0.34 + Math.random() * 0.44,
+        w: 0.7 + Math.random() * 1.0,
+        a0: 0.06 + Math.random() * 0.16,
         placed: false
       };
     }
 
     function seedStreaks() {
-      var target = Math.round(Math.min(240, Math.max(60, cssW / 7)));
+      /* Density is what sells it. Individually these are nearly invisible;
+         the texture only exists in aggregate. Capped so a wide monitor does
+         not quietly turn this into 4000 quads a frame. */
+      var target = Math.round(Math.min(1500, Math.max(400, cssW * 1.05)));
       streaks = [];
       for (var i = 0; i < target; i++) streaks.push(spawnStreak(true));
       verts = new Float32Array(target * 6 * 5);
@@ -486,8 +501,11 @@
         var gn = (gust - 0.35) / 1.15;       /* 0..1 */
 
         /* Saltation: speed surges quadratically with the gust — pulses of
-           fast travel between near-stalls, not a constant conveyor. */
-        var vTarget = cssW * (0.030 + 0.30 * gn * gn) * s.jit;
+           fast travel between near-stalls, not a constant conveyor. Roughly a
+           third of the old speed: at the previous 0.43 screen-widths a second
+           the eye tracked individual grains across the frame, which reads as
+           something flying past rather than air with sand in it. */
+        var vTarget = cssW * (0.014 + 0.105 * gn * gn) * s.jit;
         s.vx += (vTarget - s.vx) * Math.min(1, dt * 3.0);
 
         var gy = groundYAt(s.x) - s.lift;
@@ -507,10 +525,12 @@
         s.x += s.vx * dt;
         if (s.x > cssW + 40) { streaks[i] = spawnStreak(false); continue; }
 
-        /* Motion stretch: the tail is where the grain just was. */
-        var tail = Math.min(64, Math.max(5, s.vx * 0.075));
-        var alpha = Math.min(0.9, s.a0 * (0.35 + 0.85 * gn) * intensity);
-        if (alpha < 0.02) continue;
+        /* Motion stretch: the tail is where the grain just was. Kept to a
+           short dash — enough that a grain reads as wind-borne rather than
+           falling, not so much that it becomes a line. Ceiling drops 64 → 14. */
+        var tail = Math.min(14, Math.max(2.5, s.vx * 0.030));
+        var alpha = Math.min(0.30, s.a0 * (0.35 + 0.85 * gn) * intensity);
+        if (alpha < 0.012) continue;
 
         var x0 = s.x * renderScale,          y0 = (cssH - s.y) * renderScale;
         var x1 = (s.x - tail) * renderScale, y1 = (cssH - (s.y - s.vy * 0.05)) * renderScale;

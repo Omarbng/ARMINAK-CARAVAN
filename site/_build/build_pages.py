@@ -113,18 +113,21 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
      landscape, a 9:16 one for phones. The poster is server-rendered and is the
      LCP element; main.js appends ONE <video> after mount, so the browser never
      downloads both, and skips video entirely under reduced-motion or Data
-     Saver. Copy stays bottom-left — the plate is bright sand edge to edge, the
-     scrim is weighted there, and the footage carries a small generation
-     watermark in the lower right.
+     Saver. Copy stays bottom-left — the plate is bright sand edge to edge and
+     the scrim is weighted there.
 
-     v2 of the render: same footage, 10s instead of 9.42s, with the blowing
-     sand composited into the plate. That is why main.js no longer layers the
-     transparent sand clip over the hero — the storm is in the film now. The
-     v1 cut is still on disk one directory up if this needs to be A/B'd; it
-     is the same six filenames, so only the paths below change. -->
+     v3 is the clean plate: original footage, generation watermark removed,
+     CRF 20, and no sand of any kind baked in. The sand is drawn live over it
+     by mountHeroSand in main.js, which is the whole point of this cut. Both
+     earlier attempts at sand — the rendered alpha clip used with v1 and the
+     version composited into v2 — were a couple of hundred long bright
+     slivers, and read as light streaking past the camera rather than as sand.
+     Baked into the film there is no way to tune that; drawn live there is.
+     v1 and v2 are still on disk beside this one under the same six
+     filenames, so going back is only the paths below. -->
 <section class="hero" id="hero"
-         data-video-desktop="assets/hero/v2/hero-desktop.mp4"
-         data-video-mobile="assets/hero/v2/hero-mobile.mp4">
+         data-video-desktop="assets/hero/v3/hero-desktop.mp4"
+         data-video-mobile="assets/hero/v3/hero-mobile.mp4">
   <!-- The stage is what opens. It is full-bleed the whole time and clipped to
        a window, so the caravan never scales or squashes on the way out — the
        frame opens around it. -->
@@ -133,11 +136,11 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
       <div class="hero__layer">
         <picture>
           <source media="(max-width: 768px), (orientation: portrait)" type="image/webp"
-                  srcset="assets/hero/v2/poster-mobile.webp">
+                  srcset="assets/hero/v3/poster-mobile.webp">
           <source media="(max-width: 768px), (orientation: portrait)" type="image/jpeg"
-                  srcset="assets/hero/v2/poster-mobile.jpg">
-          <source type="image/webp" srcset="assets/hero/v2/poster-desktop.webp">
-          <img class="hero__poster" src="assets/hero/v2/poster-desktop.jpg" alt=""
+                  srcset="assets/hero/v3/poster-mobile.jpg">
+          <source type="image/webp" srcset="assets/hero/v3/poster-desktop.webp">
+          <img class="hero__poster" src="assets/hero/v3/poster-desktop.jpg" alt=""
                aria-hidden="true" fetchpriority="high" decoding="async"
                width="1280" height="720">
         </picture>
