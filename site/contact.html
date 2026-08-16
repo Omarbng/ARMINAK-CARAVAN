@@ -34,9 +34,18 @@
 
     <nav class="nav__menu" id="navMenu" aria-label="Primary">
       <a class="nav__link" href="catalogue.html" data-i18n="nav.catalogue">Catalogue</a>
-      <a class="nav__link" href="index.html#about" data-i18n="nav.about">About</a>
+      <a class="nav__link" href="about.html" data-i18n="nav.about">About</a>
       <a class="nav__link" href="insights.html" data-i18n="nav.insights">Insights</a>
       <a class="nav__link" href="contact.html" aria-current="page" data-i18n="nav.contact">Contact</a>
+
+      <div class="nav__panelFoot">
+        <a class="btn btn--primary btn--full" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
+        <a class="nav__panelMail" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20—%20ARMINAK%20CARAVAN">trading@arminakcaravan.ae</a>
+        <div class="lang nav__panelLang" role="group" aria-label="Language">
+          <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
+          <button class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
+        </div>
+      </div>
     </nav>
 
     <a class="nav__mark" href="index.html">ARMINAK CARAVAN<sup>™</sup></a>
@@ -52,8 +61,11 @@
           <svg class="i-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.6 14.6A8.6 8.6 0 0 1 9.4 3.4a8.6 8.6 0 1 0 11.2 11.2Z"/></svg>
         </span>
       </button>
+      <a class="btn nav__cta" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
     </div>
   </div>
+
+  <span class="nav__progress" aria-hidden="true"></span>
 </header>
 
 <main id="main">
@@ -205,56 +217,103 @@
 </main>
 
 <footer class="footer">
+  <div class="footer__rule" aria-hidden="true"></div>
   <div class="shell">
-    <div class="footer__grid">
-      <div>
-        <a class="footer__mark" href="index.html">ARMINAK CARAVAN<sup>™</sup></a>
-        <address class="footer__addr">
-          <span data-i18n="footer.legal">ARMINAK CARAVAN FOODSTUFF AND BEVERAGES TRADING LTD</span><br>
-          <span data-i18n="footer.addr">KEZAD Free Zone, Abu Dhabi, United Arab Emirates</span>
-        </address>
-      </div>
 
-      <div>
-        <h2 class="footer__h" data-i18n="footer.h.nav">Navigation</h2>
+    <div class="footer__top">
+      <p class="footer__claim">
+        <span data-i18n="footer.claim1">Sourced at origin.</span>
+        <em data-i18n="footer.claim2">Delivered across continents.</em>
+      </p>
+
+      <div class="footer__desk" id="deskStatus">
+        <p class="footer__state">
+          <span class="footer__dot" aria-hidden="true"></span>
+          <span class="footer__st footer__st--hours" data-i18n="footer.desk.hours">Desk hours Mon–Fri 09:00–18:00</span>
+          <span class="footer__st footer__st--open" data-i18n="footer.desk.open">Trading desk open now</span>
+          <span class="footer__st footer__st--shut" data-i18n="footer.desk.shut">Trading desk closed — enquiries answered next business day</span>
+        </p>
+        <p class="footer__clock">
+          <span class="tabular" id="deskClock">--:--</span>
+          <span data-i18n="footer.desk.tz">Gulf Standard Time · Abu Dhabi</span>
+        </p>
+      </div>
+    </div>
+
+    <nav class="footer__cols" aria-label="Footer">
+      <div class="footer__col">
+        <h2 class="footer__h"><i aria-hidden="true">01</i><span data-i18n="footer.h.nav">Navigate</span></h2>
         <ul class="footer__list">
-          <li><a href="index.html" data-i18n="nav.home">Home</a></li>
           <li><a href="catalogue.html" data-i18n="nav.catalogue">Catalogue</a></li>
-          <li><a href="insights.html" data-i18n="nav.insights">Insights</a></li>
+          <li><a href="about.html" data-i18n="nav.about">About</a></li>
+          <li><a href="insights.html" data-i18n="nav.insights">Market Insights</a></li>
           <li><a href="contact.html" data-i18n="nav.contact">Contacts</a></li>
         </ul>
       </div>
 
-      <div>
-        <h2 class="footer__h" data-i18n="footer.h.legal">Legal</h2>
-        <ul class="footer__list">
-          <li><a href="contact.html#terms" data-i18n="footer.terms">Terms of Trading</a></li>
-          <li><a href="contact.html#sgs" data-i18n="footer.sgs">SGS Certification Protocols</a></li>
-          <li><a href="contact.html#privacy" data-i18n="footer.privacy">Privacy Policy</a></li>
+      <div class="footer__col footer__col--desk">
+        <h2 class="footer__h"><i aria-hidden="true">02</i><span data-i18n="footer.h.desk">Trading Desk</span></h2>
+        <ul class="footer__list footer__list--desk">
+          <li>
+            <a class="footer__line" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20—%20ARMINAK%20CARAVAN">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="m3 6 9 6.5L21 6"/></svg>
+              <span>trading@arminakcaravan.ae</span>
+            </a>
+          </li>
+          <li>
+            <a class="footer__line" href="https://wa.me/971500000000" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23a8.2 8.2 0 0 1 5.83 2.42 8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.53.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.22.25-.85.83-.85 2.03 0 1.2.87 2.35.99 2.51.12.17 1.71 2.61 4.15 3.66.58.25 1.03.4 1.39.51.58.19 1.11.16 1.53.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.28Z"/></svg>
+              <span data-i18n="footer.wa">WhatsApp — direct line</span>
+            </a>
+          </li>
         </ul>
+        <address class="footer__addr">
+          <span data-i18n="footer.addr">KEZAD Free Zone, Abu Dhabi, United Arab Emirates</span>
+        </address>
+        <p class="footer__reply" data-i18n="footer.reply">Enquiries answered within one business day</p>
       </div>
+    </nav>
 
-      <div>
-        <h2 class="footer__h" data-i18n="footer.h.pref">Preferences</h2>
-        <div class="footer__controls">
-          <div class="lang" role="group" aria-label="Language">
-            <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
-            <button class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
-          </div>
-          <button class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
-            <span class="theme-toggle__thumb">
-              <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/></svg>
-              <svg class="i-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.6 14.6A8.6 8.6 0 0 1 9.4 3.4a8.6 8.6 0 1 0 11.2 11.2Z"/></svg>
-            </span>
-          </button>
+    <a class="footer__plate" href="index.html" aria-label="ARMINAK CARAVAN — home">
+      <span aria-hidden="true">Arminak</span><em aria-hidden="true">Caravan</em>
+    </a>
+
+    <div class="footer__reg">
+      <dl class="footer__regList">
+        <div>
+          <dt data-i18n="footer.k.entity">Entity</dt>
+          <dd data-i18n="footer.legal">ARMINAK CARAVAN FOODSTUFF AND BEVERAGES TRADING LTD</dd>
         </div>
+        <div>
+          <dt data-i18n="footer.k.lic">Free Zone Licence</dt>
+          <dd class="tabular">#5820194</dd>
+        </div>
+        <div>
+          <dt data-i18n="footer.k.corr">Corridors</dt>
+          <dd data-i18n="footer.k.corrV">EAEU · CIS · GCC Hub · Israel · Africa · Türkiye · South America</dd>
+        </div>
+      </dl>
+
+      <div class="footer__prefs">
+        <div class="lang" role="group" aria-label="Language">
+          <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
+          <button class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
+        </div>
+        <button class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+          <span class="theme-toggle__thumb">
+            <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/></svg>
+            <svg class="i-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.6 14.6A8.6 8.6 0 0 1 9.4 3.4a8.6 8.6 0 1 0 11.2 11.2Z"/></svg>
+          </span>
+        </button>
       </div>
     </div>
 
-    <div class="footer__bottom">
-      <span>© 2026 ARMINAK CARAVAN LTD. <span data-i18n="footer.rights">All rights reserved.</span></span>
-      <span data-i18n="footer.licence">Free Zone Licence #5820194</span>
-    </div>
+    <p class="footer__copy">
+      <span>© 2026 ARMINAK CARAVAN LTD.</span>
+      <span data-i18n="footer.rights">All rights reserved.</span>
+      <a href="contact.html#terms" data-i18n="footer.terms">Terms of Trading</a>
+      <a href="contact.html#privacy" data-i18n="footer.privacy">Privacy Policy</a>
+    </p>
   </div>
 </footer>
 

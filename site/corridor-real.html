@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corridor map — concept | ARMINAK CARAVAN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  body { padding: 48px var(--gutter) 90px; }
+  .wrap { max-width: 1360px; margin: 0 auto; }
+  .lede { max-width: 68ch; color: var(--ink-soft); margin: 14px 0 0; }
+  .flag { display:inline-block; font-family:var(--font-mono); font-size:10px; letter-spacing:.18em;
+           text-transform:uppercase; color:var(--accent); border:1px solid var(--hairline);
+           padding:5px 10px; border-radius:var(--radius-pill); }
+  .split { display:grid; grid-template-columns: 1.05fr .95fr; gap: 56px; margin-top: 54px; align-items:start; }
+  .panel__label { font-family:var(--font-mono); font-size:10px; letter-spacing:.18em;
+                   text-transform:uppercase; color:var(--muted); margin-bottom:14px; }
+  .map { width:100%; height:auto; max-height: 78vh; display:block; }
+  .grat { stroke: var(--hairline-soft); stroke-width:1; fill:none; }
+  .carc { fill:none; stroke-linecap:round; }
+  .carc--in { stroke: var(--accent); stroke-width:2; opacity:.62; stroke-dasharray:5 7; }
+  .carc--out { stroke: var(--ink); stroke-width:2.6; opacity:.85; }
+  .cnode__ring { fill:none; stroke:var(--accent); stroke-width:1.2; opacity:.55; }
+  .cnode__dot { fill: var(--accent); }
+  .cnode--hub .cnode__dot { fill: var(--ink); }
+  .cnode--hub .cnode__ring { stroke: var(--ink); opacity:.8; }
+  .cnode text { paint-order: stroke fill; stroke: var(--bg); stroke-width: 3.5px;
+                stroke-linejoin: round; }
+  .cnode__name { font-family:var(--font-ui); font-size:17px; font-weight:600; fill:var(--ink); letter-spacing:.02em; }
+  .cnode__sub { font-family:var(--font-ui); font-size:12.5px; fill:var(--muted); }
+  .cnode__coord { font-family:var(--font-mono); font-size:11px; fill:var(--accent); letter-spacing:.04em; }
+  .conc-caravan { fill: var(--ink); }
+  .legend { display:flex; gap:26px; flex-wrap:wrap; margin-top:26px;
+             font-family:var(--font-mono); font-size:10.5px; letter-spacing:.14em;
+             text-transform:uppercase; color:var(--muted); }
+  .legend i { display:inline-block; width:26px; height:0; vertical-align:middle; margin-right:9px; }
+  .legend .i-in { border-top:2px dashed var(--accent); }
+  .legend .i-out { border-top:2.6px solid var(--ink); }
+  .lanes { width:100%; border-collapse:collapse; margin-top:8px; }
+  .lanes th, .lanes td { text-align:left; padding:13px 10px 13px 0; border-bottom:1px solid var(--hairline-soft); }
+  .lanes th { font-family:var(--font-mono); font-size:10px; letter-spacing:.16em;
+               text-transform:uppercase; color:var(--muted); font-weight:500; }
+  .lanes td { font-size:14px; }
+  .lanes td.role { font-family:var(--font-mono); font-size:11px; color:var(--accent);
+                    text-transform:uppercase; letter-spacing:.1em; }
+  .old { margin-top:64px; padding-top:34px; border-top:1px solid var(--hairline); }
+  .old svg { width:100%; height:auto; }
+  @media (max-width: 980px) { .split { grid-template-columns:1fr; gap:40px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="flag">Concept · not live</span>
+  <h1 class="t-section" style="margin-top:18px">Trade Corridors &amp; Waypoints</h1>
+  <p class="lede">The live figure draws one line through all five points in sequence, which reads as a
+  single journey. The page's own copy says something different — three producing regions
+  consolidated through the Gulf, then delivered out. This version draws that structure, and
+  puts every waypoint at its true position: three origination lanes converging on Jebel Ali, one
+  delivery lane leaving it. Grid lines are 10° of latitude and longitude.</p>
+
+  <div class="split">
+    <div>
+      <div class="panel__label">Proposed — true positions</div>
+      <svg class="map" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 900 1116" role="img" aria-labelledby="mapTitle">
+        <title id="mapTitle">Origination lanes from the Black Sea, Turkey and Central Asia converging on Jebel Ali, with delivery to East Africa</title>
+        <path class="grat" d="M6.4,0 V1116 M178.6,0 V1116 M350.8,0 V1116 M523.0,0 V1116 M695.2,0 V1116 M867.5,0 V1116 M0,1115.3 H900 M0,931.6 H900 M0,747.9 H900 M0,564.2 H900 M0,380.6 H900 M0,196.9 H900 M0,13.2 H900"/>
+    <path class="carc carc--in" d="M140.2,110.2 Q223.9,344.8 437.9,472.2"><title>Black Sea to Jebel Ali</title></path>
+    <path class="carc carc--in" d="M86.1,255.7 Q223.0,427.3 437.9,472.2"><title>Turkey to Jebel Ali</title></path>
+    <path class="carc carc--in" d="M813.9,137.4 Q565.6,237.1 437.9,472.2"><title>Central Asia to Jebel Ali</title></path>
+        <path class="carc carc--out" id="deliveryArc" d="M437.9,472.2 Q209.4,691.3 172.9,1005.8"><title>Jebel Ali to East Africa</title></path>
+        <g class="conc-caravan">
+          <g transform="translate(-42,-6)">
+<g transform="translate(0.0,0.0) scale(0.240)">
+    <path d="M -9,0 C -8,-30 -6,-56 -4,-78 C -3,-86 -1,-92 2,-93 C 6,-94 9,-89 10,-78 C 12,-56 14,-30 15,0 Z"/>
+    <path d="M 2,-93 C -2,-94 -5,-100 -2,-105 C 1,-111 8,-111 11,-105 C 13,-100 10,-94 6,-93 Z"/>
+    <path d="M -2,-105 C -7,-101 -9,-92 -8,-83 L -2,-83 C -3,-92 -2,-100 1,-103 Z"/>
+    <path d="M 9,-84 C 17,-83 25,-80 31,-76 L 30,-71 C 23,-75 16,-78 9,-79 Z"/>
+  </g>
+  <g transform="translate(12.0,0.0) scale(0.240,0.240)">
+    <path d="M 64.0,-72.0 C 66.0,-44.6 62.0,-20.2 59.0,0 L 54.0,0 C 57.0,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
+    <path d="M 56.0,-70.0 C 58.0,-43.4 57.2,-19.6 59.0,0 L 54.0,0 C 52.2,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
+    <path d="M 32.0,-66.0 C 30.0,-40.9 33.6,-18.5 36.0,0 L 31.0,0 C 28.6,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
+    <path d="M 24.0,-65.0 C 22.0,-40.3 22.8,-18.2 21.0,0 L 16.0,0 C 17.8,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
+    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
+    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
+    <path d="M 22,-96 C 20,-106 24,-116 32,-122 L 40,-130 L 56,-130 C 62,-126 64,-114 61,-104 C 59,-96 57,-88 55,-80 L 47,-80 C 49,-88 50,-94 50,-100 L 30,-102 C 30,-94 31,-88 33,-80 L 25,-80 C 23,-88 22,-92 22,-96 Z"/>
+  </g>
+  <g transform="translate(40.0,0.0) scale(0.240,0.240)">
+    <path d="M 64.0,-72.0 C 66.0,-44.6 65.2,-20.2 67.0,0 L 62.0,0 C 60.2,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
+    <path d="M 56.0,-70.0 C 58.0,-43.4 54.4,-19.6 52.0,0 L 47.0,0 C 49.4,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
+    <path d="M 32.0,-66.0 C 30.0,-40.9 30.8,-18.5 29.0,0 L 24.0,0 C 25.8,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
+    <path d="M 24.0,-65.0 C 22.0,-40.3 25.6,-18.2 28.0,0 L 23.0,0 C 20.6,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
+    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
+    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
+    <path d="M 23,-98 C 21,-108 25,-118 33,-124 L 36,-136 L 56,-134 C 63,-130 65,-115 62,-105 C 60,-97 58,-89 56,-81 L 48,-81 C 50,-89 51,-95 51,-101 L 31,-103 C 31,-95 32,-89 34,-81 L 26,-81 C 24,-89 23,-94 23,-98 Z"/>
+  </g>
+  <g transform="translate(68.0,0.0) scale(0.240,0.240)">
+    <path d="M 64.0,-72.0 C 66.0,-44.6 63.2,-20.2 62.0,0 L 57.0,0 C 58.2,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
+    <path d="M 56.0,-70.0 C 58.0,-43.4 58.0,-19.6 61.0,0 L 56.0,0 C 53.0,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
+    <path d="M 32.0,-66.0 C 30.0,-40.9 32.8,-18.5 34.0,0 L 29.0,0 C 27.8,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
+    <path d="M 24.0,-65.0 C 22.0,-40.3 22.0,-18.2 19.0,0 L 14.0,0 C 17.0,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
+    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
+    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
+    <path d="M 21,-94 C 19,-102 24,-111 33,-117 L 42,-124 L 56,-124 C 61,-120 63,-108 60,-100 C 58,-93 56,-86 54,-78 L 46,-78 C 48,-86 49,-92 49,-98 L 29,-100 C 29,-92 30,-86 32,-78 L 24,-78 C 22,-86 21,-90 21,-94 Z"/>
+  </g>
+          </g>
+          <animateMotion dur="16s" begin="0.6s" repeatCount="indefinite" calcMode="linear">
+            <mpath xlink:href="#deliveryArc" href="#deliveryArc"/>
+          </animateMotion>
+        </g>
+    <g class="cnode ">
+      <circle class="cnode__ring" cx="140.2" cy="110.2" r="10"/>
+      <circle class="cnode__dot" cx="140.2" cy="110.2" r="3.5"/>
+      <text class="cnode__name" x="156.2" y="96.2" text-anchor="start">BLACK SEA</text>
+      <text class="cnode__sub"  x="156.2" y="116.2" text-anchor="start">Novorossiysk · origination</text>
+      <text class="cnode__coord" x="156.2" y="134.2" text-anchor="start">44.72° N  37.77° E</text>
+    </g>
+    <g class="cnode ">
+      <circle class="cnode__ring" cx="86.1" cy="255.7" r="10"/>
+      <circle class="cnode__dot" cx="86.1" cy="255.7" r="3.5"/>
+      <text class="cnode__name" x="102.1" y="271.7" text-anchor="start">TURKEY</text>
+      <text class="cnode__sub"  x="102.1" y="291.7" text-anchor="start">Mersin · origination</text>
+      <text class="cnode__coord" x="102.1" y="309.7" text-anchor="start">36.80° N  34.63° E</text>
+    </g>
+    <g class="cnode ">
+      <circle class="cnode__ring" cx="813.9" cy="137.4" r="10"/>
+      <circle class="cnode__dot" cx="813.9" cy="137.4" r="3.5"/>
+      <text class="cnode__name" x="797.9" y="107.4" text-anchor="end">CENTRAL ASIA</text>
+      <text class="cnode__sub"  x="797.9" y="127.4" text-anchor="end">Almaty · origination</text>
+      <text class="cnode__coord" x="797.9" y="145.4" text-anchor="end">43.24° N  76.89° E</text>
+    </g>
+    <g class="cnode cnode--hub">
+      <circle class="cnode__ring" cx="437.9" cy="472.2" r="14"/>
+      <circle class="cnode__dot" cx="437.9" cy="472.2" r="5"/>
+      <text class="cnode__name" x="453.9" y="492.2" text-anchor="start">JEBEL ALI</text>
+      <text class="cnode__sub"  x="453.9" y="512.2" text-anchor="start">Jebel Ali · hub</text>
+      <text class="cnode__coord" x="453.9" y="530.2" text-anchor="start">25.01° N  55.06° E</text>
+    </g>
+    <g class="cnode ">
+      <circle class="cnode__ring" cx="172.9" cy="1005.8" r="10"/>
+      <circle class="cnode__dot" cx="172.9" cy="1005.8" r="3.5"/>
+      <text class="cnode__name" x="188.9" y="1021.8" text-anchor="start">EAST AFRICA</text>
+      <text class="cnode__sub"  x="188.9" y="1041.8" text-anchor="start">Mombasa · delivery</text>
+      <text class="cnode__coord" x="188.9" y="1059.8" text-anchor="start"> 4.04° S  39.67° E</text>
+    </g>
+      </svg>
+      <div class="legend">
+        <span><i class="i-in"></i>Origination → hub</span>
+        <span><i class="i-out"></i>Hub → delivery</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="panel__label">Lanes</div>
+      <table class="lanes">
+        <tr><th>Waypoint</th><th>Port</th><th>Role</th><th>Position</th></tr>
+        <tr><td>Black Sea</td><td>Novorossiysk</td><td class="role">origination</td><td style="font-family:var(--font-mono);font-size:11.5px">44.72° N  37.77° E</td></tr><tr><td>Turkey</td><td>Mersin</td><td class="role">origination</td><td style="font-family:var(--font-mono);font-size:11.5px">36.80° N  34.63° E</td></tr><tr><td>Central Asia</td><td>Almaty</td><td class="role">origination</td><td style="font-family:var(--font-mono);font-size:11.5px">43.24° N  76.89° E</td></tr><tr><td>Jebel Ali</td><td>Jebel Ali</td><td class="role">hub</td><td style="font-family:var(--font-mono);font-size:11.5px">25.01° N  55.06° E</td></tr><tr><td>East Africa</td><td>Mombasa</td><td class="role">delivery</td><td style="font-family:var(--font-mono);font-size:11.5px"> 4.04° S  39.67° E</td></tr>
+      </table>
+      <p class="lede" style="margin-top:26px">Ports stand in for each region and can be swapped for the
+      ones actually used — the geometry is generated from coordinates, so changing a port moves its
+      node and redraws its lane.</p>
+    </div>
+  </div>
+
+  <div class="old">
+    <div class="panel__label">Current — live on index.html</div>
+    <p class="lede" style="margin-bottom:22px">The route is a drawn curve; the five points sit where the
+    curve looks good, not where they are. Central Asia is east of the Gulf in reality, so the live line
+    doubles back on itself without showing it.</p>
+  </div>
+
+</div>
+</body>
+</html>

@@ -2,10 +2,13 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "arminak-site",
-      "runtimeExecutable": "python3",
-      "runtimeArgs": ["-m", "http.server", "8899", "--directory", "/Users/mohmmadomar/Desktop/ARMINAK CARAVAN /site"],
-      "port": 8899
+      "name": "arminak-preview",
+      "runtimeExecutable": "sh",
+      "runtimeArgs": [
+        "-c",
+        "exec python3 -m http.server \"$PORT\" --directory '/Users/mohmmadomar/Desktop/ARMINAK CARAVAN /site'"
+      ],
+      "autoPort": true
     }
   ]
 }

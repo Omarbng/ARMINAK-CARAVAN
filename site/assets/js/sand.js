@@ -190,8 +190,12 @@
     'uniform float uWind;',
     'uniform float uSeed;',
     'uniform float uHasGround;',
+    'uniform float uMidW;',      /* 0 when the GLSL terrain owns the mid ground */
+    'uniform float uCrestW;',
     'uniform vec3  uColThin;',
     'uniform vec3  uColDense;',
+    'uniform vec2  uCursor;',
+    'uniform float uGustBoost;',
     'uniform sampler2D uNoise;',
     'uniform sampler2D uGround;',
 
@@ -202,7 +206,12 @@
 
     /* Traveling gust front — density fronts sweep with the wind. */
     '  float grr = texture2D(uNoise, vec2(uv.x * 0.16 - t * 0.035 + uSeed, 0.31)).g;',
-    '  float gust = 0.35 + 1.15 * smoothstep(0.30, 0.78, grr);',
+    '  float gust = 0.35 + 1.15 * smoothstep(0.30, 0.78, grr) + uGustBoost;',
+
+    /* Cursor force field: cursor motion creates localized sand swirl. */
+    '  vec2 cDist = uv - uCursor;',
+    '  float cForce = exp(-dot(cDist, cDist) * 24.0);',
+    '  gust += cForce * 0.55;',
 
     /* Wind: base flow + curl of the low-frequency channel, so the stream
        curls over the terrain instead of running flat. Curl of a potential
@@ -212,9 +221,9 @@
     '  float n0 = texture2D(uNoise, cuv).r;',
     '  float nx = texture2D(uNoise, cuv + vec2(e, 0.0)).r;',
     '  float ny = texture2D(uNoise, cuv + vec2(0.0, e)).r;',
-    '  vec2 vel = vec2(uWind, 0.0) + vec2(ny - n0, -(nx - n0)) * (0.020 / e);',
+    '  vec2 vel = vec2(uWind + cForce * 0.08, 0.0) + vec2(ny - n0, -(nx - n0)) * (0.020 / e);',
     '  vel   *= (0.55 + 0.65 * gust);',             /* gusts race, lulls crawl */
-    '  vel.y += (gust - 0.85) * 0.012;',            /* gusts loft sand upward */
+    '  vel.y += (gust - 0.85) * 0.012 + cForce * 0.02;', /* gusts loft sand upward */
 
     /* Three advected layers with flow-map cross-fade: two phase-offset
        samples of the SAME field, each re-anchored every cycle before it can
@@ -247,8 +256,8 @@
     '    float hN = uv.y - g.r;',
     '    float hM = uv.y - g.g;',
     '    band = exp(-max(hN, 0.0) * 6.5) * smoothstep(-0.16, -0.02, hN)',
-    '         + 0.55 * exp(-max(hM, 0.0) * 9.0) * smoothstep(-0.10, -0.01, hM);',
-    '    band += g.b * 1.5 * exp(-abs(hM) * 13.0) * gust;',   /* smoking crests */
+    '         + 0.55 * uMidW * exp(-max(hM, 0.0) * 9.0) * smoothstep(-0.10, -0.01, hM);',
+    '    band += uCrestW * g.b * 1.5 * exp(-abs(hM) * 13.0) * gust;',   /* smoking crests */
     '    band = min(band, 1.35);',
     '  }',
 
@@ -367,9 +376,10 @@
 
     var cssW = 1, cssH = 1, renderScale = 1;
     var groundPx = null;                   /* near-dune y in css px, for streaks */
+    var cursorX = -10.0, cursorY = -10.0, gustBoost = 0.0;
 
     /* ---- mode-specific GL state ---- */
-    var uRes, uTime, uInt, uWindU, uSeedU, uHasG, uThin, uDense, uCol;
+    var uRes, uTime, uInt, uWindU, uSeedU, uHasG, uThin, uDense, uCol, uCursorU, uGustBoostU;
     var groundTex = null;
 
     if (MODE === 'veil') {
@@ -400,19 +410,28 @@
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 
-      uRes   = gl.getUniformLocation(prog, 'uRes');
-      uTime  = gl.getUniformLocation(prog, 'uTime');
-      uInt   = gl.getUniformLocation(prog, 'uIntensity');
-      uWindU = gl.getUniformLocation(prog, 'uWind');
-      uSeedU = gl.getUniformLocation(prog, 'uSeed');
-      uHasG  = gl.getUniformLocation(prog, 'uHasGround');
-      uThin  = gl.getUniformLocation(prog, 'uColThin');
-      uDense = gl.getUniformLocation(prog, 'uColDense');
+      uRes        = gl.getUniformLocation(prog, 'uRes');
+      uTime       = gl.getUniformLocation(prog, 'uTime');
+      uInt        = gl.getUniformLocation(prog, 'uIntensity');
+      uWindU      = gl.getUniformLocation(prog, 'uWind');
+      uSeedU      = gl.getUniformLocation(prog, 'uSeed');
+      uHasG       = gl.getUniformLocation(prog, 'uHasGround');
+      uThin       = gl.getUniformLocation(prog, 'uColThin');
+      uDense      = gl.getUniformLocation(prog, 'uColDense');
+      uCursorU    = gl.getUniformLocation(prog, 'uCursor');
+      uGustBoostU = gl.getUniformLocation(prog, 'uGustBoost');
       gl.uniform1i(gl.getUniformLocation(prog, 'uNoise'), 0);
       gl.uniform1i(gl.getUniformLocation(prog, 'uGround'), 1);
       gl.uniform1f(uSeedU, SEED);
       gl.uniform1f(uWindU, opts.wind != null ? opts.wind : 0.13);
       gl.uniform1f(uHasG, hasGround ? 1 : 0);
+      /* Sand must only bank against ground the viewer can actually SEE. Once
+         the GLSL terrain replaces the mid bezier dune, banking on that now
+         invisible line reads as a dirty smear floating in clear air. */
+      gl.uniform1f(gl.getUniformLocation(prog, 'uMidW'),
+                   opts.midWeight != null ? opts.midWeight : 1);
+      gl.uniform1f(gl.getUniformLocation(prog, 'uCrestW'),
+                   opts.crestWeight != null ? opts.crestWeight : 1);
     } else {
       getNoise();                            /* the sim samples it in JS */
       uRes = gl.getUniformLocation(prog, 'uRes');
@@ -463,7 +482,7 @@
       var G = 480;                           /* gravity, px/s² */
       for (var i = 0; i < streaks.length; i++) {
         var s = streaks[i];
-        var gust = gustAt(s.x / cssW, t, SEED);
+        var gust = gustAt(s.x / cssW, t, SEED) + gustBoost * 0.4;
         var gn = (gust - 0.35) / 1.15;       /* 0..1 */
 
         /* Saltation: speed surges quadratically with the gust — pulses of
@@ -608,6 +627,9 @@
       var t = (now - t0) / 1000;
       var intensity = t < OPEN_S ? OPEN - (OPEN - BASE) * (t / OPEN_S) : BASE;
 
+      if (gustBoost > 0.001) gustBoost *= 0.945;
+      else gustBoost = 0;
+
       gl.useProgram(prog);
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
@@ -615,6 +637,8 @@
       if (MODE === 'veil') {
         gl.uniform1f(uTime, t);
         gl.uniform1f(uInt, intensity);
+        if (uCursorU) gl.uniform2f(uCursorU, cursorX, cursorY);
+        if (uGustBoostU) gl.uniform1f(uGustBoostU, gustBoost);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
       } else {
         var count = simStreaks(dt, t, intensity);
@@ -630,6 +654,8 @@
       stop:  function () { if (raf) { cancelAnimationFrame(raf); raf = null; running = false; } },
       resize: resize,
       setColor: setColor,
+      setCursor: function (xNorm, yNorm) { cursorX = xNorm; cursorY = yNorm; },
+      triggerGust: function (p) { gustBoost = Math.max(gustBoost, p || 0.85); },
       isRunning: function () { return running; }
     };
   };

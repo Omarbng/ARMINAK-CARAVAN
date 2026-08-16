@@ -25,6 +25,21 @@
 <meta property="og:title" content="ARMINAK CARAVAN — Sourced at origin. Delivered across continents.">
 <meta property="og:description" content="Global supply of agricultural commodities and everyday foodstuff. KEZAD Free Zone, Abu Dhabi.">
 <meta property="og:image" content="assets/img/og-cover.svg">
+<!-- The hero intro has to be decided before first paint, or the page shows the
+     settled hero for a frame and then snaps into the window. Same trick as the
+     theme script above. Without JS the class never lands and the hero renders
+     settled, which is the correct fallback. -->
+<script>(function(){try{
+  if (location.hash) return;
+  var m = window.matchMedia;
+  if (m && m('(prefers-reduced-motion: reduce)').matches) return;
+  if (!(window.CSS && CSS.supports && CSS.supports('clip-path', 'inset(10% round 10px)'))) return;
+  /* The opening interpolates registered custom properties. Without @property
+     they would not animate and the plate would snap open, which looks broken
+     — better no intro at all. */
+  if (!CSS.registerProperty) return;
+  document.documentElement.classList.add('ac-intro');
+}catch(e){}})();</script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -62,9 +77,18 @@
 
     <nav class="nav__menu" id="navMenu" aria-label="Primary">
       <a class="nav__link" href="catalogue.html" data-i18n="nav.catalogue">Catalogue</a>
-      <a class="nav__link" href="index.html#about" data-i18n="nav.about">About</a>
+      <a class="nav__link" href="about.html" data-i18n="nav.about">About</a>
       <a class="nav__link" href="insights.html" data-i18n="nav.insights">Insights</a>
       <a class="nav__link" href="contact.html" data-i18n="nav.contact">Contact</a>
+
+      <div class="nav__panelFoot">
+        <a class="btn btn--primary btn--full" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
+        <a class="nav__panelMail" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20—%20ARMINAK%20CARAVAN">trading@arminakcaravan.ae</a>
+        <div class="lang nav__panelLang" role="group" aria-label="Language">
+          <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
+          <button class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
+        </div>
+      </div>
     </nav>
 
     <a class="nav__mark" href="index.html">ARMINAK CARAVAN<sup>™</sup></a>
@@ -80,90 +104,63 @@
           <svg class="i-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.6 14.6A8.6 8.6 0 0 1 9.4 3.4a8.6 8.6 0 1 0 11.2 11.2Z"/></svg>
         </span>
       </button>
+      <a class="btn nav__cta" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
     </div>
   </div>
+
+  <span class="nav__progress" aria-hidden="true"></span>
 </header>
 
 <main id="main">
 
 <!-- ================================================================== HERO -->
-<section class="hero" id="hero">
-  <!-- No video: the client asked for a still scene, and the mp4 behaved
-       differently on phone and desktop. The scene is inline SVG so it takes
-       its colours from the theme, weighs a few KB and is identical on every
-       device. The gold dust is a canvas layer that settles after the reveal. -->
-  <div class="hero__media">
-    <div class="hero__layer">
-      <!-- The scene is split into two stacked SVGs so the sand can live
-           BETWEEN them: veils drift behind the caravan, grain streaks whip
-           past in front. Same viewBox and slice, so they align exactly. -->
-      <svg class="hero__scene hero__scene--dunes" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice"
-           aria-hidden="true" focusable="false">
-        <path class="dune dune--far" d="M0,560 C 220,520 380,566 560,556 C 760,545 900,500 1080,516
-              C 1280,534 1420,568 1600,548 L1600,900 L0,900 Z"/>
-        <path class="dune dune--mid" d="M0,660 C 260,620 420,666 640,654 C 860,642 1020,606 1240,620
-              C 1400,630 1500,654 1600,646 L1600,900 L0,900 Z"/>
-        <path class="dune dune--near" d="M0,812 C 300,776 520,822 760,812 C 1000,802 1240,760 1600,782
-              L1600,900 L0,900 Z"/>
-      </svg>
-      <canvas class="hero__sand" id="heroSandBack" aria-hidden="true"></canvas>
-      <svg class="hero__scene hero__scene--caravan" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice"
-           role="img" aria-labelledby="heroSceneTitle">
-        <title id="heroSceneTitle">A loaded camel caravan crossing the dunes</title>
-        <g class="hero__caravan">
-  <g transform="translate(792.0,786.0) scale(0.920)">
-    <path d="M -9,0 C -8,-30 -6,-56 -4,-78 C -3,-86 -1,-92 2,-93 C 6,-94 9,-89 10,-78 C 12,-56 14,-30 15,0 Z"/>
-    <path d="M 2,-93 C -2,-94 -5,-100 -2,-105 C 1,-111 8,-111 11,-105 C 13,-100 10,-94 6,-93 Z"/>
-    <path d="M -2,-105 C -7,-101 -9,-92 -8,-83 L -2,-83 C -3,-92 -2,-100 1,-103 Z"/>
-    <path d="M 9,-84 C 17,-83 25,-80 31,-76 L 30,-71 C 23,-75 16,-78 9,-79 Z"/>
-  </g>
-  <g transform="translate(846.0,786.0) scale(0.920,0.920)">
-    <path d="M 64.0,-72.0 C 66.0,-44.6 62.0,-20.2 59.0,0 L 54.0,0 C 57.0,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
-    <path d="M 56.0,-70.0 C 58.0,-43.4 57.2,-19.6 59.0,0 L 54.0,0 C 52.2,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
-    <path d="M 32.0,-66.0 C 30.0,-40.9 33.6,-18.5 36.0,0 L 31.0,0 C 28.6,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
-    <path d="M 24.0,-65.0 C 22.0,-40.3 22.8,-18.2 21.0,0 L 16.0,0 C 17.8,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
-    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
-    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
-    <path d="M 22,-96 C 20,-106 24,-116 32,-122 L 40,-130 L 56,-130 C 62,-126 64,-114 61,-104 C 59,-96 57,-88 55,-80 L 47,-80 C 49,-88 50,-94 50,-100 L 30,-102 C 30,-94 31,-88 33,-80 L 25,-80 C 23,-88 22,-92 22,-96 Z"/>
-  </g>
-  <g transform="translate(996.0,786.0) scale(0.920,0.920)">
-    <path d="M 64.0,-72.0 C 66.0,-44.6 65.2,-20.2 67.0,0 L 62.0,0 C 60.2,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
-    <path d="M 56.0,-70.0 C 58.0,-43.4 54.4,-19.6 52.0,0 L 47.0,0 C 49.4,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
-    <path d="M 32.0,-66.0 C 30.0,-40.9 30.8,-18.5 29.0,0 L 24.0,0 C 25.8,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
-    <path d="M 24.0,-65.0 C 22.0,-40.3 25.6,-18.2 28.0,0 L 23.0,0 C 20.6,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
-    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
-    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
-    <path d="M 23,-98 C 21,-108 25,-118 33,-124 L 36,-136 L 56,-134 C 63,-130 65,-115 62,-105 C 60,-97 58,-89 56,-81 L 48,-81 C 50,-89 51,-95 51,-101 L 31,-103 C 31,-95 32,-89 34,-81 L 26,-81 C 24,-89 23,-94 23,-98 Z"/>
-  </g>
-  <g transform="translate(1146.0,786.0) scale(0.920,0.920)">
-    <path d="M 64.0,-72.0 C 66.0,-44.6 63.2,-20.2 62.0,0 L 57.0,0 C 58.2,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
-    <path d="M 56.0,-70.0 C 58.0,-43.4 58.0,-19.6 61.0,0 L 56.0,0 C 53.0,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
-    <path d="M 32.0,-66.0 C 30.0,-40.9 32.8,-18.5 34.0,0 L 29.0,0 C 27.8,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
-    <path d="M 24.0,-65.0 C 22.0,-40.3 22.0,-18.2 19.0,0 L 14.0,0 C 17.0,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
-    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
-    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
-    <path d="M 21,-94 C 19,-102 24,-111 33,-117 L 42,-124 L 56,-124 C 61,-120 63,-108 60,-100 C 58,-93 56,-86 54,-78 L 46,-78 C 48,-86 49,-92 49,-98 L 29,-100 C 29,-92 30,-86 32,-78 L 24,-78 C 22,-86 21,-90 21,-94 Z"/>
-  </g>
-  <g transform="translate(1296.0,786.0) scale(0.920,0.920)">
-    <path d="M 64.0,-72.0 C 66.0,-44.6 65.6,-20.2 68.0,0 L 63.0,0 C 60.6,-20.2 61.0,-44.6 59.0,-72.0 Z"/>
-    <path d="M 56.0,-70.0 C 58.0,-43.4 55.2,-19.6 54.0,0 L 49.0,0 C 50.2,-19.6 53.0,-43.4 51.0,-70.0 Z"/>
-    <path d="M 32.0,-66.0 C 30.0,-40.9 30.4,-18.5 28.0,0 L 23.0,0 C 25.4,-18.5 25.0,-40.9 27.0,-66.0 Z"/>
-    <path d="M 24.0,-65.0 C 22.0,-40.3 24.8,-18.2 26.0,0 L 21.0,0 C 19.8,-18.2 17.0,-40.3 19.0,-65.0 Z"/>
-    <path d="M 17,-94 C 12,-86 10,-74 11,-62 C 11,-58 14,-57 15,-60 C 15,-72 17,-83 21,-91 Z"/>
-    <path d="M 16,-92 C 19,-106 27,-117 38,-119 C 49,-122 57,-113 62,-103 C 70,-115 80,-131 90,-143 C 94,-148 100,-147 102,-141 C 104,-136 101,-132 96,-131 C 92,-130 90,-129 88,-127 C 86,-120 83,-110 80,-100 C 77,-92 74,-84 71,-76 C 70,-72 69,-69 67,-67 L 30,-65 C 21,-65 16,-76 16,-92 Z"/>
-    <path d="M 22,-96 C 20,-106 24,-116 32,-122 L 40,-130 L 56,-130 C 62,-126 64,-114 61,-104 C 59,-96 57,-88 55,-80 L 47,-80 C 49,-88 50,-94 50,-100 L 30,-102 C 30,-94 31,-88 33,-80 L 25,-80 C 23,-88 22,-92 22,-96 Z"/>
-  </g>
-  <path d="M 938.0,659.0 Q 974.4,672.6 1010.7,668.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.75"/>
-  <path d="M 1088.0,659.0 Q 1124.4,672.6 1160.7,668.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.75"/>
-  <path d="M 1238.0,659.0 Q 1274.4,672.6 1310.7,668.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.75"/>
-  <path d="M 808.3,708.7 Q 829.1,679.7 850.0,662.7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" opacity="0.75"/>
-        </g>
-      </svg>
-      <canvas class="hero__dust" id="heroDust" aria-hidden="true"></canvas>
+<!-- Full-bleed desert film. Two separately reframed cuts: the 16:9 one for
+     landscape, a 9:16 one for phones. The poster is server-rendered and is the
+     LCP element; main.js appends ONE <video> after mount, so the browser never
+     downloads both, and skips video entirely under reduced-motion or Data
+     Saver. Copy stays bottom-left — the plate is bright sand edge to edge, the
+     scrim is weighted there, and the footage carries a small generation
+     watermark in the lower right. -->
+<section class="hero" id="hero"
+         data-video-desktop="assets/hero/hero-desktop.mp4"
+         data-video-mobile="assets/hero/hero-mobile.mp4">
+  <!-- The stage is what opens. It is full-bleed the whole time and clipped to
+       a window, so the caravan never scales or squashes on the way out — the
+       frame opens around it. -->
+  <div class="hero__stage">
+    <div class="hero__media">
+      <div class="hero__layer">
+        <picture>
+          <source media="(max-width: 768px), (orientation: portrait)" type="image/webp"
+                  srcset="assets/hero/poster-mobile.webp">
+          <source media="(max-width: 768px), (orientation: portrait)" type="image/jpeg"
+                  srcset="assets/hero/poster-mobile.jpg">
+          <source type="image/webp" srcset="assets/hero/poster-desktop.webp">
+          <img class="hero__poster" src="assets/hero/poster-desktop.jpg" alt=""
+               aria-hidden="true" fetchpriority="high" decoding="async"
+               width="1280" height="720">
+        </picture>
+      </div>
     </div>
+
+    <!-- Load-bearing, not decoration: white type is unreadable on lit sand.
+         Inside the stage, so it is clipped with the film instead of covering
+         the ivory ground during the intro. -->
+    <div class="hero__scrim" aria-hidden="true"></div>
   </div>
 
-  <div class="hero__fade"></div>
+  <!-- Carries the shadow, hairline and registration ticks while the film is a
+       window; it tracks the same animating rect as the clip, so it needs no
+       timing of its own. -->
+  <div class="hero__frame" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+  <!-- Hands the mono voice over to the coordinate readout that replaces it.
+       Hidden from assistive tech: the same words appear in the hero meta once
+       the plate opens, and once is enough. -->
+  <p class="hero__plate" aria-hidden="true"><span data-i18n="hero.tag">KEZAD Free Zone · Abu Dhabi</span></p>
+
+  <!-- The film dissolves into the page instead of ending on a hard line. -->
+  <div class="hero__fade" aria-hidden="true"></div>
 
   <div class="hero__content">
     <div class="hero__meta reveal">
@@ -191,17 +188,9 @@
   </div>
 </section>
 
-<nav class="corridor-strip" aria-label="Trade corridor">
-  <div class="shell">
-    <ol>
-      <li data-i18n="corridor.n1">Black Sea</li>
-      <li data-i18n="corridor.n2">Turkey</li>
-      <li data-i18n="corridor.n3">Central Asia</li>
-      <li data-i18n="corridor.n4">Jebel Ali</li>
-      <li data-i18n="corridor.n5">East Africa</li>
-    </ol>
-  </div>
-</nav>
+<!-- The waypoint rail that used to sit here listed the same five points the
+     Trade Corridors section now draws on the globe, one scroll below. Saying
+     it twice made the page feel busy without adding a fact. -->
 
 <!-- ============================================================ PRESS STRIP -->
 <section class="press">
@@ -271,7 +260,6 @@
   <div class="shell">
     <div class="rowhead fade-up">
       <h2 class="t-section" data-i18n="home.byCat">Shop by Category</h2>
-      <a class="link-quiet" href="catalogue.html" data-i18n="home.viewAll">View all →</a>
     </div>
 
     <div class="grid-cats">
@@ -322,7 +310,27 @@
       <p class="body-copy fade-up stagger-2" style="max-width:38ch" data-i18n="corridor.copy">Origination across three producing regions, consolidated through the Gulf and delivered to buyers on four continents.</p>
     </div>
 
-    <figure class="corridor__figure fade-up">
+    <!-- Globe first, flat route second. main.js mounts the globe only on a wide
+         viewport with WebGL and full motion, and only once this section is
+         scrolled into view; when it succeeds it hides the SVG below. Phones,
+         reduced motion, missing WebGL and no-JS all keep the drawn route. -->
+    <div class="corridor__grid">
+      <div>
+        <div class="corridor__globe" id="corridorGlobe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        <p class="corridor__hint" id="corridorHint" hidden data-i18n="corridor.drag">Drag to turn · true great-circle lanes</p>
+      </div>
+
+      <table class="corridor__lanes" id="corridorLanes" hidden>
+        <tr><th data-i18n="corridor.thWaypoint">Waypoint</th><th data-i18n="corridor.thPort">Port</th><th data-i18n="corridor.thRole">Role</th><th data-i18n="corridor.thPos">Position</th></tr>
+        <tr><td data-i18n="corridor.n1">Black Sea</td><td>Novorossiysk</td><td class="role" data-i18n="corridor.r1">Origination</td><td class="pos">44.72° N 37.77° E</td></tr>
+        <tr><td data-i18n="corridor.n2">Turkey</td><td>Mersin</td><td class="role" data-i18n="corridor.r2">Origination</td><td class="pos">36.80° N 34.63° E</td></tr>
+        <tr><td data-i18n="corridor.n3">Central Asia</td><td>Almaty</td><td class="role" data-i18n="corridor.r3">Origination</td><td class="pos">43.24° N 76.89° E</td></tr>
+        <tr><td data-i18n="corridor.n4">Jebel Ali</td><td>Jebel Ali</td><td class="role" data-i18n="corridor.r4">Transhipment hub</td><td class="pos">25.01° N 55.06° E</td></tr>
+        <tr><td data-i18n="corridor.n5">East Africa</td><td>Mombasa</td><td class="role" data-i18n="corridor.r5">Delivery</td><td class="pos">4.04° S 39.67° E</td></tr>
+      </table>
+    </div>
+
+    <figure class="corridor__figure fade-up" id="corridorFlat">
       <svg class="corridor__svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1200 360" role="img" aria-labelledby="corridorTitle">
         <title id="corridorTitle">Trade corridor from the Black Sea through Turkey and Central Asia via Jebel Ali to East Africa</title>
 
@@ -494,21 +502,27 @@
     <div class="qualify">
       <div>
         <span class="label fade-up" data-i18n="qualify.tag">Client Qualification</span>
-        <h2 class="t-sub qualify__title fade-up stagger-1 u-mt-s" data-i18n="qualify.title">You will value partnering with ARMINAK CARAVAN if you…</h2>
+        <h2 class="t-sub qualify__title fade-up stagger-1 u-mt-s" data-i18n="qualify.title">You will enjoy working with ARMINAK CARAVAN if:</h2>
+        <p class="qualify__close fade-up stagger-2" data-i18n="qualify.close">If this aligns with your business philosophy — welcome to our Caravan.</p>
+        <a class="qualify__more fade-up stagger-3" href="about.html" data-i18n="qualify.more">Heritage &amp; standards →</a>
       </div>
 
       <ol class="qualify__list">
         <li class="qualify__item fade-up">
           <span class="qualify__num tabular">01</span>
-          <p class="qualify__text" data-i18n="qualify.i1">value long-term supply stability and legal integrity over risky one-off deals at anomalously low prices</p>
+          <p class="qualify__text" data-i18n="qualify.i1">You value long-term supply stability.</p>
         </li>
         <li class="qualify__item fade-up stagger-1">
           <span class="qualify__num tabular">02</span>
-          <p class="qualify__text" data-i18n="qualify.i2">seek a partner with direct access to producers and laboratory-verified quality (SGS / Bureau Veritas certification)</p>
+          <p class="qualify__text" data-i18n="qualify.i2">You expect uncompromising quality and standards.</p>
         </li>
         <li class="qualify__item fade-up stagger-2">
           <span class="qualify__num tabular">03</span>
-          <p class="qualify__text" data-i18n="qualify.i3">respect professional business etiquette and strict adherence to contract terms</p>
+          <p class="qualify__text" data-i18n="qualify.i3">You require reliable trade corridors.</p>
+        </li>
+        <li class="qualify__item fade-up stagger-3">
+          <span class="qualify__num tabular">04</span>
+          <p class="qualify__text" data-i18n="qualify.i4">You believe in transparent, institutional B2B relationships.</p>
         </li>
       </ol>
     </div>
@@ -526,7 +540,7 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23a8.2 8.2 0 0 1 5.83 2.42 8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.53.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.22.25-.85.83-.85 2.03 0 1.2.87 2.35.99 2.51.12.17 1.71 2.61 4.15 3.66.58.25 1.03.4 1.39.51.58.19 1.11.16 1.53.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.28Z"/></svg>
         <span data-i18n="closing.wa">Direct Trading Desk</span>
       </a>
-      <a class="btn btn--outline-sand" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20—%20ARMINAK%20CARAVAN" data-i18n="closing.mail">Send Official Inquiry</a>
+      <a class="link-quiet closing__alt" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20—%20ARMINAK%20CARAVAN" data-i18n="closing.mail">Send Official Inquiry</a>
     </div>
 
     <p class="closing__note fade-up stagger-3" data-i18n="closing.note">Prices and freight rates are released against a formal written request only</p>
@@ -603,56 +617,103 @@
 </aside>
 
 <footer class="footer">
+  <div class="footer__rule" aria-hidden="true"></div>
   <div class="shell">
-    <div class="footer__grid">
-      <div>
-        <a class="footer__mark" href="index.html">ARMINAK CARAVAN<sup>™</sup></a>
-        <address class="footer__addr">
-          <span data-i18n="footer.legal">ARMINAK CARAVAN FOODSTUFF AND BEVERAGES TRADING LTD</span><br>
-          <span data-i18n="footer.addr">KEZAD Free Zone, Abu Dhabi, United Arab Emirates</span>
-        </address>
-      </div>
 
-      <div>
-        <h2 class="footer__h" data-i18n="footer.h.nav">Navigation</h2>
+    <div class="footer__top">
+      <p class="footer__claim">
+        <span data-i18n="footer.claim1">Sourced at origin.</span>
+        <em data-i18n="footer.claim2">Delivered across continents.</em>
+      </p>
+
+      <div class="footer__desk" id="deskStatus">
+        <p class="footer__state">
+          <span class="footer__dot" aria-hidden="true"></span>
+          <span class="footer__st footer__st--hours" data-i18n="footer.desk.hours">Desk hours Mon–Fri 09:00–18:00</span>
+          <span class="footer__st footer__st--open" data-i18n="footer.desk.open">Trading desk open now</span>
+          <span class="footer__st footer__st--shut" data-i18n="footer.desk.shut">Trading desk closed — enquiries answered next business day</span>
+        </p>
+        <p class="footer__clock">
+          <span class="tabular" id="deskClock">--:--</span>
+          <span data-i18n="footer.desk.tz">Gulf Standard Time · Abu Dhabi</span>
+        </p>
+      </div>
+    </div>
+
+    <nav class="footer__cols" aria-label="Footer">
+      <div class="footer__col">
+        <h2 class="footer__h"><i aria-hidden="true">01</i><span data-i18n="footer.h.nav">Navigate</span></h2>
         <ul class="footer__list">
-          <li><a href="index.html" data-i18n="nav.home">Home</a></li>
           <li><a href="catalogue.html" data-i18n="nav.catalogue">Catalogue</a></li>
-          <li><a href="insights.html" data-i18n="nav.insights">Insights</a></li>
+          <li><a href="about.html" data-i18n="nav.about">About</a></li>
+          <li><a href="insights.html" data-i18n="nav.insights">Market Insights</a></li>
           <li><a href="contact.html" data-i18n="nav.contact">Contacts</a></li>
         </ul>
       </div>
 
-      <div>
-        <h2 class="footer__h" data-i18n="footer.h.legal">Legal</h2>
-        <ul class="footer__list">
-          <li><a href="contact.html#terms" data-i18n="footer.terms">Terms of Trading</a></li>
-          <li><a href="contact.html#sgs" data-i18n="footer.sgs">SGS Certification Protocols</a></li>
-          <li><a href="contact.html#privacy" data-i18n="footer.privacy">Privacy Policy</a></li>
+      <div class="footer__col footer__col--desk">
+        <h2 class="footer__h"><i aria-hidden="true">02</i><span data-i18n="footer.h.desk">Trading Desk</span></h2>
+        <ul class="footer__list footer__list--desk">
+          <li>
+            <a class="footer__line" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20—%20ARMINAK%20CARAVAN">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="m3 6 9 6.5L21 6"/></svg>
+              <span>trading@arminakcaravan.ae</span>
+            </a>
+          </li>
+          <li>
+            <a class="footer__line" href="https://wa.me/971500000000" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23a8.2 8.2 0 0 1 5.83 2.42 8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.53.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.22.25-.85.83-.85 2.03 0 1.2.87 2.35.99 2.51.12.17 1.71 2.61 4.15 3.66.58.25 1.03.4 1.39.51.58.19 1.11.16 1.53.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.28Z"/></svg>
+              <span data-i18n="footer.wa">WhatsApp — direct line</span>
+            </a>
+          </li>
         </ul>
+        <address class="footer__addr">
+          <span data-i18n="footer.addr">KEZAD Free Zone, Abu Dhabi, United Arab Emirates</span>
+        </address>
+        <p class="footer__reply" data-i18n="footer.reply">Enquiries answered within one business day</p>
       </div>
+    </nav>
 
-      <div>
-        <h2 class="footer__h" data-i18n="footer.h.pref">Preferences</h2>
-        <div class="footer__controls">
-          <div class="lang" role="group" aria-label="Language">
-            <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
-            <button class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
-          </div>
-          <button class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
-            <span class="theme-toggle__thumb">
-              <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/></svg>
-              <svg class="i-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.6 14.6A8.6 8.6 0 0 1 9.4 3.4a8.6 8.6 0 1 0 11.2 11.2Z"/></svg>
-            </span>
-          </button>
+    <a class="footer__plate" href="index.html" aria-label="ARMINAK CARAVAN — home">
+      <span aria-hidden="true">Arminak</span><em aria-hidden="true">Caravan</em>
+    </a>
+
+    <div class="footer__reg">
+      <dl class="footer__regList">
+        <div>
+          <dt data-i18n="footer.k.entity">Entity</dt>
+          <dd data-i18n="footer.legal">ARMINAK CARAVAN FOODSTUFF AND BEVERAGES TRADING LTD</dd>
         </div>
+        <div>
+          <dt data-i18n="footer.k.lic">Free Zone Licence</dt>
+          <dd class="tabular">#5820194</dd>
+        </div>
+        <div>
+          <dt data-i18n="footer.k.corr">Corridors</dt>
+          <dd data-i18n="footer.k.corrV">EAEU · CIS · GCC Hub · Israel · Africa · Türkiye · South America</dd>
+        </div>
+      </dl>
+
+      <div class="footer__prefs">
+        <div class="lang" role="group" aria-label="Language">
+          <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
+          <button class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
+        </div>
+        <button class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+          <span class="theme-toggle__thumb">
+            <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/></svg>
+            <svg class="i-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.6 14.6A8.6 8.6 0 0 1 9.4 3.4a8.6 8.6 0 1 0 11.2 11.2Z"/></svg>
+          </span>
+        </button>
       </div>
     </div>
 
-    <div class="footer__bottom">
-      <span>© 2026 ARMINAK CARAVAN LTD. <span data-i18n="footer.rights">All rights reserved.</span></span>
-      <span data-i18n="footer.licence">Free Zone Licence #5820194</span>
-    </div>
+    <p class="footer__copy">
+      <span>© 2026 ARMINAK CARAVAN LTD.</span>
+      <span data-i18n="footer.rights">All rights reserved.</span>
+      <a href="contact.html#terms" data-i18n="footer.terms">Terms of Trading</a>
+      <a href="contact.html#privacy" data-i18n="footer.privacy">Privacy Policy</a>
+    </p>
   </div>
 </footer>
 

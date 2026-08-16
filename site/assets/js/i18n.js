@@ -15,6 +15,7 @@
     'nav.catalogue': 'Каталог',
     'nav.insights': 'Аналитика',
     'nav.contact': 'Контакты',
+    'nav.rfq': 'Запросить расчёт',
 
     /* ----------------------------------------------------------- hero ---- */
     'hero.tag': 'Абу-Даби · Свободная зона KEZAD',
@@ -38,6 +39,11 @@
     'corridor.r3': 'Происхождение',
     'corridor.r4': 'Перевалочный узел',
     'corridor.r5': 'Доставка',
+    'corridor.drag': 'Потяните, чтобы повернуть · дуги большого круга',
+    'corridor.thWaypoint': 'Пункт',
+    'corridor.thPort': 'Порт',
+    'corridor.thRole': 'Роль',
+    'corridor.thPos': 'Координаты',
     'corridor.tag': 'География поставок',
     'corridor.title': 'Торговые коридоры и узловые точки',
     'corridor.copy': 'Закупка в трёх регионах происхождения, консолидация в Персидском заливе и поставка покупателям на четырёх континентах.',
@@ -46,11 +52,16 @@
     'corridor.l3': 'Инструменты расчётов',
 
     /* ------------------------------------------------------ qualify ------ */
+    /* The client's approved four points — kept word-for-word identical to the
+       About page (ab.q1–q4) so the two sections never drift apart. */
     'qualify.tag': 'Кому мы подходим',
-    'qualify.title': 'Вам будет максимально выгодно работать с ARMINAK CARAVAN, если вы…',
-    'qualify.i1': 'цените долгосрочную стабильность поставок и юридическую чистоту выше сиюминутных рискованных сделок по аномально низким ценам',
-    'qualify.i2': 'ищете надёжного партнёра с прямым доступом к производителям и лабораторно подтверждённым качеством (сертификаты SGS / Bureau Veritas)',
-    'qualify.i3': 'уважаете профессиональный деловой этикет и строгое соблюдение условий контракта',
+    'qualify.title': 'Вам понравится работать с ARMINAK CARAVAN, если:',
+    'qualify.i1': 'Вы цените долгосрочную стабильность поставок.',
+    'qualify.i2': 'Вы ожидаете бескомпромиссного качества и стандартов.',
+    'qualify.i3': 'Вам нужны надёжные торговые коридоры.',
+    'qualify.i4': 'Вы верите в прозрачные, институциональные B2B-отношения.',
+    'qualify.close': 'Если это соответствует вашей философии бизнеса — добро пожаловать в наш Караван.',
+    'qualify.more': 'Наследие и стандарты →',
 
     /* ------------------------------------------------------- ribbon ------ */
     'ribbon.i1': 'Независимый контроль качества — SGS / Intertek',
@@ -68,15 +79,45 @@
     /* ------------------------------------------------------- footer ------ */
     'footer.legal': 'ARMINAK CARAVAN FOODSTUFF AND BEVERAGES TRADING LTD',
     'footer.addr': 'Свободная зона KEZAD, Абу-Даби, Объединённые Арабские Эмираты',
-    'footer.h.nav': 'Навигация',
-    'footer.h.legal': 'Правовая информация',
-    'footer.h.lang': 'Язык',
-    'footer.h.pref': 'Настройки',
     'footer.terms': 'Условия торговли',
+    'footer.standards': 'Качество и сертификация',
     'footer.sgs': 'Протоколы сертификации SGS',
     'footer.privacy': 'Политика конфиденциальности',
     'footer.rights': 'Все права защищены.',
     'footer.licence': 'Лицензия свободной зоны №5820194',
+
+    /* masthead */
+    'footer.claim1': 'Закупка в странах происхождения.',
+    'footer.claim2': 'Доставка на все континенты.',
+    'footer.desk.hours': 'Часы работы: пн–пт, 09:00–18:00',
+    'footer.desk.open': 'Торговый отдел сейчас на связи',
+    'footer.desk.shut': 'Торговый отдел закрыт — ответим на следующий рабочий день',
+    'footer.desk.tz': 'Время Персидского залива · Абу-Даби',
+
+    /* manifest columns */
+    'footer.h.nav': 'Навигация',
+    'footer.h.cat': 'Каталог',
+    'footer.h.company': 'Компания',
+    'footer.h.ins': 'Аналитика рынка',
+    'footer.h.desk': 'Торговый отдел',
+    'footer.cat.grains': 'Сельхозпродукция и зерновые',
+    'footer.cat.oils': 'Масла и бакалея',
+    'footer.cat.dairy': 'Молочная продукция и напитки',
+    'footer.cat.sugar': 'Сахар и продукты питания',
+    'footer.cat.all': 'Все 16 позиций →',
+    'footer.ins1': 'Черноморский коридор — фрахт и урожайность в III квартале',
+    'footer.ins2': 'Перевалка в Джебель-Али в Восточную Африку',
+    'footer.ins3': 'Споры по числу падения в порту погрузки',
+    'footer.ins4': 'Аккредитив против CAD: выбор инструмента расчётов',
+    'footer.ins.all': 'Весь архив →',
+    'footer.wa': 'WhatsApp — прямая линия',
+    'footer.reply': 'Отвечаем в течение одного рабочего дня',
+
+    /* registry strip */
+    'footer.k.entity': 'Юридическое лицо',
+    'footer.k.lic': 'Лицензия свободной зоны',
+    'footer.k.corr': 'Коридоры',
+    'footer.k.corrV': 'Причерноморье · Турция · Центральная Азия → Джебель-Али',
 
     /* --------------------------------------------------------- shop ------ */
     'shop.filter': 'Фильтр',
@@ -241,6 +282,14 @@
     }
   }
 
+  if (window.__RU_ABOUT) {
+    for (var bk in window.__RU_ABOUT) {
+      if (Object.prototype.hasOwnProperty.call(window.__RU_ABOUT, bk)) {
+        RU[bk] = window.__RU_ABOUT[bk];
+      }
+    }
+  }
+
   var STORE = 'ac_lang';
   var current = 'en';
 
@@ -332,6 +381,12 @@
     each(document, '.lang__btn', function (b) {
       b.addEventListener('click', function () { apply(b.getAttribute('data-lang')); });
     });
+
+    /* Every page advertises ?lang=ru as its Russian alternate in the hreflang
+       tags, so that URL has to actually land in Russian — an explicit request
+       outranks whatever the visitor last chose. */
+    var url = /[?&]lang=(ru|en)\b/.exec(location.search);
+    if (url) { apply(url[1]); return; }
 
     var saved = null;
     try { saved = localStorage.getItem(STORE); } catch (e) {}

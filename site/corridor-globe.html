@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Corridor globe — concept | ARMINAK CARAVAN</title>
+<script>(function(){try{var t=localStorage.getItem('ac_theme');if(t)document.documentElement.setAttribute('data-theme',t)}catch(e){}})();</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/main.css">
+<style>
+  body { padding: 44px var(--gutter) 80px; }
+  .wrap { max-width: 1360px; margin: 0 auto; }
+  .flag { display:inline-block; font-family:var(--font-mono); font-size:10px; letter-spacing:.18em;
+          text-transform:uppercase; color:var(--accent); border:1px solid var(--hairline);
+          padding:5px 10px; border-radius:var(--radius-pill); }
+  .lede { max-width:64ch; color:var(--ink-soft); margin:14px 0 0; }
+
+  .split { display:grid; grid-template-columns: 1.15fr .85fr; gap:52px; margin-top:44px; align-items:start; }
+  @media (max-width: 1000px) { .split { grid-template-columns:1fr; gap:36px; } }
+
+  /* The instrument: a paper globe, engraved. Not a lit sphere with a photo on
+     it — the site's language is survey plates and coordinates, so the world is
+     drawn in line rather than rendered in texture. */
+  .globe {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    max-height: 78vh;
+    border-radius: var(--radius);
+    overflow: hidden;
+    background:
+      radial-gradient(120% 100% at 50% 8%, var(--bg-elev) 0%, var(--tile) 62%, var(--tile-strong) 100%);
+    cursor: grab;
+    touch-action: pan-y;
+  }
+  .globe:active { cursor: grabbing; }
+  .globe canvas { display:block; width:100%; height:100%; }
+
+  /* Corner ticks, same register the hero plate uses. */
+  .globe i { position:absolute; width:14px; height:14px; border:0 solid var(--accent); opacity:.75; }
+  .globe i:nth-child(1) { top:14px; left:14px; border-top-width:1.5px; border-left-width:1.5px; }
+  .globe i:nth-child(2) { top:14px; right:14px; border-top-width:1.5px; border-right-width:1.5px; }
+  .globe i:nth-child(3) { bottom:14px; left:14px; border-bottom-width:1.5px; border-left-width:1.5px; }
+  .globe i:nth-child(4) { bottom:14px; right:14px; border-bottom-width:1.5px; border-right-width:1.5px; }
+
+  /* Labels are HTML, projected each frame, so the type stays the site's type
+     rather than a texture-baked approximation. */
+  .lbl {
+    position:absolute; transform:translate(-50%,-50%); pointer-events:none;
+    white-space:nowrap; text-align:center; opacity:0; transition:opacity 220ms var(--ease);
+  }
+  .lbl b { display:block; font-family:var(--font-ui); font-size:12.5px; font-weight:600;
+           letter-spacing:.06em; text-transform:uppercase; color:var(--ink);
+           text-shadow:0 0 5px var(--tile), 0 0 5px var(--tile); }
+  .lbl span { display:block; font-family:var(--font-mono); font-size:9.5px; letter-spacing:.1em;
+              color:var(--accent); text-shadow:0 0 5px var(--tile), 0 0 5px var(--tile); }
+
+  .status { position:absolute; inset:0; display:grid; place-items:center;
+            font-family:var(--font-mono); font-size:10.5px; letter-spacing:.2em;
+            text-transform:uppercase; color:var(--muted); background:var(--tile); }
+  .status.is-gone { opacity:0; visibility:hidden; transition:opacity 500ms var(--ease); }
+
+  .hint { margin-top:14px; font-family:var(--font-mono); font-size:10px; letter-spacing:.16em;
+          text-transform:uppercase; color:var(--muted); }
+
+  .lanes { width:100%; border-collapse:collapse; margin-top:6px; }
+  .lanes th, .lanes td { text-align:left; padding:12px 10px 12px 0; border-bottom:1px solid var(--hairline-soft); }
+  .lanes th { font-family:var(--font-mono); font-size:10px; letter-spacing:.16em;
+              text-transform:uppercase; color:var(--muted); font-weight:500; }
+  .lanes td { font-size:14px; }
+  .lanes td.role { font-family:var(--font-mono); font-size:11px; color:var(--accent);
+                   text-transform:uppercase; letter-spacing:.1em; }
+  .legend { display:flex; gap:24px; flex-wrap:wrap; margin-top:22px;
+            font-family:var(--font-mono); font-size:10.5px; letter-spacing:.14em;
+            text-transform:uppercase; color:var(--muted); }
+  .legend i { display:inline-block; width:24px; height:0; vertical-align:middle; margin-right:8px; }
+  .legend .i-in { border-top:2px dashed var(--accent); }
+  .legend .i-out { border-top:2.6px solid var(--ink); }
+  .fallback { display:none; padding:22px; font-size:14px; color:var(--ink-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <span class="flag">Concept · not live</span>
+  <h1 class="t-section" style="margin-top:16px">Trade Corridors &amp; Waypoints</h1>
+  <p class="lede">Three producing regions consolidated through the Gulf, then delivered out — drawn on
+  the actual planet, at actual positions. Coastlines are Natural Earth data rendered as line work, not
+  a photographic texture: the world engraved rather than photographed. Drag to turn it.</p>
+
+  <div class="split">
+    <div>
+      <div class="globe" id="globe">
+        <i></i><i></i><i></i><i></i>
+        <div class="status" id="status">Loading the world…</div>
+        <div class="fallback" id="fallback">This browser has no WebGL, so the globe can't draw.
+          The flat corridor map carries the same lanes.</div>
+      </div>
+      <div class="hint">Drag to turn · scroll page to continue</div>
+      <div class="legend">
+        <span><i class="i-in"></i>Origination → hub</span>
+        <span><i class="i-out"></i>Hub → delivery</span>
+      </div>
+    </div>
+
+    <div>
+      <table class="lanes">
+        <tr><th>Waypoint</th><th>Port</th><th>Role</th><th>Position</th></tr>
+        <tr><td>Black Sea</td><td>Novorossiysk</td><td class="role">origination</td><td style="font-family:var(--font-mono);font-size:11.5px">44.72° N 37.77° E</td></tr>
+        <tr><td>Turkey</td><td>Mersin</td><td class="role">origination</td><td style="font-family:var(--font-mono);font-size:11.5px">36.80° N 34.63° E</td></tr>
+        <tr><td>Central Asia</td><td>Almaty</td><td class="role">origination</td><td style="font-family:var(--font-mono);font-size:11.5px">43.24° N 76.89° E</td></tr>
+        <tr><td>Jebel Ali</td><td>Jebel Ali</td><td class="role">hub</td><td style="font-family:var(--font-mono);font-size:11.5px">25.01° N 55.06° E</td></tr>
+        <tr><td>East Africa</td><td>Mombasa</td><td class="role">delivery</td><td style="font-family:var(--font-mono);font-size:11.5px">4.04° S 39.67° E</td></tr>
+      </table>
+      <p class="lede" style="margin-top:24px">Arcs are true great circles — the shortest path over a
+      sphere, which is the path a vessel actually takes. On a flat map that curve is exactly what gets
+      lost.</p>
+    </div>
+  </div>
+</div>
+
+<script type="importmap">
+{ "imports": { "three": "./assets/vendor/three.module.min.js" } }
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from './assets/vendor/OrbitControls.js';
+
+const host = document.getElementById('globe');
+const statusEl = document.getElementById('status');
+
+const NODES = [
+  { name:'Black Sea',    port:'Novorossiysk', lat: 44.72, lon: 37.77, role:'origination' },
+  { name:'Turkey',       port:'Mersin',       lat: 36.80, lon: 34.63, role:'origination' },
+  { name:'Central Asia', port:'Almaty',       lat: 43.24, lon: 76.89, role:'origination' },
+  { name:'Jebel Ali',    port:'Jebel Ali',    lat: 25.01, lon: 55.06, role:'hub' },
+  { name:'East Africa',  port:'Mombasa',      lat: -4.04, lon: 39.67, role:'delivery' },
+];
+
+const css = getComputedStyle(document.documentElement);
+const tok = n => css.getPropertyValue(n).trim();
+const INK    = new THREE.Color(tok('--ink')    || '#1B2A41');
+const ACCENT = new THREE.Color(tok('--accent') || '#B08D57');
+const TILE   = new THREE.Color(tok('--tile')   || '#EFEAE0');
+const PAPER  = new THREE.Color(tok('--bg-elev')|| '#FCFAF5');
+
+if (!window.WebGLRenderingContext) { fail(); }
+
+function fail() {
+  statusEl.classList.add('is-gone');
+  document.getElementById('fallback').style.display = 'block';
+}
+
+const R = 1;
+const toVec = (lat, lon, r = R) => {
+  const phi = (90 - lat) * Math.PI / 180, theta = (lon + 180) * Math.PI / 180;
+  return new THREE.Vector3(
+    -r * Math.sin(phi) * Math.cos(theta),
+     r * Math.cos(phi),
+     r * Math.sin(phi) * Math.sin(theta));
+};
+
+let renderer, scene, camera, controls, world, labels = [], pulse, pulseCurve;
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+init();
+
+async function init() {
+  try {
+    renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+  } catch (e) { return fail(); }
+
+  const size = host.clientWidth;
+  renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 700 ? 1.5 : 2));
+  renderer.setSize(size, size, false);
+  host.appendChild(renderer.domElement);
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
+  camera.position.copy(toVec(22, 52, 3.05));
+
+  controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.06;
+  controls.enablePan = false;
+  controls.enableZoom = false;
+  controls.rotateSpeed = 0.42;
+  controls.autoRotate = !reduced;
+  controls.autoRotateSpeed = 0.28;
+
+  world = new THREE.Group();
+  scene.add(world);
+
+  /* The sphere itself: paper, lit softly so the limb turns without going
+     glossy. A photographic texture would fight every other surface on the site. */
+  const globeMat = new THREE.MeshLambertMaterial({ color: PAPER });
+  world.add(new THREE.Mesh(new THREE.SphereGeometry(R, 96, 96), globeMat));
+  scene.add(new THREE.AmbientLight(0xffffff, 2.5));
+  const key = new THREE.DirectionalLight(0xffffff, 1.9);
+  key.position.set(-1.1, 1.3, 1.9);
+  scene.add(key);
+  const fill = new THREE.DirectionalLight(0xffffff, 0.5);
+  fill.position.set(1.4, -0.8, -1.2);
+  scene.add(fill);
+
+  graticule();
+
+  try {
+    const res = await fetch('assets/data/coastlines.json');
+    coastlines(await res.json());
+  } catch (e) { /* the globe still reads without them */ }
+
+  lanes();
+  nodes();
+
+  statusEl.classList.add('is-gone');
+  addEventListener('resize', onResize);
+  onResize();
+  renderer.setAnimationLoop(tick);
+}
+
+function graticule() {
+  const pts = [];
+  for (let lon = -180; lon < 180; lon += 15) {
+    for (let lat = -85; lat < 85; lat += 5) {
+      pts.push(toVec(lat, lon, R * 1.001), toVec(lat + 5, lon, R * 1.001));
+    }
+  }
+  for (let lat = -60; lat <= 60; lat += 15) {
+    for (let lon = -180; lon < 180; lon += 5) {
+      pts.push(toVec(lat, lon, R * 1.001), toVec(lat, lon + 5, R * 1.001));
+    }
+  }
+  world.add(new THREE.LineSegments(
+    new THREE.BufferGeometry().setFromPoints(pts),
+    new THREE.LineBasicMaterial({ color: INK, transparent:true, opacity:0.09 })));
+}
+
+function coastlines(data) {
+  const pts = [];
+  for (const line of data.lines) {
+    for (let i = 0; i < line.length - 1; i++) {
+      pts.push(toVec(line[i][1],   line[i][0],   R * 1.003),
+               toVec(line[i+1][1], line[i+1][0], R * 1.003));
+    }
+  }
+  world.add(new THREE.LineSegments(
+    new THREE.BufferGeometry().setFromPoints(pts),
+    new THREE.LineBasicMaterial({ color: INK, transparent:true, opacity:0.5 })));
+}
+
+/* Great circle between two points, bowed off the surface. Slerp gives the true
+   shortest path; the sine lifts it so it reads as a route above the world
+   rather than a scratch on it. */
+function greatCircle(a, b, lift = 0.17, seg = 128) {
+  const va = toVec(a.lat, a.lon), vb = toVec(b.lat, b.lon);
+  const ang = va.angleTo(vb);
+  const pts = [];
+  for (let i = 0; i <= seg; i++) {
+    const t = i / seg;
+    const p = new THREE.Vector3().copy(va).lerp(vb, t).normalize();
+    p.multiplyScalar(R + Math.sin(Math.PI * t) * lift * ang);
+    pts.push(p);
+  }
+  return new THREE.CatmullRomCurve3(pts);
+}
+
+function lanes() {
+  const hub = NODES.find(n => n.role === 'hub');
+  for (const n of NODES) {
+    if (n.role === 'origination') {
+      const curve = greatCircle(n, hub);
+      world.add(new THREE.Mesh(
+        new THREE.TubeGeometry(curve, 128, 0.0045, 8, false),
+        new THREE.MeshBasicMaterial({ color: ACCENT, transparent:true, opacity:0.85 })));
+    }
+  }
+  const out = NODES.find(n => n.role === 'delivery');
+  pulseCurve = greatCircle(hub, out, 0.2);
+  world.add(new THREE.Mesh(
+    new THREE.TubeGeometry(pulseCurve, 160, 0.0062, 8, false),
+    new THREE.MeshBasicMaterial({ color: INK, transparent:true, opacity:0.9 })));
+
+  pulse = new THREE.Mesh(
+    new THREE.SphereGeometry(0.017, 16, 16),
+    new THREE.MeshBasicMaterial({ color: ACCENT }));
+  world.add(pulse);
+}
+
+function nodes() {
+  for (const n of NODES) {
+    const v = toVec(n.lat, n.lon, R * 1.004);
+    const hub = n.role === 'hub';
+
+    const dot = new THREE.Mesh(
+      new THREE.SphereGeometry(hub ? 0.019 : 0.013, 16, 16),
+      new THREE.MeshBasicMaterial({ color: hub ? INK : ACCENT }));
+    dot.position.copy(v);
+    world.add(dot);
+
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(hub ? 0.032 : 0.024, hub ? 0.036 : 0.027, 48),
+      new THREE.MeshBasicMaterial({ color: hub ? INK : ACCENT, transparent:true,
+                                    opacity:0.65, side: THREE.DoubleSide }));
+    ring.position.copy(v);
+    ring.lookAt(0, 0, 0);
+    world.add(ring);
+
+    const el = document.createElement('div');
+    el.className = 'lbl';
+    el.innerHTML = `<b>${n.name}</b>`;
+    host.appendChild(el);
+    labels.push({ el, v });
+  }
+}
+
+function onResize() {
+  const size = host.clientWidth;
+  renderer.setSize(size, size, false);
+  camera.aspect = 1;
+  camera.updateProjectionMatrix();
+}
+
+const tmp = new THREE.Vector3();
+let t0 = 0;
+
+function tick(time) {
+  controls.update();
+
+  if (pulse && pulseCurve) {
+    const t = ((time - t0) / 7000) % 1;
+    pulse.position.copy(pulseCurve.getPointAt(t));
+  }
+
+  const rect = host.getBoundingClientRect();
+  const camDir = camera.position.clone().normalize();
+  for (const l of labels) {
+    tmp.copy(l.v).applyMatrix4(world.matrixWorld);
+    /* Hide anything on the far side of the sphere rather than letting it
+       bleed through — the one thing that instantly reads as broken. */
+    const facing = tmp.clone().normalize().dot(camDir);
+    tmp.project(camera);
+    const x = (tmp.x * 0.5 + 0.5) * rect.width;
+    const y = (-tmp.y * 0.5 + 0.5) * rect.height;
+    l.el.style.left = x + 'px';
+    l.el.style.top = (y - 30) + 'px';
+    l.el.style.opacity = facing > 0.12 ? '1' : '0';
+  }
+
+  renderer.render(scene, camera);
+}
+</script>
+</body>
+</html>

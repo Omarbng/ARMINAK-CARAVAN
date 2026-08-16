@@ -1,0 +1,66 @@
+<!-- ==================================================== SPEC / RFQ DRAWER -->
+<div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
+  <header class="drawer__head">
+    <div>
+      <span class="label drawer__eyebrow" id="drawerEyebrow"></span>
+      <h2 class="drawer__title" id="drawerTitle"></h2>
+    </div>
+    <button type="button" class="drawer__close" aria-label="Close">
+      <svg width="13" height="13" viewBox="0 0 13 13" aria-hidden="true">
+        <path d="M1 1l11 11M12 1L1 12" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      </svg>
+    </button>
+  </header>
+
+  <div class="drawer__body">
+    <section class="drawer__section">
+      <div class="drawer__legend"><span class="label" data-i18n="cat.lab">Laboratory Specification</span></div>
+      <div id="drawerSpec"></div>
+    </section>
+
+    <section class="drawer__section">
+      <div class="drawer__legend"><span class="label" data-i18n="cat.rfqTitle">Request for Quotation</span></div>
+
+      <form id="rfqForm" data-mailto="trading@arminakcaravan.ae" data-subject="Request for Quotation" novalidate>
+        <input type="hidden" id="rfqProduct" name="Product">
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field__label" for="rfqVolume" data-i18n="form.volume">Target volume, tonnes</label>
+            <input class="input tabular" id="rfqVolume" name="Target volume (MT)" type="number" min="1" step="1" required placeholder="3000" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label class="field__label" for="rfqPort" data-i18n="form.port">Destination port</label>
+            <select class="select" id="rfqPort" name="Destination port" required>
+              <option value="CIF Jebel Ali" data-i18n="form.port1">CIF Jebel Ali</option>
+              <option value="CIF Dammam" data-i18n="form.port2">CIF Dammam</option>
+              <option value="Other" data-i18n="form.port3">Other — specify below</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="rfqName" data-i18n="form.name">Full name</label>
+          <input class="input" id="rfqName" name="Full name" type="text" autocomplete="name" required>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="rfqEmail" data-i18n="form.email">Corporate email</label>
+          <input class="input" id="rfqEmail" name="Corporate email" type="email" autocomplete="email" required>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="rfqCompany" data-i18n="form.company">Company entity</label>
+          <input class="input" id="rfqCompany" name="Company entity" type="text" autocomplete="organization" required>
+        </div>
+
+        <button class="btn btn--primary btn--full" type="submit" data-i18n="form.submitRfq">Submit Request for Quotation</button>
+
+        <p class="form__note" data-i18n="form.note">Submitting opens your mail client with the enquiry addressed to our trading desk. Prices and freight rates are released against a formal written request only.</p>
+        <p class="form__status" data-i18n="form.status">Your enquiry has been prepared in your mail client. Send it to reach the trading desk.</p>
+      </form>
+    </section>
+  </div>
+</aside>

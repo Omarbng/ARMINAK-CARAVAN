@@ -142,6 +142,43 @@ button, input, select, textarea { font: inherit; color: inherit; }
   opacity: 0.34;
 }
 
+/* Best case: the rendered sand itself — the same clip that blows across the
+   hero, masked by the parent to the margins, so every page is framed by real
+   grains rather than a drawn approximation of them. The mask lives on
+   .sand-edges and applies to this subtree, so the film never reaches body
+   copy. Falls back to the shader, then to the tile. */
+.sand-edges--film {
+  background-image: none;
+  animation: none;
+  opacity: 1;
+}
+
+.sand-edges__film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  opacity: 0;
+  transition: opacity 1600ms var(--ease);
+}
+
+/* The clip is graded for dark footage: sunlit grains are near-white, which on
+   ivory is nothing at all. Blending is what makes them read, not opacity —
+   multiply lets the shaded grains bite into the page while the lit ones stay
+   politely invisible, which is exactly how sand behaves against a pale ground.
+   On the matte dark theme the relationship inverts: screen lets the lit grains
+   carry and drops the shaded ones. */
+.sand-edges__film {
+  mix-blend-mode: multiply;
+}
+.sand-edges__film.is-ready { opacity: 0.72; }
+
+[data-theme="dark"] .sand-edges--film { background-image: none; opacity: 1; }
+[data-theme="dark"] .sand-edges__film { mix-blend-mode: screen; }
+[data-theme="dark"] .sand-edges__film.is-ready { opacity: 0.5; }
+
 /* When WebGL is available the tiled dots are replaced by the real sand shader.
    The element keeps its edge mask, so the veil still lives in the margins. */
 .sand-edges--gl {
@@ -274,23 +311,25 @@ button, input, select, textarea { font: inherit; color: inherit; }
               border-color 450ms var(--ease);
 }
 
+/* Three tracks rather than an absolutely-centred mark: the wordmark keeps the
+   reference-style centre position, but the side columns can no longer run
+   underneath it — which they did in Russian, where the link labels are far
+   longer than the English. */
 .nav__inner {
   position: relative;
   width: 100%;
   max-width: 1560px;
   margin: 0 auto;
   padding: 0 var(--gutter);
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
   gap: 24px;
 }
 
 /* Centered wordmark, reference-style */
 .nav__mark {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  grid-column: 2;
   font-family: var(--font-ui);
   font-weight: 700;
   font-size: 19px;
@@ -310,9 +349,21 @@ button, input, select, textarea { font: inherit; color: inherit; }
   opacity: 0.7;
 }
 
-.nav__menu { display: flex; align-items: center; gap: clamp(18px, 2vw, 30px); }
+.nav__menu {
+  grid-column: 1;
+  display: flex;
+  align-items: center;
+  gap: clamp(18px, 2vw, 30px);
+  counter-reset: navitem;          /* the panel numbers itself — see mobile */
+}
 
-.nav__side { display: flex; align-items: center; gap: clamp(14px, 1.6vw, 24px); }
+.nav__side {
+  grid-column: 3;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: clamp(12px, 1.4vw, 20px);
+}
 
 .nav__link {
   font-size: 14px;
@@ -321,17 +372,65 @@ button, input, select, textarea { font: inherit; color: inherit; }
   color: var(--ink);
   position: relative;
   padding: 6px 0;
-  transition: color 450ms var(--ease), opacity 300ms var(--ease);
+  white-space: nowrap;
+  transition: color 450ms var(--ease);
 }
 
-.nav__link:hover { opacity: 0.6; }
-.nav__link[aria-current="page"]::after {
+/* Same rule-drawn-from-the-left as the footer links, so the two ends of the
+   page share one hover language. */
+.nav__link::after {
   content: "";
   position: absolute;
   left: 0; bottom: 0;
   width: 100%; height: 1.5px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 380ms var(--ease);
+}
+.nav__link:hover::after,
+.nav__link:focus-visible::after { transform: scaleX(1); }
+
+.nav__link[aria-current="page"]::after {
+  transform: scaleX(1);
   background: currentColor;
 }
+
+/* The desk CTA. The site's whole conversion is "request a quotation" and the
+   bar carried no way to do it. */
+.nav__cta {
+  height: 38px;
+  padding: 0 18px;
+  font-size: 13px;
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg);
+}
+.nav__cta:hover { background: var(--accent); border-color: var(--accent); color: #1B2A41; }
+
+/* Reading position, drawn as the corridor route completing along the bar's
+   bottom edge. Scroll-timeline only — no scroll handler, and browsers without
+   it simply never paint it. */
+.nav__progress {
+  position: absolute;
+  left: 0; bottom: -1px;
+  height: 1.5px;
+  width: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+@supports (animation-timeline: scroll()) {
+  .nav__progress {
+    animation: navProgress linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+@keyframes navProgress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* Panel-only tail: hidden while the menu is a horizontal bar. */
+.nav__panelFoot { display: none; }
 
 /* Theme toggle */
 .theme-toggle {
@@ -390,8 +489,27 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .lang__btn:hover { opacity: 0.75; }
 .lang__btn[aria-pressed="true"] { opacity: 1; text-decoration: underline; text-underline-offset: 4px; }
 
-/* The hero is a light scene now, so there is no dark-over state:
-   the nav simply uses page colours and gains its blur on scroll. */
+/* Over the film — the hero is a dark plate again, so the nav borrows the
+   hero's cream until the page scrolls past it. Only pages that actually have
+   a #hero ever get this class (main.js). */
+.nav--over .nav__mark,
+.nav--over .nav__link,
+.nav--over .lang__btn { color: #FDF6EA; }
+.nav--over .theme-toggle { border-color: rgba(253, 246, 234, 0.35); }
+.nav--over .theme-toggle:hover { border-color: rgba(253, 246, 234, 0.7); }
+.nav--over .theme-toggle__thumb { background: #FDF6EA; color: #2B1D0F; }
+.nav--over .nav__burger span { background: #FDF6EA; }
+.nav--over :focus-visible { outline-color: #FDF6EA; }
+
+/* Over the film the bar has no ground of its own, so the solid CTA becomes an
+   outline and the progress rule steps back to cream. */
+.nav--over .nav__cta {
+  background: transparent;
+  border-color: rgba(253, 246, 234, 0.45);
+  color: #FDF6EA;
+}
+.nav--over .nav__cta:hover { background: #FDF6EA; border-color: #FDF6EA; color: #2B1D0F; }
+.nav--over .nav__progress { background: rgba(253, 246, 234, 0.75); }
 
 /* Scrolled */
 .nav--scrolled {
@@ -503,11 +621,26 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .link-brass:hover, .link-quiet:hover { border-color: var(--ink); gap: 12px; }
 
-/* Hero actions sit on the ivory scene, so they use page colours. */
+/* On the navy closing band a quiet link inherits --ink and disappears into the
+   background. It only became reachable when the second button there was
+   demoted to a link, so this pairs with that change. */
+.section--inverse .link-quiet,
+.closing__alt {
+  color: var(--inverse-ink);
+  border-bottom-color: var(--inverse-muted);
+}
+.section--inverse .link-quiet:hover,
+.closing__alt:hover { color: var(--accent); border-color: var(--accent); }
+
+/* Sits under the single primary action rather than beside it. */
+.closing__alt { margin-top: 18px; }
+
+/* Hero actions sit on the film, not on the page, so they take the hero's own
+   palette: a cream block reads on lit sand where gold-on-gold would not. */
 .hero .btn--primary {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #1B2A41;
+  background: var(--hero-ink);
+  border-color: var(--hero-ink);
+  color: #2B1D0F;
   height: 54px;
   border-radius: var(--radius-s);
   font-size: 14px;
@@ -515,107 +648,285 @@ button, input, select, textarea { font: inherit; color: inherit; }
   letter-spacing: 0;
   text-transform: none;
 }
-.hero .btn--primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); opacity: 1; }
+.hero .btn--primary:hover { background: #FFFFFF; border-color: #FFFFFF; opacity: 1; }
 
 .hero .link-quiet {
-  color: var(--ink);
-  border-bottom-color: var(--hairline);
+  color: var(--hero-ink);
+  border-bottom-color: var(--hero-hairline);
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0;
 }
-.hero .link-quiet:hover { color: var(--accent); border-color: var(--accent); }
+.hero .link-quiet:hover { color: var(--hero-accent); border-color: var(--hero-accent); }
 
 /* ------------------------------------------------------------------ 7. HERO */
-/* No film. Gold dust drifts, the loaded caravan develops out of it, the dust
-   settles to an ambient trace and the headline rises. Identical on every
-   device — which is what fixes the phone-versus-desktop mismatch the client
-   reported. Everything here is theme-driven, so the scene follows ivory or
-   matte-dark automatically. */
+/* Full-bleed desert film — a real loaded caravan on lit dunes, which is what
+   the drawn scene was standing in for. Two separately reframed cuts (16:9 and
+   9:16) with one picked on the client, so a phone never pulls the wide one;
+   the poster carries first paint and the video crossfades over it. The hero
+   keeps its own fixed cream-on-sand palette: the footage does not follow the
+   theme, so neither does the type sitting on it. */
 
 .hero {
+  --hero-ink:      #FDF6EA;
+  --hero-ink-soft: rgba(253, 246, 234, 0.86);
+  --hero-muted:    rgba(253, 246, 234, 0.66);
+  --hero-hairline: rgba(253, 246, 234, 0.30);
+  --hero-accent:   #E3C07A;   /* brand gold, lifted to read on lit sand */
+
+  /* The window the film opens from — one set of values, animated once, read by
+     the clip, the frame and the caption alike. Top and bottom are not equal:
+     the plate sits two points above true centre, which is where the eye reads
+     "centred". */
+  --wt: 0%;    /* window inset: top    */
+  --wb: 0%;    /* window inset: bottom */
+  --wx: 0%;    /* window inset: sides  */
+  --wr: 0px;   /* window corner radius */
+  --win-open: 940ms;
+
   position: relative;
   width: 100%;
-  min-height: 100svh;
+  min-height: 100vh;
+  min-height: 100svh;   /* svh: no jump when mobile browser chrome collapses */
   overflow: hidden;
+  isolation: isolate;
+  /* Ivory, not the film's brown: during the intro this is the ground the
+     window sits on. Once open, the film covers it entirely. */
   background: var(--bg);
+  color: var(--hero-ink);
 }
 
-.hero__media { position: absolute; inset: 0; will-change: transform; }
-.hero__layer { position: absolute; inset: 0; overflow: hidden; }
+/* ---- The opening ----------------------------------------------------------
+   The film is full-bleed and full-size throughout; only the clip moves. That
+   is what keeps the camels from growing or squashing as the window opens —
+   the frame opens around them, like an aperture rather than a box being
+   scaled up. `.ac-intro` is set by an inline head script before first paint
+   and removed when the intro plays out, so the settled state below is also
+   the no-JS state.
 
-/* Sky wash behind the dunes — warm at the horizon, clean at the top. */
-.hero__layer::before {
+   Registering the four inset values makes them interpolable, which buys the
+   thing a uniform clip-path transition cannot: the sides can travel on a
+   different curve to the top and bottom. The plate widens first and drops its
+   letterbox a beat later — an aperture opening, not a box inflating.        */
+
+@property --wt { syntax: "<length-percentage>"; inherits: true; initial-value: 0%; }
+@property --wb { syntax: "<length-percentage>"; inherits: true; initial-value: 0%; }
+@property --wx { syntax: "<length-percentage>"; inherits: true; initial-value: 0%; }
+@property --wr { syntax: "<length>"; inherits: true; initial-value: 0px; }
+
+.hero {
+  transition: --wx calc(var(--win-open) * 0.82) var(--ease),
+              --wt var(--win-open) 90ms var(--ease),
+              --wb var(--win-open) 90ms var(--ease),
+              --wr calc(var(--win-open) * 0.7) var(--ease);
+}
+
+.ac-intro .hero {
+  --wt: 17%;
+  --wb: 21%;
+  --wx: 19%;
+  --wr: var(--radius);   /* the tile radius the rest of the site is built on */
+  transition: none;      /* the window is the starting state, not a destination */
+}
+
+.hero__stage {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(var(--wt) var(--wx) var(--wb) var(--wx) round var(--wr));
+}
+
+/* The plate arrives rather than simply being there: a short rise and fade,
+   under half a second so the poster still lands as the LCP element early. */
+.ac-intro .hero__stage {
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition: opacity 420ms var(--ease), transform 620ms var(--ease);
+}
+.ac-intro.ac-mounted .hero__stage { opacity: 1; transform: none; }
+
+/* Nothing is written on the plate, so it shows clean footage; the scrim
+   arrives with the copy that actually needs it. */
+.ac-intro .hero__scrim { opacity: 0; transition: none; }
+
+/* Shadow, hairline and registration ticks can't live on the clipped element —
+   the clip would cut them off — so an empty box tracks the same rect. It needs
+   no transition of its own: it reads the same animating values as the clip. */
+.hero__frame {
+  position: absolute;
+  inset: var(--wt) var(--wx) var(--wb) var(--wx);
+  z-index: 2;
+  pointer-events: none;
+  border-radius: var(--wr);
+  /* One deep, soft shadow rather than the two-layer "material card" stack —
+     this is a plate resting on sand, not a floating panel. Declared here, not
+     under .ac-intro, so removing the intro class doesn't snap the shadow off
+     a frame that is still fading. */
+  box-shadow: 0 60px 120px -60px rgba(27, 42, 65, 0.5);
+  outline: 1px solid rgba(27, 42, 65, 0.12);
+  outline-offset: -1px;
+  opacity: 0;
+  transition: opacity 460ms var(--ease);   /* the exit */
+}
+
+.ac-intro.ac-mounted .hero__frame {
+  opacity: 1;
+  transition: opacity 520ms var(--ease) 60ms;   /* the entrance */
+}
+
+/* Warm light pooling around the plate, so it sits in the ivory rather than
+   floating on it. A halo, not a fill — the centre stays clear or it would
+   tint the footage it is meant to sit behind. */
+.hero__frame::before {
   content: "";
   position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(120% 78% at 68% 82%, var(--accent-soft) 0%, transparent 62%),
-    linear-gradient(to bottom, var(--bg) 0%, var(--bg) 34%, var(--tile) 100%);
+  inset: -16% -10%;
+  z-index: -1;
+  background: radial-gradient(closest-side,
+    transparent 58%, var(--accent-soft) 80%, transparent 100%);
+  filter: blur(34px);
 }
 
-.hero__scene {
+/* Crop marks: the register this trade already reads on every document it
+   touches. They sit outside the trim, on the ivory — a gold hairline laid over
+   the footage itself would simply disappear into it. Gone the moment the plate
+   opens, along with the rest of the frame. */
+.hero__frame i {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border: 0 solid var(--accent);
+  opacity: 0.85;
+}
+.hero__frame i:nth-child(1) { top: -17px; left: -17px;  border-top-width: 1.5px; border-left-width: 1.5px; }
+.hero__frame i:nth-child(2) { top: -17px; right: -17px; border-top-width: 1.5px; border-right-width: 1.5px; }
+.hero__frame i:nth-child(3) { bottom: -17px; left: -17px;  border-bottom-width: 1.5px; border-left-width: 1.5px; }
+.hero__frame i:nth-child(4) { bottom: -17px; right: -17px; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+/* Caption under the plate, in the same mono voice as the coordinate readout
+   it hands over to. It rides the bottom inset down and out as the plate
+   opens, so the line leaves with the frame instead of blinking off. */
+.hero__plate {
+  position: absolute;
+  z-index: 3;
+  left: 0; right: 0;
+  top: calc(100% - var(--wb) + 20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms var(--ease);   /* the exit, as the plate opens */
+}
+.hero__plate::before {
+  content: "";
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.ac-intro.ac-mounted .hero__plate {
+  opacity: 1;
+  transition: opacity 600ms var(--ease) 220ms;
+}
+
+/* Skipped intro (a scroll, a click, a key): finish fast rather than cut. */
+.hero--fast { --win-open: 300ms; }
+
+/* Real sand, drifting over the film AND over the ivory ground around the
+   window — grains only, the dust wash is rendered out. Attached by JS, so it
+   never costs a byte on phones, Data Saver or reduced motion.
+
+   Two elements again, for the same reason as the film: the wrapper takes the
+   JS pointer parallax, the video itself takes the scroll-driven exit. The
+   grains are the nearest thing to the camera in this scene, so both of those
+   move them further than the plate — that difference IS the depth. */
+.hero__sandwrap {
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  will-change: transform;
 }
 
-/* Dunes recede by lightening toward the horizon. */
-.dune { fill: var(--sand); }
-.dune--far  { opacity: 0.20; }
-.dune--mid  { opacity: 0.30; }
-.dune--near { opacity: 0.42; }
-
-[data-theme="dark"] .dune--far  { opacity: 0.09; }
-[data-theme="dark"] .dune--mid  { opacity: 0.14; }
-[data-theme="dark"] .dune--near { opacity: 0.20; }
-
-/* The caravan develops out of the dust rather than fading in flatly. */
-.hero__caravan {
-  fill: var(--ink);
-  color: var(--ink);
-  opacity: 0;
-  transform: translateY(10px) scale(1.012);
-  transform-origin: 58% 78%;
-  filter: blur(9px);
-  transition: opacity 1500ms var(--ease) 320ms,
-              transform 2100ms var(--ease) 320ms,
-              filter 1500ms var(--ease) 320ms;
-}
-
-.hero--revealed .hero__caravan {
-  opacity: 1;
-  transform: translateY(0) scale(1);
-  filter: blur(0);
-}
-
-.hero__dust,
 .hero__sand {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
+  object-fit: cover;
   pointer-events: none;
+  opacity: 0;
+  transition: opacity 1400ms var(--ease);
 }
+.hero__sand.is-ready { opacity: 0.9; }
 
-/* Only the canvas-2D fallback needs a CSS mask — the WebGL layers shape
-   themselves around the dune lines and the text column in the shader/sim. */
-.hero__dust--fallback {
-  -webkit-mask-image: radial-gradient(88% 92% at 84% 98%,
-      #000 0%, rgba(0,0,0,0.72) 30%, rgba(0,0,0,0.20) 56%, transparent 74%);
-  mask-image: radial-gradient(88% 92% at 84% 98%,
-      #000 0%, rgba(0,0,0,0.72) 30%, rgba(0,0,0,0.20) 56%, transparent 74%);
-}
-
-/* The film used to end here; the scene now melts into the page instead. */
+/* The film ends by dissolving into the page rather than on a hard cut —
+   lifted from the "Desert Caravan Hero" study the client liked. Theirs runs
+   45vh under a centred headline; ours is kept to 18vh because the copy sits
+   bottom-left on a dark scrim and a deeper ivory melt would wash it out.
+   Fades to var(--bg), so it lands correctly in both themes. */
 .hero__fade {
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  height: 22%;
+  height: 18vh;
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, var(--bg) 88%);
+  background: linear-gradient(to bottom, transparent 0%, var(--bg) 94%);
+  transition: opacity var(--win-open) var(--ease);
+}
+
+/* During the window beat the ground already IS the page — the melt only has
+   meaning once the film goes full-bleed. */
+.ac-intro .hero__fade { opacity: 0; transition: none; }
+
+/* Two nested layers on purpose: JS parallax transforms .hero__media, the
+   scroll-driven exit transforms .hero__layer. An animation always beats an
+   inline style, so they must not share an element. */
+.hero__media { position: absolute; inset: 0; will-change: transform; }
+.hero__layer { position: absolute; inset: 0; }
+
+.hero__poster,
+.hero__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* The drone shot sits low in frame — bias the crop upward so the caravan
+     survives on short and ultra-wide viewports. Re-check if the hero height
+     changes. */
+  object-position: center 42%;
+}
+
+.hero__video { opacity: 0; transition: opacity 700ms var(--ease); }
+.hero__video.is-ready { opacity: 1; }
+
+/* Load-bearing, not decoration: the plate is bright sand edge to edge and
+   cream type is illegible without it. Weighted bottom-left, which also keeps
+   copy clear of the generation watermark in the lower right. Check any change
+   against the sunlit-camel frame — the brightest in the clip. */
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  transition: opacity var(--win-open) var(--ease);
+  background:
+    linear-gradient(to top,
+      rgba(28, 18, 8, 0.86) 0%,
+      rgba(28, 18, 8, 0.48) 34%,
+      rgba(28, 18, 8, 0.08) 64%,
+      rgba(28, 18, 8, 0.34) 100%),
+    linear-gradient(to right,
+      rgba(28, 18, 8, 0.58) 0%,
+      rgba(28, 18, 8, 0.14) 46%,
+      rgba(28, 18, 8, 0) 72%);
 }
 
 .hero__content {
@@ -623,32 +934,31 @@ button, input, select, textarea { font: inherit; color: inherit; }
   z-index: 3;
   left: var(--gutter);
   right: var(--gutter);
-  top: var(--nav-h);
-  bottom: 26%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  bottom: clamp(86px, 13vh, 152px);
   max-width: 44rem;
 }
+
+/* Cream on a photograph — the page focus ring (navy) would vanish here. */
+.hero :focus-visible { outline-color: var(--hero-ink); }
 
 .hero__meta {
   display: flex;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 30px;
+  margin-bottom: 26px;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--hero-muted);
 }
 
 .hero__dot {
   width: 6px; height: 6px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--hero-accent);
   flex: 0 0 auto;
   position: relative;
 }
@@ -657,7 +967,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--hero-accent);
   animation: dotPing 2.8s var(--ease) infinite;
 }
 @keyframes dotPing {
@@ -667,16 +977,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 .hero__coord { font-variant-numeric: tabular-nums; white-space: nowrap; }
-.hero__sep { width: 18px; height: 1px; background: var(--hairline); flex: 0 0 auto; }
+.hero__sep { width: 18px; height: 1px; background: var(--hero-hairline); flex: 0 0 auto; }
 
 .hero__title {
-  margin: 0 0 28px;
+  margin: 0 0 26px;
   font-family: var(--font-ui);
   font-weight: 600;
   font-size: clamp(38px, 5.1vw, 74px);
   line-height: 1.02;
   letter-spacing: -0.042em;
-  color: var(--ink);
+  color: var(--hero-ink);
+  text-shadow: 0 2px 30px rgba(20, 12, 4, 0.38);
 }
 
 .hero__title .line {
@@ -690,19 +1001,22 @@ button, input, select, textarea { font: inherit; color: inherit; }
   transform: translateY(110%);
   transition: transform 1100ms var(--ease);
 }
+/* These delays are measured from the moment the window starts opening, so the
+   copy arrives while the frame is still travelling rather than after it. */
 .hero--revealed .hero__title .line > span { transform: translateY(0); }
-.hero--revealed .hero__title .line:nth-child(1) > span { transition-delay: 1150ms; }
-.hero--revealed .hero__title .line:nth-child(2) > span { transition-delay: 1280ms; }
+.hero--revealed .hero__title .line:nth-child(1) > span { transition-delay: 500ms; }
+.hero--revealed .hero__title .line:nth-child(2) > span { transition-delay: 620ms; }
 
-.hero__title .l1 { color: var(--ink); }
-.hero__title .l2 { color: var(--accent); }
+.hero__title .l1 { color: var(--hero-ink); }
+.hero__title .l2 { color: var(--hero-accent); }
 
 .hero__copy {
   font-size: 16px;
   line-height: 1.7;
-  color: var(--ink-soft);
+  color: var(--hero-ink-soft);
   max-width: 46ch;
-  margin-bottom: 38px;
+  margin-bottom: 34px;
+  text-shadow: 0 1px 18px rgba(20, 12, 4, 0.42);
 }
 
 .hero__actions { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
@@ -714,9 +1028,12 @@ button, input, select, textarea { font: inherit; color: inherit; }
   transform: translateY(0);
   transition: opacity 800ms var(--ease), transform 800ms var(--ease);
 }
-.hero--revealed .hero__content .reveal:nth-child(1) { transition-delay: 1000ms; }
-.hero--revealed .hero__content .reveal:nth-child(3) { transition-delay: 1520ms; }
-.hero--revealed .hero__content .reveal:nth-child(4) { transition-delay: 1620ms; }
+.hero--revealed .hero__content .reveal:nth-child(1) { transition-delay: 400ms; }
+.hero--revealed .hero__content .reveal:nth-child(3) { transition-delay: 800ms; }
+.hero--revealed .hero__content .reveal:nth-child(4) { transition-delay: 900ms; }
+
+/* Invisible copy is still clickable — keep the window beat inert. */
+.ac-intro .hero__content, .ac-intro .hero__cue { pointer-events: none; }
 
 .hero__cue {
   position: absolute;
@@ -730,14 +1047,16 @@ button, input, select, textarea { font: inherit; color: inherit; }
   font-size: 10px;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+  /* The cue sits inside the bottom fade, where the ground is already the
+     page — so it reads in page ink, not the hero's cream. */
   color: var(--muted);
   opacity: 0;
 }
-.hero--revealed .hero__cue { opacity: 1; transition: opacity 900ms var(--ease) 1900ms; }
+.hero--revealed .hero__cue { opacity: 1; transition: opacity 900ms var(--ease) 1250ms; }
 .hero__cue i {
   display: block;
   width: 34px; height: 1px;
-  background: linear-gradient(to right, var(--accent), transparent);
+  background: linear-gradient(to right, var(--hero-accent), transparent);
   animation: cueSlide 2.8s var(--ease) infinite;
   transform-origin: left;
 }
@@ -746,25 +1065,27 @@ button, input, select, textarea { font: inherit; color: inherit; }
   50%      { transform: scaleX(1);    opacity: 1; }
 }
 
-/* Reduced motion: land on the finished frame, no development, no dust. */
+/* Reduced motion: no intro, no film, no sand — the poster stays and the copy
+   is simply there. The head script and the JS make the same call; this is the
+   backstop for when scripts fail or run late. */
 @media (prefers-reduced-motion: reduce) {
-  .hero__caravan { opacity: 1; transform: none; filter: none; transition: none; }
-  .hero__dust, .hero__sand { display: none; }
+  .hero__video, .hero__sand { display: none; }
+  .hero__dot::after, .hero__cue i { animation: none; }
+  .hero__stage { clip-path: none; }
+  .hero__frame { display: none; }
 }
 
 @media (max-height: 820px) and (min-width: 769px) {
   .hero__title { font-size: clamp(32px, 4vw, 54px); margin-bottom: 22px; }
   .hero__meta { margin-bottom: 20px; }
   .hero__copy { font-size: 15px; margin-bottom: 28px; }
-  .hero__fade { height: 18%; }
-  .hero__content { bottom: 22%; }
+  .hero__content { bottom: clamp(72px, 10vh, 110px); }
 }
 
 @media (max-height: 680px) and (min-width: 769px) {
   .hero__title { font-size: clamp(28px, 3.2vw, 42px); }
   .hero__copy { display: none; }
-  .hero__fade { height: 16%; }
-  .hero__content { bottom: 20%; }
+  .hero__content { bottom: 64px; }
 }
 
 /* --------------------------------------------------- 7b. CORRIDOR STRIP */
@@ -1827,15 +2148,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
   align-items: start;
 }
 
-.qualify__title { max-width: 16ch; }
-.qualify__list { display: flex; flex-direction: column; gap: 32px; }
+.qualify__title { max-width: 20ch; }
+/* The client's four points are one-liners, so the rhythm is tighter than the
+   paragraph-length copy this strip originally carried. */
+.qualify__list { display: flex; flex-direction: column; gap: 20px; }
 
 .qualify__item {
   display: grid;
   grid-template-columns: 64px 1fr;
   gap: 0 8px;
   align-items: baseline;
-  padding-bottom: 32px;
+  padding-bottom: 20px;
   border-bottom: 1px solid var(--hairline-soft);
 }
 .qualify__item:last-child { border-bottom: 0; padding-bottom: 0; }
@@ -1847,7 +2170,43 @@ button, input, select, textarea { font: inherit; color: inherit; }
   font-variant-numeric: tabular-nums;
 }
 
-.qualify__text { font-size: 15px; line-height: 1.65; color: var(--ink-soft); max-width: 52ch; }
+.qualify__text { font-size: 15.5px; line-height: 1.6; color: var(--ink-soft); max-width: 52ch; }
+
+/* The welcome line closes the left column, which the shorter list would
+   otherwise leave empty. Same sand-gold rule as the About page. */
+.qualify__close {
+  margin-top: 28px;
+  padding-top: 22px;
+  border-top: 2px solid var(--accent);
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  line-height: 1.45;
+  max-width: 30ch;
+}
+
+.qualify__more {
+  display: inline-block;
+  margin-top: 18px;
+  position: relative;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.qualify__more::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -3px;
+  width: 100%; height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 380ms var(--ease);
+}
+.qualify__more:hover::after,
+.qualify__more:focus-visible::after { transform: scaleX(1); }
 
 /* Guarantees ribbon */
 .ribbon { padding: 0; }
@@ -1893,6 +2252,105 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 .corridor__figure { position: relative; width: 100%; }
+
+/* ---- Globe -----------------------------------------------------------------
+   The lanes drawn on the actual planet. It only ever replaces the flat figure
+   once WebGL has drawn something, so the SVG below stays the fallback for
+   phones, missing WebGL, reduced motion and no-JS alike.                     */
+
+.corridor__grid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: clamp(32px, 4vw, 60px);
+  align-items: center;
+}
+
+.corridor__globe {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  max-height: 70vh;
+  border-radius: var(--radius);
+  overflow: hidden;
+  /* No card behind it. This site frames things with crop marks and hairlines,
+     not panels, and a gradient plate read as a floating dark box in the matte
+     theme. The globe sits on the page ground like every other figure. */
+  background: transparent;
+  cursor: grab;
+  touch-action: pan-y;          /* the page keeps vertical scroll on touch */
+  opacity: 0;
+  transition: opacity 900ms var(--ease);
+}
+.corridor__globe.is-live { opacity: 1; }
+.corridor__globe:active { cursor: grabbing; }
+.corridor__globe canvas { display: block; width: 100%; height: 100%; }
+
+/* The same register the hero plate wears. */
+.corridor__globe i { position: absolute; width: 14px; height: 14px;
+                     border: 0 solid var(--accent); opacity: 0.7; }
+.corridor__globe i:nth-child(1) { top: 14px; left: 14px;  border-top-width: 1.5px; border-left-width: 1.5px; }
+.corridor__globe i:nth-child(2) { top: 14px; right: 14px; border-top-width: 1.5px; border-right-width: 1.5px; }
+.corridor__globe i:nth-child(3) { bottom: 14px; left: 14px;  border-bottom-width: 1.5px; border-left-width: 1.5px; }
+.corridor__globe i:nth-child(4) { bottom: 14px; right: 14px; border-bottom-width: 1.5px; border-right-width: 1.5px; }
+
+/* Labels are HTML projected each frame, so the type stays Manrope rather than
+   being baked into a texture. */
+.globe__lbl {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 220ms var(--ease);
+}
+.globe__lbl b {
+  font-family: var(--font-ui);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-shadow: 0 0 5px var(--tile), 0 0 5px var(--tile), 0 0 5px var(--tile);
+}
+
+.corridor__hint {
+  margin-top: 14px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.corridor__lanes { width: 100%; border-collapse: collapse; }
+.corridor__lanes th, .corridor__lanes td {
+  text-align: left;
+  padding: 13px 10px 13px 0;
+  border-bottom: 1px solid var(--hairline-soft);
+}
+.corridor__lanes th {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.corridor__lanes td { font-size: 14px; }
+.corridor__lanes td.role,
+.corridor__lanes td.pos {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.corridor__lanes td.role { color: var(--accent); text-transform: uppercase; }
+.corridor__lanes td.pos { color: var(--muted); white-space: nowrap; }
+
+/* Below this the globe is never mounted, so the grid collapses to the SVG. */
+@media (max-width: 999px) {
+  .corridor__grid { display: block; }
+  .corridor__globe, .corridor__hint, .corridor__lanes { display: none; }
+}
 .corridor__svg { width: 100%; height: auto; overflow: visible; }
 
 .corridor__route {
@@ -2023,7 +2481,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .closing { text-align: center; }
 .closing__title { max-width: 22ch; margin: 0 auto 18px; }
 .closing__copy { max-width: 52ch; margin: 0 auto 40px; color: var(--inverse-muted); font-size: 15.5px; }
-.closing__actions { display: flex; justify-content: center; align-items: center; gap: 16px; flex-wrap: wrap; }
+.closing__actions { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; }
 .closing__note {
   margin-top: 36px;
   font-size: 11px;
@@ -2034,67 +2492,532 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 /* ----------------------------------------------------------------- 20. FOOTER */
+/* The closing plate of a trading dossier: a live desk readout, four numbered
+   manifest columns, the wordmark struck across the base, and a registry strip.
+   The band is inverse, and inverse flips with the theme (navy on the light
+   site, ivory on the dark one) — so every colour here resolves through
+   footer-scoped tokens rather than the global --accent, which does not carry
+   enough contrast against the ivory band. */
 
 .footer {
+  --f-accent:  #B08D57;                      /* gold on the navy band */
+  --f-ink:     var(--inverse-ink);
+  --f-muted:   rgba(247, 244, 237, 0.68);
+  --f-line:    rgba(247, 244, 237, 0.15);
+  --f-line-s:  rgba(247, 244, 237, 0.08);
+  --f-plate:   rgba(247, 244, 237, 0.11);
+
+  position: relative;
   background: var(--inverse-bg);
-  color: var(--inverse-ink);
-  border-top: 2px solid var(--accent);
-  padding: clamp(48px, 5vw, 80px) 0 36px;
+  color: var(--f-ink);
+  padding: clamp(56px, 6vw, 96px) 0 32px;
   transition: background 400ms var(--ease);
+  overflow: hidden;                          /* the wordmark plate bleeds */
 }
 
-.footer__grid {
+/* On the dark site the band inverts to ivory, so the gold has to come down
+   with it — #B08D57 on #F7F4ED is 2.1:1 and unreadable. This is 5.0:1. */
+[data-theme="dark"] .footer {
+  --f-accent:  #7D6339;
+  --f-muted:   rgba(27, 42, 65, 0.72);
+  --f-line:    rgba(27, 42, 65, 0.15);
+  --f-line-s:  rgba(27, 42, 65, 0.08);
+  --f-plate:   rgba(27, 42, 65, 0.10);
+}
+
+/* Top edge: the corridor route line from section 19, dashed and faded at both
+   ends so the band arrives rather than starts. */
+.footer__rule {
+  height: 2px;
+  background: repeating-linear-gradient(90deg,
+              var(--accent) 0 15px, transparent 15px 27px);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+}
+
+/* ------------------------------------------------------------ masthead --- */
+
+.footer__top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  flex-wrap: wrap;
+  padding-bottom: clamp(34px, 3.5vw, 52px);
+  border-bottom: 1px solid var(--f-line);
+}
+
+.footer__claim {
+  font-size: clamp(21px, 2.5vw, 31px);
+  font-weight: 600;
+  line-height: 1.22;
+  letter-spacing: -0.022em;
+  max-width: 26ch;      /* holds "Delivered across continents." on one line */
+}
+.footer__claim em { font-style: normal; display: block; color: var(--f-accent); }
+
+/* Live desk readout — the hero's amber status dot, carried to the base of
+   every page. Falls back to plain opening hours when JS never runs. */
+.footer__desk { text-align: right; }
+
+.footer__state {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  font-size: 13px;
+  color: var(--f-ink);
+}
+
+.footer__dot {
+  width: 7px;
+  height: 7px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--f-muted);
+  box-shadow: 0 0 0 0 transparent;
+}
+.footer__desk[data-open="1"] .footer__dot {
+  background: var(--accent);
+  animation: deskPulse 2.6s var(--ease) infinite;
+}
+.footer__desk[data-open="0"] .footer__dot { background: var(--f-muted); opacity: 0.55; }
+
+@keyframes deskPulse {
+  0%, 100% { box-shadow: 0 0 0 0 var(--accent-soft); }
+  50%      { box-shadow: 0 0 0 6px transparent; }
+}
+
+/* Three mutually exclusive states; JS only ever swaps the data attribute, so
+   the language switcher keeps ownership of the text. */
+.footer__st { display: none; }
+.footer__desk:not([data-open]) .footer__st--hours { display: inline; }
+.footer__desk[data-open="1"] .footer__st--open   { display: inline; }
+.footer__desk[data-open="0"] .footer__st--shut   { display: inline; }
+
+.footer__clock {
+  margin-top: 7px;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--f-muted);
+}
+.footer__clock .tabular { font-size: 13px; letter-spacing: 0.04em; color: var(--f-accent); }
+/* Until JS reports a time there is nothing to show, so the placeholder digits
+   stay hidden rather than reading as a broken clock. */
+.footer__desk:not([data-open]) .footer__clock .tabular { display: none; }
+
+/* -------------------------------------------------------- manifest cols --- */
+
+.footer__cols {
   display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr 1.1fr;
-  gap: 44px 36px;
+  /* Two columns since the footer was cut from four: where to go, and how to
+     reach the desk. Weighted so the desk column keeps its breathing room. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: 44px clamp(40px, 8vw, 120px);
+  padding: clamp(38px, 4vw, 58px) 0 clamp(20px, 2vw, 30px);
 }
-
-.footer__mark {
-  font-weight: 700;
-  font-size: 19px;
-  letter-spacing: -0.02em;
-  color: var(--inverse-ink);
-  margin-bottom: 16px;
-  display: block;
-}
-.footer__mark em { font-style: normal; color: var(--accent); }
-.footer__mark sup { font-size: 8px; vertical-align: super; margin-left: 2px; opacity: 0.7; }
-
-.footer__addr { font-style: normal; font-size: 13px; line-height: 1.75; color: var(--inverse-muted); max-width: 30ch; }
 
 .footer__h {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid var(--f-line-s);
   font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--f-ink);
+}
+.footer__h i {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--f-accent);
+}
+
+.footer__list li + li { margin-top: 11px; }
+
+.footer__list a {
+  position: relative;
+  display: inline-block;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--f-muted);
+  transition: color 280ms var(--ease);
+}
+/* A rule that draws itself in from the left — the corridor stroke again, at
+   link scale. */
+.footer__list a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background: var(--f-accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 380ms var(--ease);
+}
+.footer__list a:hover,
+.footer__list a:focus-visible { color: var(--f-ink); }
+.footer__list a:hover::after,
+.footer__list a:focus-visible::after { transform: scaleX(1); }
+
+/* Written at the same weight as .footer__list a so it overrides without
+   !important. */
+.footer__list a.footer__more {
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--f-accent);
+}
+
+/* Desk column — same specificity note: the base rule sets inline-block, which
+   would drop each icon onto its own line. */
+.footer__list--desk li + li { margin-top: 14px; }
+.footer__list a.footer__line { display: flex; align-items: center; gap: 10px; }
+.footer__line svg { width: 15px; height: 15px; flex: none; color: var(--f-accent); }
+
+.footer__addr {
+  margin-top: 20px;
+  font-style: normal;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--f-muted);
+  max-width: 26ch;
+}
+
+.footer__reply {
+  margin-top: 14px;
+  padding-top: 13px;
+  border-top: 1px solid var(--f-line-s);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.6;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--f-muted);
+}
+
+/* ------------------------------------------------------- wordmark plate --- */
+/* Struck across the base at display scale, outlined rather than filled so it
+   reads as a watermark on the document instead of a second headline. */
+
+.footer__plate {
+  display: block;
+  margin: clamp(8px, 1.5vw, 22px) 0 clamp(26px, 3vw, 40px);
+  font-size: clamp(46px, 12.2vw, 172px);
+  font-weight: 700;
+  line-height: 0.86;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--f-plate);
+  transition: color 500ms var(--ease);
+}
+.footer__plate em { font-style: normal; }
+.footer__plate em::before { content: " "; }
+
+@supports (-webkit-text-stroke: 1px currentColor) {
+  .footer__plate {
+    color: transparent;
+    -webkit-text-stroke: 1px var(--f-plate);
+    transition: -webkit-text-stroke-color 500ms var(--ease);
+  }
+  .footer__plate:hover,
+  .footer__plate:focus-visible { -webkit-text-stroke-color: var(--f-accent); }
+}
+.footer__plate:hover, .footer__plate:focus-visible { color: var(--f-accent); }
+
+/* ------------------------------------------------------- registry strip --- */
+
+.footer__reg {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px 40px;
+  flex-wrap: wrap;
+  padding-top: 24px;
+  border-top: 1px solid var(--f-line);
+}
+
+.footer__regList {
+  display: flex;
+  gap: 14px 40px;
+  flex-wrap: wrap;
+  margin: 0;
+}
+.footer__regList dt {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--f-accent);
+  margin-bottom: 5px;
+}
+.footer__regList dd {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--f-muted);
+  max-width: 34ch;
+}
+
+.footer__prefs { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+
+/* The band is inverse, so its controls invert with it. */
+.footer .lang__btn { color: var(--f-muted); }
+.footer .lang__btn[aria-pressed="true"] { color: var(--f-accent); }
+.footer .theme-toggle { border-color: var(--f-line); }
+.footer .theme-toggle:hover { border-color: var(--f-accent); }
+.footer .theme-toggle__thumb { background: var(--inverse-ink); color: var(--inverse-bg); }
+
+.footer__copy a {
+  border-bottom: 1px solid var(--hairline);
+  padding-bottom: 1px;
+  transition: border-color 300ms var(--ease);
+}
+.footer__copy a:hover { border-bottom-color: var(--ink); }
+
+.footer__copy {
+  margin-top: 26px;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--f-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer__dot { animation: none !important; }
+  .footer__list a::after { transition: none; }
+}
+
+/* ------------------------------------------------------------- 20c. ABOUT */
+/* The client's "О НАС & СТАНДАРТЫ" brief, built as a document: a heritage
+   masthead, a numbered client creed, the certification register (inspection
+   marks + the GOST table every position is contracted against), and the
+   corridor list. Shares the manifest idiom used by the nav and footer —
+   mono indices, hairline rules, sand-gold accents. */
+
+.ab-hero__title {
+  font-size: clamp(34px, 5.4vw, 76px);
+  font-weight: 600;
+  letter-spacing: -0.032em;
+  line-height: 1.02;
+  margin: 18px 0 clamp(34px, 4vw, 56px);
+  max-width: 16ch;
+}
+.ab-hero__title em { font-style: normal; display: block; color: var(--accent); }
+
+.ab-hero__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: clamp(34px, 5vw, 84px);
+  align-items: start;
+}
+.ab-hero__copy { display: flex; flex-direction: column; gap: 20px; max-width: 62ch; }
+.ab-hero__copy .body-copy { font-size: 16.5px; line-height: 1.72; color: var(--ink-soft); }
+
+/* Founding facts, set as a register rather than prose. */
+.ab-facts { margin: 0; border-top: 1px solid var(--hairline); }
+.ab-facts > div { padding: 16px 0; border-bottom: 1px solid var(--hairline-soft); }
+.ab-facts dt {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+.ab-facts dd { margin: 0; font-size: 14px; line-height: 1.5; color: var(--ink); }
+
+/* ------------------------------------------------------- client creed --- */
+
+.ab-qual__title { max-width: 20ch; margin: 16px 0 clamp(32px, 3.6vw, 52px); }
+
+.ab-qual__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 clamp(32px, 4vw, 72px);
+  counter-reset: none;
+}
+.ab-qual__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 22px 0;
+  border-top: 1px solid var(--hairline-soft);
+}
+/* The two columns each want a rule above their first row. */
+.ab-qual__item:nth-child(-n+2) { border-top-color: var(--hairline); }
+
+.ab-qual__idx {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  padding-top: 4px;
+  flex: none;
+}
+.ab-qual__item p { font-size: 15.5px; line-height: 1.6; color: var(--ink-soft); }
+
+.ab-qual__close {
+  margin-top: clamp(30px, 3.4vw, 46px);
+  padding-top: 26px;
+  border-top: 2px solid var(--accent);
+  font-size: clamp(17px, 1.7vw, 21px);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.4;
+  max-width: 34ch;
+}
+
+/* ------------------------------------------------- certification block --- */
+
+.ab-std__title { max-width: 20ch; margin: 16px 0 clamp(32px, 3.6vw, 52px); }
+.ab-std__block + .ab-std__block { margin-top: clamp(44px, 5vw, 76px); }
+
+.ab-std__h {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding-bottom: 13px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--hairline);
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+.ab-std__h i {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 500;
   color: var(--accent);
-  margin-bottom: 18px;
 }
 
-.footer__list li + li { margin-top: 10px; }
-.footer__list a { font-size: 13.5px; color: var(--inverse-muted); transition: color 300ms var(--ease); }
-.footer__list a:hover { color: var(--accent); }
+.ab-std__marks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1px;
+  background: var(--hairline-soft);
+  border: 1px solid var(--hairline-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.ab-mark {
+  background: var(--tile);
+  padding: 22px 20px;
+  transition: background 300ms var(--ease);
+}
+.ab-mark:hover { background: var(--tile-strong); }
+.ab-mark__name {
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin-bottom: 7px;
+}
+.ab-mark__gloss { font-size: 12.5px; line-height: 1.55; color: var(--muted); }
 
-.footer__controls { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.ab-std__note {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  max-width: 62ch;
+  margin-bottom: 26px;
+}
 
-/* The footer is a navy band, so its controls invert. */
-.footer .lang__btn { color: var(--inverse-ink); }
-.footer .lang__btn[aria-pressed="true"] { color: var(--accent); }
-.footer .theme-toggle { border-color: rgba(247, 243, 236, 0.28); }
-.footer .theme-toggle:hover { border-color: var(--accent); }
-.footer .theme-toggle__thumb { background: var(--inverse-ink); color: var(--inverse-bg); }
+/* The GOST register — a two-column table that scrolls inside itself rather
+   than pushing the page sideways on a phone. */
+.ab-gost { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+/* Capped measure: across a 1500px shell the two columns would sit at opposite
+   edges of the row and stop reading as a pair. */
+.ab-gost__table {
+  width: 100%;
+  max-width: 820px;
+  min-width: 380px;
+  border-collapse: collapse;
+}
+.ab-gost__table th {
+  text-align: left;
+  padding: 0 0 12px;
+  border-bottom: 1px solid var(--hairline);
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.ab-gost__table th:last-child { text-align: right; }
+.ab-gost__table td {
+  padding: 13px 0;
+  border-bottom: 1px solid var(--hairline-soft);
+  font-size: 14.5px;
+}
+.ab-gost__table tbody tr { transition: background 250ms var(--ease); }
+.ab-gost__table tbody tr:hover { background: var(--accent-soft); }
+.ab-gost__std {
+  font-family: var(--font-mono);
+  font-size: 12px !important;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  white-space: nowrap;
+  text-align: right;
+}
 
-.footer__bottom {
-  margin-top: clamp(40px, 4vw, 64px);
-  padding-top: 24px;
-  border-top: 1px solid rgba(247, 243, 236, 0.14);
+/* ------------------------------------------------------------ corridors --- */
+
+.ab-corr__title { max-width: 18ch; margin: 16px 0 18px; }
+.ab-corr__copy { max-width: 56ch; margin-bottom: clamp(30px, 3.4vw, 46px); }
+
+.ab-corr__list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 0 clamp(30px, 3.6vw, 60px);
+}
+.ab-lane {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-  font-size: 12px;
-  color: var(--inverse-muted);
+  align-items: baseline;
+  gap: 16px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--hairline-soft);
+}
+.ab-lane__idx {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  flex: none;
+}
+.ab-lane__name { font-size: 15.5px; font-weight: 500; letter-spacing: -0.01em; }
+
+@media (max-width: 860px) {
+  .ab-hero__grid { grid-template-columns: 1fr; }
+  .ab-qual__list { grid-template-columns: 1fr; }
+  .ab-qual__item:nth-child(-n+2) { border-top-color: var(--hairline-soft); }
+  .ab-qual__item:first-child { border-top-color: var(--hairline); }
 }
 
 /* ------------------------------------------- 20b. SCROLL-DRIVEN ENHANCEMENTS */
@@ -2113,6 +3036,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
        zero range, leaving these animations permanently inactive. */
     .hero__layer {
       animation: heroExitMedia linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 100vh;
+    }
+
+    /* …the sand sinks faster still, because it is the nearest layer to the
+       camera. Same scroll, three rates: grains, film, headline. */
+    .hero__sand {
+      animation: heroExitSand linear both;
       animation-timeline: scroll(root);
       animation-range: 0 100vh;
     }
@@ -2141,6 +3072,7 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 @keyframes heroExitMedia   { to { transform: translate3d(0, 9vh, 0); } }
+@keyframes heroExitSand    { to { transform: translate3d(0, 17vh, 0) scale(1.06); } }
 @keyframes heroExitContent { to { opacity: 0; transform: translate3d(0, -7vh, 0); } }
 @keyframes figRise {
   from { opacity: 0.55; transform: translate3d(0, 20px, 0) scale(0.985); }
@@ -2204,21 +3136,24 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @media (max-width: 1180px) {
   .grid-products { grid-template-columns: repeat(3, 1fr); }
   .grid-cats { grid-template-columns: repeat(2, 1fr); }
-  .footer__grid { grid-template-columns: 1.4fr 1fr 1fr; }
-  .footer__grid > :nth-child(4) { grid-column: 1 / -1; }
+  .footer__cols { grid-template-columns: repeat(2, 1fr); gap: 40px; }
 }
 
 @media (max-width: 1024px) {
+  /* Full height, not a dropdown. Opening the menu already locks the body to
+     no-scroll, so a short panel left the page visible underneath but frozen —
+     which reads as a bug. */
   .nav__menu {
     position: fixed;
     top: var(--nav-h);
-    left: 0; right: 0;
+    left: 0; right: 0; bottom: 0;
     flex-direction: column;
     align-items: flex-start;
     gap: 0;
     background: var(--bg);
-    border-bottom: 1px solid var(--hairline);
-    padding: 8px var(--gutter) 24px;
+    padding: 8px var(--gutter) max(28px, env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overscroll-behavior: contain;
     transform: translateY(-12px);
     opacity: 0;
     visibility: hidden;
@@ -2233,19 +3168,69 @@ button, input, select, textarea { font: inherit; color: inherit; }
   }
 
   .nav__menu .nav__link {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
     width: 100%;
     padding: 16px 0;
-    font-size: 15px;
+    font-size: 16px;
     color: var(--ink);
     border-bottom: 1px solid var(--hairline-soft);
     opacity: 1;
   }
-  .nav__menu .nav__link[aria-current="page"]::after { display: none; }
+  /* The manifest indices from the footer columns, generated rather than
+     marked up — data-i18n rewrites textContent, so a numbered span in the
+     markup would be wiped on every language switch. */
+  .nav__menu .nav__link::before {
+    counter-increment: navitem;
+    content: "0" counter(navitem);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+  }
+  /* The underline rule is a desktop affordance; in the panel the row itself
+     is the target. */
+  .nav__menu .nav__link::after { display: none; }
+  .nav__menu .nav__link[aria-current="page"] { color: var(--accent); }
+  /* The drawer-style menu is a page-coloured panel, so its links stay ink
+     even while the bar itself is over the film. */
+  .nav--over .nav__menu .nav__link { color: var(--ink); }
 
+  /* The desk actions sit at the foot of the panel rather than crowding a
+     76px-tall bar. margin-top:auto holds them to the bottom on tall screens
+     and lets them scroll on short ones. */
+  .nav__panelFoot {
+    display: block;
+    width: 100%;
+    margin-top: auto;
+    padding-top: 28px;
+  }
+  .nav__panelMail {
+    display: block;
+    margin-top: 16px;
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+  }
+  .nav--over .nav__panelMail { color: var(--muted); }
 
-  .nav__burger { display: flex; }
-  .nav__mark { position: static; transform: none; }
-  .nav__inner { justify-content: space-between; }
+  /* Language moves into the panel: three controls plus a 15-character
+     wordmark did not fit a 390px bar, and the toggle was being clipped. */
+  .nav__panelLang { display: flex; justify-content: center; width: 100%; margin-top: 22px; }
+  .nav__panelLang .lang__btn { font-size: 13px; padding: 8px 12px; }
+  .nav__side .lang { display: none; }
+
+  .nav__cta { display: none; }
+
+  /* The menu is fixed-position here, so it vacates its cell and the burger
+     takes the first track. The mark keeps the centre one. */
+  .nav__burger { display: flex; grid-column: 1; margin-left: -8px; }
+  .nav__inner { gap: 12px; }
+  .nav__mark { font-size: 16px; }
 
   .qualify { grid-template-columns: 1fr; gap: 40px; }
   .feature { grid-template-columns: 1fr; }
@@ -2285,13 +3270,25 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
   body { font-size: 15px; }
 
-  .hero { min-height: 600px; }
-  .hero__content { max-width: 100%; }
-  .hero__copy { font-size: 15px; margin-bottom: 30px; }
+  /* No min-height floor here: the portrait cut is made to fill the phone, so
+     the hero keeps the base 100svh rather than the old 600px block. */
+  .hero__content { max-width: 100%; bottom: clamp(52px, 8vh, 92px); }
+
+  /* A 62% window on a tall screen is a slot, not a plate — widen it, let the
+     portrait cut breathe, and open a little quicker on a device where the
+     whole page is one thumb-flick away. */
+  .ac-intro .hero { --wt: 11%; --wb: 15%; --wx: 7%; }
+  .hero { --win-open: 780ms; }
+  .hero__plate { font-size: 9px; letter-spacing: 0.16em; }
+
+  /* The phone's copy sits lower, so the melt is kept shallower to stay out
+     from under the quiet link. */
+  .hero__fade { height: 13vh; }
+  .hero__copy { font-size: 15px; margin-bottom: 28px; }
   .hero__actions { gap: 16px; }
   .hero__actions .btn { width: 100%; }
   .hero__cue { display: none; }
-  .hero__meta { font-size: 10px; gap: 9px; margin-bottom: 24px; }
+  .hero__meta { font-size: 10px; gap: 9px; margin-bottom: 22px; }
   .hero__sep { display: none; }
 
   .qualify__item { grid-template-columns: 1fr; gap: 8px; }
@@ -2306,8 +3303,23 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
   .field-row { grid-template-columns: 1fr; gap: 0; }
 
-  .footer__grid { grid-template-columns: 1fr; gap: 36px; }
-  .footer__grid > :nth-child(4) { grid-column: auto; }
+  /* The masthead unstacks: the desk readout goes left-aligned under the
+     claim rather than clinging to a right edge that no longer exists. */
+  .footer__top { flex-direction: column; align-items: flex-start; gap: 26px; }
+  .footer__claim { max-width: none; }
+  .footer__desk { text-align: left; }
+  .footer__state, .footer__clock { justify-content: flex-start; }
+
+  .footer__cols { grid-template-columns: 1fr; gap: 34px; }
+  .footer__addr, .footer__reply { max-width: none; }
+
+  /* Two words, one per line. 15vw keeps the longer word inside the gutter. */
+  .footer__plate { font-size: clamp(34px, 15vw, 96px); line-height: 0.98; white-space: normal; }
+  .footer__plate em { display: block; }
+  .footer__plate em::before { content: none; }
+
+  .footer__reg { flex-direction: column; gap: 26px; }
+  .footer__regList { gap: 16px 28px; }
 
   .mapframe { height: 300px; }
   .desk__dl > div { grid-template-columns: 1fr; gap: 6px; }
@@ -2347,6 +3359,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* -------------------------------------------------------------------- 24. PRINT */
 
 @media print {
-  .nav, .drawer, .drawer-backdrop, .hero__cue, .hero__dust, .sand-edges, .theme-toggle { display: none !important; }
+  .nav, .drawer, .drawer-backdrop, .hero__cue, .hero__video, .sand-edges, .theme-toggle { display: none !important; }
   .fade-up { opacity: 1; transform: none; }
 }

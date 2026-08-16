@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sand alpha — what this browser gets</title>
+<style>
+  :root { --ivory:#F7F4ED; --brown:#2B1D0F; --ink:#1B2A41; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; min-height:100%; }
+  body { background:var(--ivory); color:var(--ink);
+         font:500 14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+         display:flex; flex-direction:column; align-items:center; gap:22px; padding:32px 20px 60px; }
+  h1 { font-size:17px; margin:0; letter-spacing:-0.01em; }
+  .plate { position:relative; width:min(92vw,860px); aspect-ratio:16/9; border-radius:12px;
+           overflow:hidden; background:linear-gradient(90deg,var(--ivory) 0 50%,var(--brown) 50% 100%);
+           outline:1px solid rgba(27,42,65,.14); }
+  .plate video { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+  .verdict { font-size:20px; font-weight:700; letter-spacing:-0.01em; }
+  .verdict.pass { color:#2E6B43; }
+  .verdict.fail { color:#A8321F; }
+  table { border-collapse:collapse; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12px; }
+  td { padding:4px 14px 4px 0; vertical-align:top; }
+  td:first-child { color:#6E7889; text-transform:uppercase; letter-spacing:.08em; font-size:10px; }
+  .note { max-width:62ch; text-align:center; color:#3C4A5F; }
+  button { font:inherit; padding:8px 16px; border-radius:6px; border:1px solid rgba(27,42,65,.2);
+           background:#fff; cursor:pointer; }
+</style>
+</head>
+<body>
+
+<h1>Sand alpha — what this browser actually gets</h1>
+
+<div class="plate"><video id="v" autoplay muted loop playsinline></video></div>
+
+<div class="verdict" id="verdict">testing…</div>
+
+<table>
+  <tr><td>engine</td><td id="engine">—</td></tr>
+  <tr><td>file chosen</td><td id="src">—</td></tr>
+  <tr><td>min alpha</td><td id="alpha">—</td></tr>
+</table>
+
+<p class="note">This picks the same file the real site would pick for this browser and runs the same
+transparency check the site runs. <strong>PASS</strong> means grains drift over both halves and the
+ivory/brown split stays visible. <strong>FAIL</strong> means the picture is opaque — on the real site
+that layer is pulled before you could ever see it.</p>
+
+<button id="swap">Force the other codec</button>
+
+<script>
+var WEBM = 'assets/hero/sand.webm', MP4 = 'assets/hero/sand.mp4';
+var v = document.getElementById('v');
+
+function pick() {
+  var ua = navigator.userAgent;
+  var webkit = /Safari/.test(ua) && !/Chrome|Chromium|Android|CriOS|FxiOS|Edg/.test(ua);
+  var probe = document.createElement('video');
+  document.getElementById('engine').textContent = webkit ? 'WebKit (Safari)' : 'Chromium / Gecko';
+  if (webkit) return probe.canPlayType('video/mp4; codecs="hvc1"') ? MP4 : null;
+  return probe.canPlayType('video/webm; codecs="vp8"') ? WEBM : null;
+}
+
+function minAlpha(video) {
+  var c = document.createElement('canvas');
+  c.width = 64; c.height = 36;
+  var ctx = c.getContext('2d');
+  ctx.clearRect(0, 0, 64, 36);
+  ctx.drawImage(video, 0, 0, 64, 36);
+  var d = ctx.getImageData(0, 0, 64, 36).data, min = 255;
+  for (var i = 3; i < d.length; i += 4) if (d[i] < min) min = d[i];
+  return min;
+}
+
+function verdict(pass, why) {
+  var el = document.getElementById('verdict');
+  el.className = 'verdict ' + (pass ? 'pass' : 'fail');
+  el.textContent = (pass ? 'PASS' : 'FAIL') + (why ? ' — ' + why : '');
+}
+
+function load(src) {
+  document.getElementById('src').textContent = src || 'none playable';
+  if (!src) { verdict(false, 'no playable file'); return; }
+  v.src = src;
+  var p = v.play(); if (p && p.catch) p.catch(function(){});
+}
+
+v.addEventListener('loadeddata', function () {
+  setTimeout(function () {
+    var a = minAlpha(v);
+    document.getElementById('alpha').textContent =
+      a + ' / 255  (' + (a < 250 ? 'transparent' : 'opaque') + ')';
+    verdict(a < 250, a < 250 ? 'alpha composites here' : 'alpha ignored — the site would pull this layer');
+  }, 120);
+});
+
+document.getElementById('swap').addEventListener('click', function () {
+  load(v.src.indexOf('sand.mp4') > -1 ? WEBM : MP4);
+});
+
+/* Safari can't be driven from here without turning on two Develop-menu
+   switches, so the page reports its own result back instead: a request the
+   local server logs, which is readable without any automation permission.
+   Both codecs get measured, not just the one this engine would pick — if
+   WebKit composites VP8 alpha too, the 2 MB HEVC file stops being necessary. */
+function beacon(tag, file, alpha) {
+  var q = '/__verdict?engine=' + encodeURIComponent(webkitEngine ? 'WebKit' : 'Chromium-Gecko') +
+          '&test=' + tag +
+          '&file=' + encodeURIComponent((file || '').split('/').pop()) +
+          '&alpha=' + alpha +
+          '&verdict=' + (alpha < 250 ? 'PASS' : 'FAIL');
+  new Image().src = q + '&t=' + Date.now();
+}
+
+var webkitEngine = /Safari/.test(navigator.userAgent) &&
+                   !/Chrome|Chromium|Android|CriOS|FxiOS|Edg/.test(navigator.userAgent);
+
+/* Measure the engine's own pick, then the other codec, then leave the pick
+   on screen so the page still reads as a normal PASS/FAIL card. */
+function measure(src) {
+  return new Promise(function (resolve) {
+    var t = document.createElement('video');
+    t.muted = true; t.autoplay = true; t.loop = true;
+    t.setAttribute('playsinline', '');
+    t.style.cssText = 'position:absolute;width:8px;height:8px;opacity:0.01;pointer-events:none';
+    t.addEventListener('loadeddata', function () {
+      setTimeout(function () {
+        var a;
+        try { a = minAlpha(t); } catch (e) { a = -1; }
+        t.remove();
+        resolve(a);
+      }, 200);
+    });
+    t.addEventListener('error', function () { t.remove(); resolve(-2); });
+    document.body.appendChild(t);
+    t.src = src;
+    var p = t.play(); if (p && p.catch) p.catch(function () {});
+  });
+}
+
+var picked = pick();
+load(picked);
+
+measure(MP4).then(function (a) {
+  beacon('mp4-hevc', MP4, a);
+  return measure(WEBM);
+}).then(function (a) {
+  beacon('webm-vp8', WEBM, a);
+});
+</script>
+</body>
+</html>

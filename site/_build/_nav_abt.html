@@ -1,0 +1,41 @@
+<header class="nav" id="nav">
+  <div class="nav__inner">
+    <button class="nav__burger" id="navBurger" aria-expanded="false" aria-controls="navMenu" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav__menu" id="navMenu" aria-label="Primary">
+      <a class="nav__link" href="catalogue.html" data-i18n="nav.catalogue">Catalogue</a>
+      <a class="nav__link" href="about.html" aria-current="page" data-i18n="nav.about">About</a>
+      <a class="nav__link" href="insights.html" data-i18n="nav.insights">Insights</a>
+      <a class="nav__link" href="contact.html" data-i18n="nav.contact">Contact</a>
+
+      <div class="nav__panelFoot">
+        <a class="btn btn--primary btn--full" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
+        <a class="nav__panelMail" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20—%20ARMINAK%20CARAVAN">trading@arminakcaravan.ae</a>
+        <div class="lang nav__panelLang" role="group" aria-label="Language">
+          <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
+          <button class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
+        </div>
+      </div>
+    </nav>
+
+    <a class="nav__mark" href="index.html">ARMINAK CARAVAN<sup>™</sup></a>
+
+    <div class="nav__side">
+      <div class="lang" role="group" aria-label="Language">
+        <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
+        <button class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
+      </div>
+      <button class="theme-toggle" type="button" aria-label="Toggle dark mode" aria-pressed="false">
+        <span class="theme-toggle__thumb">
+          <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.4"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.6 14.6A8.6 8.6 0 0 1 9.4 3.4a8.6 8.6 0 1 0 11.2 11.2Z"/></svg>
+        </span>
+      </button>
+      <a class="btn nav__cta" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
+    </div>
+  </div>
+
+  <span class="nav__progress" aria-hidden="true"></span>
+</header>

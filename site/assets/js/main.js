@@ -36,15 +36,78 @@
   }
 
   /* --------------------------------------------------------- SAND EDGES -- */
-  /* The client asked for sand at the screen edges on every page. This used to
-     be a tiled SVG of dots; dots read as snow, so the real shader runs here
-     too — low intensity, half resolution, masked to the margins by CSS. The
-     SVG stays as the fallback when WebGL is missing. */
+  /* The client asked for sand at the screen edges on every page, and then for
+     that sand to be real rather than drawn. Three tiers, best first:
+
+       1. the rendered clip — the same grains that blow across the hero
+       2. the WebGL veil — procedural, when the film can't play
+       3. the tiled SVG in the stylesheet — static, when neither can
+
+     All three wear the same CSS mask, so the desert stays in the margins and
+     never sits under body copy. */
+
+  var SAND_WEBM = 'assets/hero/sand.webm';   /* VP8 + alpha  */
+  var SAND_MP4  = 'assets/hero/sand.mp4';    /* HEVC + alpha, for WebKit */
 
   function initSandEdges() {
     var host = qs('.sand-edges');
-    if (!host || !window.ACSand) return;
+    if (!host) return;
     if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn && conn.saveData) return;        /* the static tile is free */
+
+    if (initSandFilm(host)) return;           /* real grains win */
+    initSandVeilGL(host);
+  }
+
+  /* Returns true once the rendered sand is on the page. */
+  function initSandFilm(host) {
+    var src = sandSource();
+    if (!src) return false;
+
+    var film = makeBackgroundVideo('sand-edges__film', src);
+    revealWhenTransparent(film, src === SAND_MP4 ? SAND_WEBM : SAND_MP4);
+    host.appendChild(film);
+    host.classList.add('sand-edges--film');
+
+    /* If the alpha check pulls the film, the margins fall back to the shader
+       veil rather than being left bare. */
+    film.addEventListener('ac:sandpulled', function () {
+      host.classList.remove('sand-edges--film');
+      initSandVeilGL(host);
+    });
+
+    function play() {
+      var p = film.play();
+      if (p && p.catch) p.catch(function () {});
+    }
+    play();
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') play(); else film.pause();
+    });
+
+    /* On the landing page the hero runs its own full-bleed copy of this clip
+       underneath the headline. Two decodes of the same film at once is waste
+       and double the grain, so the margins stand down while the hero holds
+       the screen. */
+    var hero = qs('#hero');
+    if (hero && 'IntersectionObserver' in window) {
+      new IntersectionObserver(function (entries) {
+        /* Only stand down if the hero actually carries its own copy — on a
+           phone it doesn't, and the margins are the only sand there is. */
+        var covered = entries[0].isIntersecting && !!hero.querySelector('.hero__sand');
+        film.style.opacity = covered ? '0' : '';
+        if (covered) film.pause(); else play();
+      }, { threshold: 0 }).observe(hero);
+    }
+
+    return true;
+  }
+
+  function initSandVeilGL(host) {
+    if (!window.ACSand) return;
 
     var canvas = document.createElement('canvas');
     canvas.className = 'sand-edges__gl';
@@ -82,209 +145,236 @@
   }
 
   /* ---------------------------------------------------------------- HERO -- */
-  /* Gold dust drifts, the loaded caravan develops out of it, the dust thins to
-     an ambient trace and the headline rises. No video, so phone and desktop
-     behave identically — which is what the client reported as broken.
+  /* Full-bleed desert film with a windowed entrance: the caravan opens inside
+     a framed window on the ivory ground, then the window opens outward and the
+     film becomes the background. Real sand drifts over both — the film and the
+     ground around the window — from a rendered alpha clip, not drawn particles.
 
-     The particle field is purpose-built rather than particles.js: ~3KB instead
-     of ~25KB, no dependency, and it can be tuned to look like desert wind
-     instead of a node graph. */
+     Exactly one hero mp4 is chosen here (portrait cut for phones, wide cut for
+     everything else) so the browser never downloads both. Reduced motion and
+     Data Saver skip video and sand entirely and leave the poster up. */
+
+  var HOLD_MS = 1150;      /* how long the window holds before it opens */
+  var READY_CAP_MS = 2000; /* open anyway if the film is still buffering */
 
   function initHero() {
     var hero = qs('#hero');
     if (!hero) return;
 
-    var canvas = qs('#heroDust');
-    var reduced = window.matchMedia &&
-                  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var root = document.documentElement;
+    var intro = root.classList.contains('ac-intro');   /* set before first paint */
+    var opened = false;
 
-    /* The scene is already in the markup — reveal it on the next frame so the
-       transition actually runs instead of being skipped on first paint. */
-    requestAnimationFrame(function () {
-      requestAnimationFrame(function () { hero.classList.add('hero--revealed'); });
-    });
+    /* Opening the window is also what starts the copy, so the two read as one
+       move. Without an intro this runs on the next frame, which is the old
+       behaviour exactly. */
+    function open(fast) {
+      if (opened) return;
+      opened = true;
+      if (fast) hero.classList.add('hero--fast');
+      root.classList.remove('ac-intro', 'ac-mounted');
+      hero.classList.add('hero--revealed', 'hero--settled');
+      document.dispatchEvent(new CustomEvent('ac:herosettled'));
+    }
 
-    if (!canvas || reduced || !canvas.getContext) return;
-
-    /* Real sand: two GL layers sandwiching the caravan. The veil (suspension)
-       drifts behind it, shaped by the dune lines; the streaks (saltation)
-       whip past in front, hugging the near dune. Both surge with the same
-       travelling gust wave. Only if WebGL is missing do we fall back to the
-       canvas-2D dust below. */
-    if (window.ACSand) {
-      var back = qs('#heroSandBack');
-      var dunesSvg = qs('.hero__scene--dunes', hero);
-      var ground = dunesSvg ? {
-        near: dunesSvg.querySelector('.dune--near'),
-        mid: dunesSvg.querySelector('.dune--mid'),
-        viewBox: [1600, 900]
-      } : null;
-
-      var veil = back ? window.ACSand(back, hero, {
-        mode: 'veil', ground: ground, seed: 3.7,
-        open: 1.5, base: 1.0, openMs: 3400, fps: 30, wind: 0.13
-      }) : null;
-      var streaks = window.ACSand(canvas, hero, {
-        mode: 'streaks', ground: ground, seed: 3.7,
-        open: 1.6, base: 1.0, openMs: 3400, fps: 30
+    if (!intro) {
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { open(false); });
+      });
+    } else {
+      /* The plate rises into place rather than being there from the first
+         frame — which needs a paint at the start value before the class that
+         moves it lands. */
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { root.classList.add('ac-mounted'); });
       });
 
-      var layers = [veil, streaks].filter(Boolean);
-      if (layers.length) {
-        function accentHex() {
-          return getComputedStyle(document.documentElement)
-                   .getPropertyValue('--accent').trim() || '#B08D57';
-        }
-        layers.forEach(function (l) { l.setColor(accentHex()); l.resize(); l.start(); });
-
-        var srt = null;
-        window.addEventListener('resize', function () {
-          clearTimeout(srt);
-          srt = setTimeout(function () { layers.forEach(function (l) { l.resize(); }); }, 180);
-        });
-        document.addEventListener('visibilitychange', function () {
-          layers.forEach(function (l) {
-            document.visibilityState === 'hidden' ? l.stop() : l.start();
-          });
-        });
-        if ('IntersectionObserver' in window) {
-          new IntersectionObserver(function (e) {
-            layers.forEach(function (l) { e[0].isIntersecting ? l.start() : l.stop(); });
-          }, { threshold: 0 }).observe(hero);
-        }
-        document.addEventListener('ac:theme', function () {
-          layers.forEach(function (l) { l.setColor(accentHex()); });
-        });
-        if (streaks) return;               /* front canvas is taken by GL */
+      /* A reader who scrolls or clicks during the window has told us they are
+         done watching — finish in 260ms rather than cut. */
+      var skip = function () { open(true); teardown(); };
+      var events = ['wheel', 'touchstart', 'keydown', 'pointerdown', 'scroll'];
+      function teardown() {
+        events.forEach(function (e) { window.removeEventListener(e, skip); });
       }
-    }
-    /* Canvas-2D fallback needs the CSS mask that keeps dust off the headline. */
-    canvas.classList.add('hero__dust--fallback');
-
-    var ctx = canvas.getContext('2d', { alpha: true });
-    if (!ctx) return;
-
-    var grains = [];
-    var raf = null;
-    var dpr = Math.min(window.devicePixelRatio || 1, 2);
-    var w = 0, h = 0;
-    var started = 0;
-    var sprite = null;
-
-    /* Dense while the caravan develops, then settling to a visible drift. */
-    var STORM_MS = 3200;
-
-    function rgb() {
-      var hex = (getComputedStyle(document.documentElement)
-                  .getPropertyValue('--accent').trim() || '#B08D57').replace('#', '');
-      if (hex.length === 3) hex = hex[0]+hex[0]+hex[1]+hex[1]+hex[2]+hex[2];
-      var n = parseInt(hex, 16);
-      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+      events.forEach(function (e) {
+        window.addEventListener(e, skip, { passive: true, once: true });
+      });
     }
 
-    /* A soft pre-rendered mote. Drawing a blurred sprite reads as airborne
-       dust; hard-edged arcs read as confetti and vanish at small sizes. */
-    function buildSprite() {
-      var c = rgb();
-      var SP = 64;
-      sprite = document.createElement('canvas');
-      sprite.width = sprite.height = SP;
-      var sc = sprite.getContext('2d');
-      var g = sc.createRadialGradient(SP / 2, SP / 2, 0, SP / 2, SP / 2, SP / 2);
-      g.addColorStop(0,    'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',1)');
-      g.addColorStop(0.35, 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0.6)');
-      g.addColorStop(1,    'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',0)');
-      sc.fillStyle = g;
-      sc.fillRect(0, 0, SP, SP);
-    }
+    var layer = qs('.hero__layer', hero);
+    if (!layer) return;
 
-    function resize() {
-      var r = hero.getBoundingClientRect();
-      w = Math.max(1, Math.round(r.width));
-      h = Math.max(1, Math.round(r.height));
-      canvas.width = Math.round(w * dpr);
-      canvas.height = Math.round(h * dpr);
-      canvas.style.width = w + 'px';
-      canvas.style.height = h + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      seed();
-    }
+    var mm = window.matchMedia;
+    if (!mm) { open(false); return; }                  /* poster stays up */
 
-    function seed() {
-      /* Enough grains to actually read as blowing sand, still scaled to the
-         viewport so a phone runs a fraction of a desktop field. */
-      var target = Math.round(Math.min(300, Math.max(90, (w * h) / 4800)));
-      grains = [];
-      for (var i = 0; i < target; i++) grains.push(grain(true));
-    }
+    if (mm('(prefers-reduced-motion: reduce)').matches) { open(false); return; }
 
-    function grain(anywhere) {
-      var big = Math.random() < 0.10;          /* a few larger, closer motes */
-      return {
-        x: anywhere ? Math.random() * w : -40 - Math.random() * 160,
-        y: Math.random() * h,
-        r: big ? 2.4 + Math.random() * 3.0 : 0.8 + Math.random() * 1.6,
-        vx: 26 + Math.random() * 88,           /* px/s, blowing right */
-        vy: -9 + Math.random() * 18,
-        a: big ? 0.07 + Math.random() * 0.10
-               : 0.14 + Math.random() * 0.26,
-        drift: Math.random() * Math.PI * 2,
-        sway: 4 + Math.random() * 12
-      };
-    }
+    /* A 1MB autoplaying background is exactly what Data Saver exists to
+       prevent. */
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn && conn.saveData) { open(false); return; }
 
-    function draw(now) {
-      if (!started) started = now;
-      var elapsed = now - started;
+    var mobile = mm('(max-width: 768px), (orientation: portrait)').matches;
+    var src = hero.getAttribute(mobile ? 'data-video-mobile' : 'data-video-desktop');
+    if (!src) { open(false); return; }
 
-      /* Opens as a gust, settles to a persistent drift rather than nothing —
-         the client wants the sand present throughout, not just on entry. */
-      var intensity = elapsed < STORM_MS
-        ? 1 - 0.5 * (elapsed / STORM_MS)
-        : 0.5;
-
-      ctx.clearRect(0, 0, w, h);
-
-      var dt = 1 / 60;
-      for (var i = 0; i < grains.length; i++) {
-        var g = grains[i];
-        g.drift += 0.014;
-        g.x += g.vx * dt;
-        g.y += (g.vy + Math.sin(g.drift) * g.sway) * dt;
-
-        if (g.x - g.r > w || g.y < -60 || g.y > h + 60) grains[i] = grain(false);
-
-        ctx.globalAlpha = Math.min(1, g.a * intensity);
-        ctx.drawImage(sprite, g.x - g.r, g.y - g.r, g.r * 2, g.r * 2);
-      }
-      ctx.globalAlpha = 1;
-      raf = requestAnimationFrame(draw);
-    }
-
-    function start() { if (!raf) raf = requestAnimationFrame(draw); }
-    function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
-
-    buildSprite();
-    resize();
-    start();
-
-    var rt = null;
-    window.addEventListener('resize', function () {
-      clearTimeout(rt);
-      rt = setTimeout(resize, 180);
+    var video = makeBackgroundVideo('hero__video', src);
+    video.addEventListener('canplay', function () {
+      video.classList.add('is-ready');
+      arm();
     });
+    layer.appendChild(video);
 
+    /* Hold the window until the film is actually moving in it — a window onto
+       a still poster is a worse first impression than a slightly later open. */
+    var t0 = now();
+    var armed = false;
+    function arm() {
+      if (armed || !intro) return;
+      armed = true;
+      setTimeout(function () { open(false); }, Math.max(0, HOLD_MS - (now() - t0)));
+    }
+    if (intro) setTimeout(arm, READY_CAP_MS);
+
+    var films = [video];
+
+    /* Real sand on top. Desktop only: a second full-screen decode is a battery
+       tax on a phone, and the film already carries its own composited storm. */
+    if (!mobile) {
+      var sandSrc = sandSource();
+      if (sandSrc) {
+        var sand = makeBackgroundVideo('hero__sand', sandSrc);
+        revealWhenTransparent(sand, sandSrc === SAND_MP4 ? SAND_WEBM : SAND_MP4);
+        var sandwrap = document.createElement('div');
+        sandwrap.className = 'hero__sandwrap';
+        sandwrap.setAttribute('aria-hidden', 'true');
+        sandwrap.appendChild(sand);
+        hero.appendChild(sandwrap);
+        films.push(sand);
+      }
+    }
+
+    function play() {
+      films.forEach(function (v) {
+        var p = v.play();
+        if (p && p.catch) p.catch(function () {});   /* poster stays up if refused */
+      });
+    }
+    play();
+
+    /* Safari intermittently ignores autoplay, and a tab restored from the
+       background can come back paused. */
     document.addEventListener('visibilitychange', function () {
-      if (document.visibilityState === 'hidden') stop(); else start();
+      if (document.visibilityState !== 'visible') return;
+      play();
     });
 
+    /* Nothing to decode while the hero is off screen. */
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (entries) {
-        entries[0].isIntersecting ? start() : stop();
+        if (entries[0].isIntersecting) play();
+        else films.forEach(function (v) { v.pause(); });
       }, { threshold: 0 }).observe(hero);
     }
+  }
 
-    document.addEventListener('ac:theme', buildSprite);
+  function now() {
+    return (window.performance && performance.now) ? performance.now() : Date.now();
+  }
+
+  /* Muted, looping, inline, invisible to assistive tech — the page's <h1>
+     stays the first real content. */
+  function makeBackgroundVideo(className, src) {
+    var v = document.createElement('video');
+    v.className = className;
+    v.muted = true;                     /* property, not attribute: iOS reads this */
+    v.defaultMuted = true;
+    v.loop = true;
+    v.autoplay = true;
+    v.preload = 'auto';
+    v.setAttribute('muted', '');
+    v.setAttribute('playsinline', '');
+    v.setAttribute('webkit-playsinline', '');
+    v.setAttribute('aria-hidden', 'true');
+    v.tabIndex = -1;
+    v.src = src;
+    return v;
+  }
+
+  /* Transparent video is the one place the codecs genuinely diverge: VP8 with
+     alpha in WebM everywhere except WebKit, HEVC with alpha in MP4 on WebKit.
+     Guessing wrong paints an opaque cream rectangle over the hero, so anything
+     unrecognised gets no sand layer at all — the film's own storm still runs. */
+  function sandSource() {
+    var ua = navigator.userAgent;
+    var webkit = /Safari/.test(ua) && !/Chrome|Chromium|Android|CriOS|FxiOS|Edg/.test(ua);
+    var probe = document.createElement('video');
+
+    if (webkit) {
+      return probe.canPlayType('video/mp4; codecs="hvc1"') ? SAND_MP4 : null;
+    }
+    return probe.canPlayType('video/webm; codecs="vp8"') ? SAND_WEBM : null;
+  }
+
+  /* The user-agent string only says which file to TRY. Whether the browser
+     actually composites that file's alpha is a different question, and getting
+     it wrong is not a subtle bug: Chrome decodes HEVC happily and then paints
+     the colour plane as an opaque slab over the hero. Verified in Chrome —
+     it is as bad as it sounds.
+
+     So the picture is checked, not assumed. One frame goes into a 64x36
+     canvas and the alpha channel is read back. Alpha compositing working means
+     transparent pixels stay transparent; a browser ignoring alpha returns 255
+     everywhere. Same-origin, so the canvas is never tainted, and it costs one
+     read of 2304 pixels, once. */
+  function verifyAlpha(video) {
+    try {
+      var c = document.createElement('canvas');
+      c.width = 64; c.height = 36;
+      var ctx = c.getContext('2d', { willReadFrequently: false });
+      if (!ctx) return null;                        /* can't tell — caller decides */
+      ctx.clearRect(0, 0, 64, 36);
+      ctx.drawImage(video, 0, 0, 64, 36);
+      var data = ctx.getImageData(0, 0, 64, 36).data;
+      var min = 255;
+      for (var i = 3; i < data.length; i += 4) {
+        if (data[i] < min) min = data[i];
+        if (min < 250) return true;                 /* genuine transparency found */
+      }
+      return false;                                 /* fully opaque: alpha ignored */
+    } catch (e) {
+      return null;                                  /* blocked — treat as unknown */
+    }
+  }
+
+  /* Fade the sand in only once its transparency is confirmed. If the picture
+     comes back opaque, the layer is pulled before it can ever be seen, and the
+     other codec gets one chance in case the engine guess was simply wrong. */
+  function revealWhenTransparent(video, altSrc) {
+    var checked = false;
+
+    video.addEventListener('loadeddata', function () {
+      if (checked) return;
+      checked = true;
+
+      var ok = verifyAlpha(video);
+      if (ok === false) {
+        video.classList.remove('is-ready');
+        if (altSrc) {
+          checked = false;                          /* one retry, other codec */
+          video.src = altSrc;
+          var p = video.play();
+          if (p && p.catch) p.catch(function () {});
+          return;
+        }
+        try { video.dispatchEvent(new CustomEvent('ac:sandpulled')); } catch (e) {}
+        if (video.parentNode) video.parentNode.removeChild(video);
+        return;
+      }
+      /* true, or null when the check itself was unavailable — the film's own
+         composited storm is the fallback either way, so showing it is safe. */
+      video.classList.add('is-ready');
+    });
   }
 
   /* ------------------------------------------------------- HERO SCRAMBLE -- */
@@ -322,7 +412,15 @@
   /* -------------------------------------------------------- HERO PARALLAX -- */
   /* Fine-pointer only: the film drifts a few pixels toward the cursor.
      One rAF loop that lerps toward the target and stops itself when idle —
-     transform + scale only, fully compositor-friendly. */
+     transform + scale only, fully compositor-friendly.
+
+     The sand rides the same loop at nearly twice the distance. Grains hanging
+     in the air are the closest thing to the camera, so they have to travel
+     further than the dunes behind them or the two layers read as one flat
+     picture with specks painted on. The extra scale is not decoration: it
+     covers the edge the larger offset would otherwise drag into frame. */
+
+  var SAND_DEPTH = 1.8;
 
   function initHeroParallax() {
     var hero = qs('#hero');
@@ -332,6 +430,10 @@
 
     var media = qs('.hero__media', hero);
     if (!media) return;
+
+    /* Attached by initHero a moment earlier, and absent on phones, Data Saver
+       and unsupported codecs — so it is optional, not assumed. */
+    var sand = qs('.hero__sandwrap', hero);
 
     var tx = 0, ty = 0, ta = 0;   /* targets: offset x/y, activation 0..1 */
     var cx = 0, cy = 0, ca = 0;   /* currents */
@@ -346,11 +448,21 @@
       media.style.transform =
         'translate3d(' + cx.toFixed(2) + 'px,' + cy.toFixed(2) + 'px,0) scale(' + scale.toFixed(4) + ')';
 
+      if (sand) {
+        var sScale = 1 + 0.045 * SAND_DEPTH * ca;
+        sand.style.transform =
+          'translate3d(' + (cx * SAND_DEPTH).toFixed(2) + 'px,' +
+                           (cy * SAND_DEPTH).toFixed(2) + 'px,0) scale(' + sScale.toFixed(4) + ')';
+      }
+
       if (Math.abs(tx - cx) > 0.05 || Math.abs(ty - cy) > 0.05 || Math.abs(ta - ca) > 0.002) {
         raf = requestAnimationFrame(tick);
       } else {
         raf = null;
-        if (ta === 0) media.style.transform = '';
+        if (ta === 0) {
+          media.style.transform = '';
+          if (sand) sand.style.transform = '';
+        }
       }
     }
 
@@ -370,6 +482,61 @@
     });
   }
 
+  /* -------------------------------------------------------- CORRIDOR GLOBE -- */
+  /* The trade lanes on the actual planet. three.js is ~780KB of geometry and
+     library, so it is never part of first paint: the flat SVG ships in the
+     markup and the globe only replaces it once this section is scrolled to,
+     on a wide viewport, with WebGL, at full motion and off Data Saver. Any of
+     those failing simply leaves the drawn route in place. */
+
+  function initCorridorGlobe() {
+    var host = qs('#corridorGlobe');
+    if (!host || !window.matchMedia) return;
+    if (!window.IntersectionObserver || !window.Promise) return;
+
+    if (!matchMedia('(min-width: 1000px)').matches) return;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn && conn.saveData) return;
+
+    /* Cheap probe first — mounting three.js only to discover there is no
+       context wastes the whole download. */
+    try {
+      var c = document.createElement('canvas');
+      if (!(c.getContext('webgl') || c.getContext('experimental-webgl'))) return;
+    } catch (e) { return; }
+
+    var started = false;
+    var view = null;
+
+    new IntersectionObserver(function (entries, obs) {
+      if (!entries[0].isIntersecting) { if (view) view.pause(); return; }
+      if (view) { view.resume(); return; }
+      if (started) return;
+      started = true;
+
+      /* Sibling of this file: import() in a classic script resolves against
+         the script's own URL, not the document's. */
+      import('./globe.js').then(function (mod) {
+        return mod.mountGlobe(host);
+      }).then(function (g) {
+        if (!g) return;                       /* keep the flat route */
+        view = g;
+        host.classList.add('is-live');
+        var flat = qs('#corridorFlat');
+        if (flat) flat.hidden = true;
+        var hint = qs('#corridorHint');
+        if (hint) hint.hidden = false;
+        var lanes = qs('#corridorLanes');
+        if (lanes) lanes.hidden = false;
+      }).catch(function () {
+        /* Older engine, blocked module, anything at all — the SVG is still
+           sitting there doing its job. */
+      });
+    }, { rootMargin: '200px 0px' }).observe(host);
+  }
+
   /* ----------------------------------------------------------------- NAV -- */
 
   function initNav() {
@@ -380,15 +547,32 @@
     var burger = qs('#navBurger');
     var menu = qs('#navMenu');
 
-    /* The hero is a light scene, so the nav no longer needs an over-video
-       state — it just picks up its blurred background once the page moves. */
+    /* Over the film the bar is transparent and cream; past the hero it picks
+       up its blurred page-coloured background. Pages without a hero only ever
+       do the second half.
+
+       During the intro the ground behind the bar is ivory, not film, so cream
+       would be invisible — the bar keeps page colours until the window opens
+       and the film actually reaches the top of the screen. */
     function onScroll() {
-      nav.classList.toggle('nav--scrolled', (window.scrollY || window.pageYOffset) > 8);
+      var y = window.scrollY || window.pageYOffset;
+      if (!hero) {
+        nav.classList.toggle('nav--scrolled', y > 8);
+        return;
+      }
+      if (document.documentElement.classList.contains('ac-intro')) {
+        nav.classList.remove('nav--over', 'nav--scrolled');
+        return;
+      }
+      var over = y < hero.offsetHeight - nav.offsetHeight;
+      nav.classList.toggle('nav--over', over);
+      nav.classList.toggle('nav--scrolled', !over);
     }
 
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
+    document.addEventListener('ac:herosettled', onScroll);
 
     if (!burger || !menu) return;
 
@@ -405,7 +589,10 @@
       document.body.classList.toggle('no-scroll', !open);
     });
 
-    qsa('.nav__link', menu).forEach(function (a) { a.addEventListener('click', closeMenu); });
+    /* Every link in the panel, not just .nav__link — the panel's quotation
+       button and mail line are same-page anchors on contact.html, and would
+       otherwise leave the menu open over a body still locked to no-scroll. */
+    qsa('a', menu).forEach(function (a) { a.addEventListener('click', closeMenu); });
     window.addEventListener('resize', function () { if (window.innerWidth > 1024) closeMenu(); });
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
   }
@@ -478,6 +665,12 @@
   /* <div class="grid-products" data-rail data-slugs="a,b,c,d"> is filled from
      window.PRODUCTS — one card renderer shared with the shop grid markup. */
 
+  /* Rail cards are for browsing, not transacting. Each one used to carry a
+     hover-only Quick RFQ, a Spec PDF button and an RFQ Price link — twenty-four
+     buttons across the twelve cards on the landing page, which is most of what
+     made it feel busy. The card title links to the product page, where both
+     actions live in full. The catalogue grid is built by build_catalogue.py and
+     still carries them, because that is the shopping context. */
   function cardHTML(slug) {
     var p = window.PRODUCTS && window.PRODUCTS[slug];
     if (!p) return '';
@@ -508,7 +701,6 @@
       '<button type="button" class="card__fav" aria-label="Save to favourites">' +
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>' +
       '<img class="card__art" src="assets/img/products/' + p.art + '.svg" alt="" loading="lazy" width="400" height="500">' +
-      '<button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>' +
       '</div>' +
       '<div class="card__row">' +
       '<h3 class="card__title"><a class="card__link" href="product.html?p=' + slug + '" data-i18n="p.' + slug + '.name">' + p.en.name + '</a></h3>' +
@@ -516,10 +708,6 @@
       '</div>' +
       '<span class="card__grade" data-i18n="p.' + slug + '.grade">' + p.en.grade + '</span>' +
       '<div class="card__metrics">' + metrics + '</div>' +
-      '<div class="card__actions">' +
-      '<a class="btn btn--ghost btn--sm" href="assets/docs/' + slug + '.pdf" download data-i18n="cat.spec">Spec PDF</a>' +
-      '<button type="button" class="link-quiet card__rfq" data-drawer-trigger data-i18n="cat.rfq">RFQ Price →</button>' +
-      '</div>' +
       '<template class="card__spec">' +
       '<table class="spec"><thead><tr>' +
       '<th scope="col" data-i18n="cat.param">Parameter</th>' +
@@ -816,10 +1004,58 @@
     });
   }
 
+  /* ----------------------------------------------------------- DESK CLOCK -- */
+  /* The footer states whether the trading desk is actually staffed right now,
+     in Abu Dhabi time rather than the visitor's. The UAE moved its weekend to
+     Saturday–Sunday in January 2022, so the working week is Mon–Fri — not the
+     Sun–Thu that older references still give. The markup ships with the plain
+     opening hours and no data-open attribute, so a visitor without JS reads
+     something true rather than a stale "open".
+
+     Only the attribute and the clock digits are written here — never the
+     label text, which belongs to i18n.js. */
+
+  function initDeskClock() {
+    var host = qs('#deskStatus');
+    var out = qs('#deskClock');
+    if (!host || !out) return;
+
+    var OPEN_H = 9, CLOSE_H = 18;
+    var WORKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+
+    var fmt;
+    try {
+      fmt = new Intl.DateTimeFormat('en-GB', {
+        timeZone: 'Asia/Dubai', hour: '2-digit', minute: '2-digit',
+        weekday: 'short', hour12: false
+      });
+      fmt.formatToParts(new Date());
+    } catch (e) {
+      return;                     /* no tz database — the hours line stands */
+    }
+
+    function tick() {
+      var part = {};
+      fmt.formatToParts(new Date()).forEach(function (p) { part[p.type] = p.value; });
+
+      var h = parseInt(part.hour, 10);
+      if (h === 24) h = 0;         /* some engines emit 24 at midnight */
+
+      var open = WORKDAYS.indexOf(part.weekday) > -1 && h >= OPEN_H && h < CLOSE_H;
+
+      out.textContent = (h < 10 ? '0' + h : h) + ':' + part.minute;
+      host.setAttribute('data-open', open ? '1' : '0');
+    }
+
+    tick();
+    setInterval(tick, 30000);
+  }
+
   /* ----------------------------------------------------------------- GO --- */
 
   function boot() {
     initTheme();
+    initDeskClock();
     initSandEdges();
     initNav();
     initCorridor();
@@ -834,6 +1070,7 @@
     initHero();
     initScramble();
     initHeroParallax();
+    initCorridorGlobe();
   }
 
   if (document.readyState === 'loading') {
