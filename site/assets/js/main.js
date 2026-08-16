@@ -88,16 +88,18 @@
       if (document.visibilityState === 'visible') play(); else film.pause();
     });
 
-    /* On the landing page the hero runs its own full-bleed copy of this clip
-       underneath the headline. Two decodes of the same film at once is waste
-       and double the grain, so the margins stand down while the hero holds
-       the screen. */
+    /* On the landing page the hero film carries its own storm, composited into
+       the plate at render time. Grains in the margins on top of that is double
+       the sand for a second decode, so the margins stand down while the hero
+       holds the screen. */
     var hero = qs('#hero');
     if (hero && 'IntersectionObserver' in window) {
       new IntersectionObserver(function (entries) {
-        /* Only stand down if the hero actually carries its own copy — on a
-           phone it doesn't, and the margins are the only sand there is. */
-        var covered = entries[0].isIntersecting && !!hero.querySelector('.hero__sand');
+        /* Keyed to the film, not to a separate sand layer: if the hero fell
+           back to its poster the plate is still, and the margins are then the
+           only sand there is. Both cuts of the film carry the storm, so this
+           holds on a phone as well. */
+        var covered = entries[0].isIntersecting && !!hero.querySelector('.hero__video');
         film.style.opacity = covered ? '0' : '';
         if (covered) film.pause(); else play();
       }, { threshold: 0 }).observe(hero);
@@ -147,12 +149,21 @@
   /* ---------------------------------------------------------------- HERO -- */
   /* Full-bleed desert film with a windowed entrance: the caravan opens inside
      a framed window on the ivory ground, then the window opens outward and the
-     film becomes the background. Real sand drifts over both — the film and the
-     ground around the window — from a rendered alpha clip, not drawn particles.
+     film becomes the background.
 
-     Exactly one hero mp4 is chosen here (portrait cut for phones, wide cut for
-     everything else) so the browser never downloads both. Reduced motion and
-     Data Saver skip video and sand entirely and leave the poster up. */
+     The sand is in the film. v1 layered a transparent alpha clip over the
+     plate at runtime, which meant probing for VP8-vs-HEVC alpha and sampling a
+     frame to catch WebKit painting the colour plane as an opaque slab. v2 has
+     the storm composited in at render time, so none of that runs on the hero
+     any more — one decode, no codec branch, nothing to verify. The alpha clip
+     still drives the sand in the page margins, where there is no film to bake
+     it into.
+
+     Exactly one hero mp4 is loaded (portrait cut for phones, wide cut for
+     everything else) so the browser never downloads both, and the cut is
+     re-checked on resize and rotation rather than stranded at its mount-time
+     value. Reduced motion and Data Saver skip the film and leave the poster
+     up. */
 
   var HOLD_MS = 1150;      /* how long the window holds before it opens */
   var READY_CAP_MS = 2000; /* open anyway if the film is still buffering */
@@ -214,8 +225,13 @@
     var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
     if (conn && conn.saveData) { open(false); return; }
 
-    var mobile = mm('(max-width: 768px), (orientation: portrait)').matches;
-    var src = hero.getAttribute(mobile ? 'data-video-mobile' : 'data-video-desktop');
+    var mqMobile = mm('(max-width: 768px), (orientation: portrait)');
+
+    function srcNow() {
+      return hero.getAttribute(mqMobile.matches ? 'data-video-mobile' : 'data-video-desktop');
+    }
+
+    var src = srcNow();
     if (!src) { open(false); return; }
 
     var video = makeBackgroundVideo('hero__video', src);
@@ -236,31 +252,32 @@
     }
     if (intro) setTimeout(arm, READY_CAP_MS);
 
-    var films = [video];
-
-    /* Real sand on top. Desktop only: a second full-screen decode is a battery
-       tax on a phone, and the film already carries its own composited storm. */
-    if (!mobile) {
-      var sandSrc = sandSource();
-      if (sandSrc) {
-        var sand = makeBackgroundVideo('hero__sand', sandSrc);
-        revealWhenTransparent(sand, sandSrc === SAND_MP4 ? SAND_WEBM : SAND_MP4);
-        var sandwrap = document.createElement('div');
-        sandwrap.className = 'hero__sandwrap';
-        sandwrap.setAttribute('aria-hidden', 'true');
-        sandwrap.appendChild(sand);
-        hero.appendChild(sandwrap);
-        films.push(sand);
-      }
-    }
-
     function play() {
-      films.forEach(function (v) {
-        var p = v.play();
-        if (p && p.catch) p.catch(function () {});   /* poster stays up if refused */
-      });
+      var p = video.play();
+      if (p && p.catch) p.catch(function () {});     /* poster stays up if refused */
     }
     play();
+
+    /* Rotating a phone, or dragging a desktop window across 768px, otherwise
+       strands the wrong cut for the rest of the session — a 9:16 crop stretched
+       across a laptop, or the reverse. The poster swaps itself through
+       <picture media>; this is the film half of the same move.
+
+       load() runs only on a genuine change of source. Calling it at mount
+       aborts the request the browser has already started and fetches it twice,
+       which is the bug this guard exists to prevent. */
+    var loadedSrc = src;
+    function onBreakpoint() {
+      var next = srcNow();
+      if (!next || next === loadedSrc) return;
+      loadedSrc = next;
+      video.classList.remove('is-ready');   /* fall back to the poster mid-swap */
+      video.src = next;
+      video.load();
+      play();
+    }
+    if (mqMobile.addEventListener) mqMobile.addEventListener('change', onBreakpoint);
+    else if (mqMobile.addListener) mqMobile.addListener(onBreakpoint);  /* Safari < 14 */
 
     /* Safari intermittently ignores autoplay, and a tab restored from the
        background can come back paused. */
@@ -273,7 +290,7 @@
     if ('IntersectionObserver' in window) {
       new IntersectionObserver(function (entries) {
         if (entries[0].isIntersecting) play();
-        else films.forEach(function (v) { v.pause(); });
+        else video.pause();
       }, { threshold: 0 }).observe(hero);
     }
   }
@@ -414,13 +431,10 @@
      One rAF loop that lerps toward the target and stops itself when idle —
      transform + scale only, fully compositor-friendly.
 
-     The sand rides the same loop at nearly twice the distance. Grains hanging
-     in the air are the closest thing to the camera, so they have to travel
-     further than the dunes behind them or the two layers read as one flat
-     picture with specks painted on. The extra scale is not decoration: it
-     covers the edge the larger offset would otherwise drag into frame. */
-
-  var SAND_DEPTH = 1.8;
+     v1 moved the sand on this same loop at nearly twice the distance, so the
+     grains read as nearer to the camera than the dunes. With the storm baked
+     into the film there is no separate layer left to move, and the depth is
+     now whatever the render itself carries. */
 
   function initHeroParallax() {
     var hero = qs('#hero');
@@ -430,10 +444,6 @@
 
     var media = qs('.hero__media', hero);
     if (!media) return;
-
-    /* Attached by initHero a moment earlier, and absent on phones, Data Saver
-       and unsupported codecs — so it is optional, not assumed. */
-    var sand = qs('.hero__sandwrap', hero);
 
     var tx = 0, ty = 0, ta = 0;   /* targets: offset x/y, activation 0..1 */
     var cx = 0, cy = 0, ca = 0;   /* currents */
@@ -448,21 +458,11 @@
       media.style.transform =
         'translate3d(' + cx.toFixed(2) + 'px,' + cy.toFixed(2) + 'px,0) scale(' + scale.toFixed(4) + ')';
 
-      if (sand) {
-        var sScale = 1 + 0.045 * SAND_DEPTH * ca;
-        sand.style.transform =
-          'translate3d(' + (cx * SAND_DEPTH).toFixed(2) + 'px,' +
-                           (cy * SAND_DEPTH).toFixed(2) + 'px,0) scale(' + sScale.toFixed(4) + ')';
-      }
-
       if (Math.abs(tx - cx) > 0.05 || Math.abs(ty - cy) > 0.05 || Math.abs(ta - ca) > 0.002) {
         raf = requestAnimationFrame(tick);
       } else {
         raf = null;
-        if (ta === 0) {
-          media.style.transform = '';
-          if (sand) sand.style.transform = '';
-        }
+        if (ta === 0) media.style.transform = '';
       }
     }
 

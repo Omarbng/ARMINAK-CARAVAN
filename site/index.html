@@ -120,10 +120,16 @@
      downloads both, and skips video entirely under reduced-motion or Data
      Saver. Copy stays bottom-left — the plate is bright sand edge to edge, the
      scrim is weighted there, and the footage carries a small generation
-     watermark in the lower right. -->
+     watermark in the lower right.
+
+     v2 of the render: same footage, 10s instead of 9.42s, with the blowing
+     sand composited into the plate. That is why main.js no longer layers the
+     transparent sand clip over the hero — the storm is in the film now. The
+     v1 cut is still on disk one directory up if this needs to be A/B'd; it
+     is the same six filenames, so only the paths below change. -->
 <section class="hero" id="hero"
-         data-video-desktop="assets/hero/hero-desktop.mp4"
-         data-video-mobile="assets/hero/hero-mobile.mp4">
+         data-video-desktop="assets/hero/v2/hero-desktop.mp4"
+         data-video-mobile="assets/hero/v2/hero-mobile.mp4">
   <!-- The stage is what opens. It is full-bleed the whole time and clipped to
        a window, so the caravan never scales or squashes on the way out — the
        frame opens around it. -->
@@ -132,11 +138,11 @@
       <div class="hero__layer">
         <picture>
           <source media="(max-width: 768px), (orientation: portrait)" type="image/webp"
-                  srcset="assets/hero/poster-mobile.webp">
+                  srcset="assets/hero/v2/poster-mobile.webp">
           <source media="(max-width: 768px), (orientation: portrait)" type="image/jpeg"
-                  srcset="assets/hero/poster-mobile.jpg">
-          <source type="image/webp" srcset="assets/hero/poster-desktop.webp">
-          <img class="hero__poster" src="assets/hero/poster-desktop.jpg" alt=""
+                  srcset="assets/hero/v2/poster-mobile.jpg">
+          <source type="image/webp" srcset="assets/hero/v2/poster-desktop.webp">
+          <img class="hero__poster" src="assets/hero/v2/poster-desktop.jpg" alt=""
                aria-hidden="true" fetchpriority="high" decoding="async"
                width="1280" height="720">
         </picture>
