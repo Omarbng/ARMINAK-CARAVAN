@@ -183,9 +183,11 @@
 
     <p class="hero__copy reveal" data-i18n="hero.copy">Global supply of agricultural commodities and everyday foodstuff — from the Black Sea, Turkey and Central Asia to ports worldwide.</p>
 
+    <!-- One button. "Request a Quote" used to sit beside it, which put the
+         same ask on screen twice — the nav carries Request Quotation, pinned
+         and visible the whole way down the page. -->
     <div class="hero__actions reveal">
       <a class="btn btn--primary" href="catalogue.html" data-i18n="hero.cta1">View Catalogue</a>
-      <a class="link-quiet" href="contact.html" data-i18n="hero.cta2">Request a Quote →</a>
     </div>
   </div>
 
@@ -322,17 +324,17 @@
          reduced motion, missing WebGL and no-JS all keep the drawn route. -->
     <div class="corridor__grid">
       <div>
-        <div class="corridor__globe" id="corridorGlobe" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-        <p class="corridor__hint" id="corridorHint" hidden data-i18n="corridor.drag">Drag to turn · true great-circle lanes</p>
+        <div class="corridor__globe" id="corridorGlobe" aria-hidden="true"></div>
+        <p class="corridor__hint" id="corridorHint" hidden data-i18n="corridor.drag">Drag to turn</p>
       </div>
 
       <table class="corridor__lanes" id="corridorLanes" hidden>
-        <tr><th data-i18n="corridor.thWaypoint">Waypoint</th><th data-i18n="corridor.thPort">Port</th><th data-i18n="corridor.thRole">Role</th><th data-i18n="corridor.thPos">Position</th></tr>
-        <tr><td data-i18n="corridor.n1">Black Sea</td><td>Novorossiysk</td><td class="role" data-i18n="corridor.r1">Origination</td><td class="pos">44.72° N 37.77° E</td></tr>
-        <tr><td data-i18n="corridor.n2">Turkey</td><td>Mersin</td><td class="role" data-i18n="corridor.r2">Origination</td><td class="pos">36.80° N 34.63° E</td></tr>
-        <tr><td data-i18n="corridor.n3">Central Asia</td><td>Almaty</td><td class="role" data-i18n="corridor.r3">Origination</td><td class="pos">43.24° N 76.89° E</td></tr>
-        <tr><td data-i18n="corridor.n4">Jebel Ali</td><td>Jebel Ali</td><td class="role" data-i18n="corridor.r4">Transhipment hub</td><td class="pos">25.01° N 55.06° E</td></tr>
-        <tr><td data-i18n="corridor.n5">East Africa</td><td>Mombasa</td><td class="role" data-i18n="corridor.r5">Delivery</td><td class="pos">4.04° S 39.67° E</td></tr>
+        <tr><th data-i18n="corridor.thWaypoint">Waypoint</th><th data-i18n="corridor.thPort">Port</th><th data-i18n="corridor.thRole">Role</th></tr>
+        <tr><td data-i18n="corridor.n1">Black Sea</td><td>Novorossiysk</td><td class="role" data-i18n="corridor.r1">Origination</td></tr>
+        <tr><td data-i18n="corridor.n2">Turkey</td><td>Mersin</td><td class="role" data-i18n="corridor.r2">Origination</td></tr>
+        <tr><td data-i18n="corridor.n3">Central Asia</td><td>Almaty</td><td class="role" data-i18n="corridor.r3">Origination</td></tr>
+        <tr><td data-i18n="corridor.n4">Jebel Ali</td><td>Jebel Ali</td><td class="role" data-i18n="corridor.r4">Transhipment hub</td></tr>
+        <tr><td data-i18n="corridor.n5">East Africa</td><td>Mombasa</td><td class="role" data-i18n="corridor.r5">Delivery</td></tr>
       </table>
     </div>
 
@@ -494,11 +496,10 @@
       </svg>
     </div>
 
-    <dl class="corridor__legend fade-up">
-      <div><dt class="tabular">05</dt><dd data-i18n="corridor.l1">Trade corridors</dd></div>
-      <div><dt>CIF · FOB</dt><dd data-i18n="corridor.l2">Incoterms 2020</dd></div>
-      <div><dt>L/C · CAD</dt><dd data-i18n="corridor.l3">Settlement instruments</dd></div>
-    </dl>
+    <!-- The 05 / CIF·FOB / L/C·CAD strip that closed this section is gone. It
+         was a third layer of technical notation under a globe and a table that
+         already carry the point, and the ribbon above states the settlement
+         instruments in a sentence. -->
   </div>
 </section>
 
