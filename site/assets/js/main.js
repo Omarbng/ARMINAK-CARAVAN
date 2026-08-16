@@ -91,18 +91,37 @@
     /* On the landing page the hero film carries its own storm, composited into
        the plate at render time. Grains in the margins on top of that is double
        the sand for a second decode, so the margins stand down while the hero
-       holds the screen. */
+       holds the screen — but only once the film is actually holding it.
+
+       During the window beat the film is a small frame on the ivory ground and
+       these margins are the only sand around it, which is the half of the
+       brief that asks for the sand to be real too. So the handover waits for
+       hero--revealed. The 1600ms opacity transition on the film makes it a
+       fade, not a cut, and it lands while the window is still opening. */
     var hero = qs('#hero');
     if (hero && 'IntersectionObserver' in window) {
-      new IntersectionObserver(function (entries) {
+      var onScreen = false;
+
+      function sync() {
         /* Keyed to the film, not to a separate sand layer: if the hero fell
            back to its poster the plate is still, and the margins are then the
-           only sand there is. Both cuts of the film carry the storm, so this
-           holds on a phone as well. */
-        var covered = entries[0].isIntersecting && !!hero.querySelector('.hero__video');
+           only sand there is. Both cuts carry the storm, so this holds on a
+           phone as well. */
+        var covered = onScreen &&
+                      hero.classList.contains('hero--revealed') &&
+                      !!hero.querySelector('.hero__video');
         film.style.opacity = covered ? '0' : '';
         if (covered) film.pause(); else play();
+      }
+
+      new IntersectionObserver(function (entries) {
+        onScreen = entries[0].isIntersecting;
+        sync();
       }, { threshold: 0 }).observe(hero);
+
+      /* Opening the window is not an intersection change, so the observer
+         alone would leave the margins running under a full-bleed film. */
+      document.addEventListener('ac:herosettled', sync);
     }
 
     return true;
