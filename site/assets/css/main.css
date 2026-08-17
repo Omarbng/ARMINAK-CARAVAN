@@ -518,9 +518,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .nav--over .nav__mark,
 .nav--over .nav__link,
 .nav--over .lang__btn { color: #FDF6EA; }
-.nav--over .theme-toggle { border-color: rgba(253, 246, 234, 0.35); }
-.nav--over .theme-toggle:hover { border-color: rgba(253, 246, 234, 0.7); }
-.nav--over .theme-toggle__thumb { background: #FDF6EA; color: #2B1D0F; }
 .nav--over .nav__burger span { background: #FDF6EA; }
 .nav--over :focus-visible { outline-color: #FDF6EA; }
 
@@ -552,16 +549,21 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .nav--scrolled .nav__mark { font-size: 17px; }
 .nav--scrolled .nav__cta { height: 38px; padding: 0 18px; font-size: 12.5px; }
-.nav--scrolled .theme-toggle { transform: scale(0.9); }
 
-/* Language sits one level below navigation and a quotation request, and it is
-   the one control duplicated verbatim in the footer. It stands down when the
-   bar tightens rather than making the strip a row of seven things. */
+/* Two controls have now left this bar. The theme toggle is gone from the
+   markup entirely — it was the eighth thing in the strip, it is duplicated
+   verbatim in the footer, and it is a preference rather than navigation, so it
+   lives where preferences live. Language stays at rest and stands down on
+   scroll: also duplicated in the footer, and one rank below the sections and
+   the quotation request it was sitting between.
+
+   What is left is a mark, the sections, and one action — which is the whole
+   bar, and the reason it stops competing with the page under it. */
 .nav--scrolled .nav__side > .lang { display: none; }
 
-.nav__mark, .nav__cta, .theme-toggle {
+.nav__mark, .nav__cta {
   transition: font-size 350ms var(--ease), height 350ms var(--ease),
-              padding 350ms var(--ease), transform 350ms var(--ease);
+              padding 350ms var(--ease);
 }
 
 /* Burger */
@@ -932,19 +934,46 @@ button, input, select, textarea { font: inherit; color: inherit; }
    multiply veil across the whole hero would grey the ground too. */
 .ac-intro .hero__sandwrap { opacity: 0; }
 
-/* The film ends by dissolving into the page rather than on a hard cut —
-   lifted from the "Desert Caravan Hero" study the client liked. Theirs runs
-   45vh under a centred headline; ours is kept to 18vh because the copy sits
-   bottom-left on a dark scrim and a deeper ivory melt would wash it out.
-   Fades to var(--bg), so it lands correctly in both themes. */
+/* Where the film becomes the page. The v4 master opens and closes inside a
+   sand whiteout — pale, low-contrast, only a few shades off the ivory ground —
+   so the two surfaces can actually be dissolved into each other rather than
+   butted together and covered with a gradient.
+
+   Two things make this read as a melt instead of a band:
+
+   1. A hand-eased ramp. A two-stop linear gradient banks all its change in the
+      middle and leaves a visible horizontal seam at each end; these stops
+      approximate an ease-in-out, so the ivory arrives without an edge. On an
+      8-bit gradient this long, banding is the failure mode, and a curve that
+      never runs flat is what hides it.
+   2. It rises off the floor. 18vh was a hem on the bottom of the film. At
+      ~30vh the last third of the frame is already becoming page while the
+      caravan is still walking through it, which is the actual handover.
+
+   Deep enough to reach the copy, so the scrim underneath keeps the headline
+   off it — see .hero__scrim, which is weighted to the same corner. */
 .hero__fade {
   position: absolute;
   left: 0; right: 0; bottom: 0;
-  height: 18vh;
+  height: clamp(190px, 30vh, 360px);
   z-index: 2;
   pointer-events: none;
-  background: linear-gradient(to bottom, transparent 0%, var(--bg) 94%);
+  background: linear-gradient(to bottom,
+    rgb(from var(--bg) r g b / 0)     0%,
+    rgb(from var(--bg) r g b / 0.04)  12%,
+    rgb(from var(--bg) r g b / 0.14)  26%,
+    rgb(from var(--bg) r g b / 0.32)  41%,
+    rgb(from var(--bg) r g b / 0.56)  56%,
+    rgb(from var(--bg) r g b / 0.78)  70%,
+    rgb(from var(--bg) r g b / 0.93)  83%,
+    rgb(from var(--bg) r g b / 1)     94%);
   transition: opacity var(--win-open) var(--ease);
+}
+
+/* relative-colour syntax is 2023+; older engines get the original two-stop
+   ramp rather than no fade at all, which would end the film on a hard edge. */
+@supports not (color: rgb(from white r g b / 1)) {
+  .hero__fade { background: linear-gradient(to bottom, transparent 0%, var(--bg) 94%); }
 }
 
 /* During the window beat the ground already IS the page — the melt only has
