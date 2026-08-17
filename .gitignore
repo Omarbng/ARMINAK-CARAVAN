@@ -2,3 +2,9 @@
 **/.DS_Store
 __pycache__/
 *.pyc
+
+# Scratch render dumps from local preview runs — stale copies of index.html
+# with animation overrides baked in, regenerated whenever they are needed.
+site/_p.html
+site/_p2.html
+_safaritest.html
