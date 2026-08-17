@@ -534,12 +534,34 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .nav--over .nav__cta:hover { background: #FDF6EA; border-color: #FDF6EA; color: #2B1D0F; }
 .nav--over .nav__progress { background: rgba(253, 246, 234, 0.75); }
 
-/* Scrolled */
+/* Scrolled. Over the film the bar is furniture on a photograph and reads fine
+   at full height; once it is a solid strip sitting on the page it is competing
+   with the content under it, and at 76px with every control still in it that
+   is a lot of bar. So it condenses: shorter, smaller mark, smaller button.
+
+   --nav-h is redefined here rather than on :root because .nav__menu is a child
+   and inherits it — the mobile panel therefore keeps meeting the bar exactly,
+   with no second rule to keep in sync. The root value still drives
+   scroll-padding-top, which is correctly the taller of the two. */
 .nav--scrolled {
+  --nav-h: 58px;
   background: var(--scrim-nav);
   -webkit-backdrop-filter: blur(14px) saturate(1.1);
   backdrop-filter: blur(14px) saturate(1.1);
-  border-bottom-color: var(--hairline-soft);
+  border-bottom-color: var(--hairline);
+}
+.nav--scrolled .nav__mark { font-size: 17px; }
+.nav--scrolled .nav__cta { height: 38px; padding: 0 18px; font-size: 12.5px; }
+.nav--scrolled .theme-toggle { transform: scale(0.9); }
+
+/* Language sits one level below navigation and a quotation request, and it is
+   the one control duplicated verbatim in the footer. It stands down when the
+   bar tightens rather than making the strip a row of seven things. */
+.nav--scrolled .nav__side > .lang { display: none; }
+
+.nav__mark, .nav__cta, .theme-toggle {
+  transition: font-size 350ms var(--ease), height 350ms var(--ease),
+              padding 350ms var(--ease), transform 350ms var(--ease);
 }
 
 /* Burger */
@@ -2191,33 +2213,37 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* -------------------------------------------------- 19. LEGACY HOME SECTIONS */
 
 /* Qualification — compact editorial strip */
-.qualify {
-  display: grid;
-  grid-template-columns: 2fr 3fr;   /* not 40%/60% — percentages ignore the gap */
-  gap: 0 clamp(32px, 6vw, 96px);
-  align-items: start;
-}
+/* ---- Client qualification (home) ------------------------------------------
+   A ledger, not a sidebar. Full measure, one criterion per rule, index in the
+   shared --idx gutter so it lines up with the corridor manifest directly above
+   it and the footer columns directly below.                                  */
 
-.qualify__title { max-width: 20ch; }
+.qual__head { max-width: 34ch; margin-bottom: clamp(36px, 4vw, 56px); }
+.qual__title { text-wrap: balance; }
 
-/* Same manifest spec as the corridor waypoints and the footer columns: one
-   numeral column, one row height, one hairline. The gap is folded into the
-   row padding so the rules land on an even rhythm instead of floating between
-   double-spaced rows. */
-.qualify__list { display: flex; flex-direction: column; }
+.qual__list { border-top: 1px solid var(--hairline); }
 
-.qualify__item {
+.qual__item {
   display: grid;
   grid-template-columns: var(--idx-gutter) 1fr;
-  gap: 0;
   align-items: baseline;
-  padding: var(--idx-row-y) 0;
+  padding: clamp(18px, 2.2vw, 30px) 0;
   border-bottom: 1px solid var(--hairline-soft);
+  transition: background 400ms var(--ease);
 }
-.qualify__item:first-child { padding-top: 0; }
-.qualify__item:last-child { border-bottom: 0; padding-bottom: 0; }
 
-.qualify__num {
+/* The criteria are statements a reader is meant to agree with one at a time,
+   so they are set at reading size rather than list size. */
+.qual__text {
+  font-size: clamp(17px, 1.7vw, 22px);
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: -0.012em;
+  color: var(--ink);
+  max-width: 46ch;
+}
+
+.qual__num {
   font-family: var(--font-mono);
   font-size: var(--idx-size);
   font-weight: 500;
@@ -2226,43 +2252,62 @@ button, input, select, textarea { font: inherit; color: inherit; }
   font-variant-numeric: tabular-nums;
 }
 
-.qualify__text { font-size: 15.5px; line-height: 1.6; color: var(--ink-soft); max-width: 52ch; }
-
-/* The welcome line closes the left column, which the shorter list would
-   otherwise leave empty. Same sand-gold rule as the About page. */
-.qualify__close {
-  margin-top: 28px;
-  padding-top: 22px;
-  border-top: 2px solid var(--accent);
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: -0.012em;
-  line-height: 1.45;
-  max-width: 30ch;
+/* Hovering a criterion warms its row. The whole section is a question being
+   put to the reader, and this is the cheapest way to make it feel answerable
+   rather than printed. */
+@media (hover: hover) and (pointer: fine) {
+  .qual__item:hover { background: var(--accent-soft); }
 }
 
-.qualify__more {
-  display: inline-block;
-  margin-top: 18px;
+.qual__foot {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px 40px;
+  margin-top: clamp(30px, 3.4vw, 46px);
+  padding-top: clamp(20px, 2.2vw, 28px);
+  border-top: 2px solid var(--accent);
+}
+
+.qual__close {
+  font-size: clamp(17px, 1.8vw, 21px);
+  font-weight: 600;
+  letter-spacing: -0.014em;
+  line-height: 1.4;
+  max-width: 44ch;
+}
+
+.qual__more {
   position: relative;
+  flex: none;
   font-family: var(--font-mono);
   font-size: 10.5px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-hover);
 }
-.qualify__more::after {
+.qual__more::after {
   content: "";
   position: absolute;
   left: 0; bottom: -3px;
   width: 100%; height: 1px;
-  background: var(--accent);
+  background: currentColor;
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 380ms var(--ease);
 }
-.qualify__more:hover::after,
-.qualify__more:focus-visible::after { transform: scaleX(1); }
+.qual__more:hover::after,
+.qual__more:focus-visible::after { transform: scaleX(1); }
+
+@media (max-width: 640px) {
+  .qual__foot { display: block; }
+  .qual__more { display: inline-block; margin-top: 16px; }
+}
+
+/* The home page's old two-column .qualify block is gone — replaced by the
+   full-measure .qual ledger above. The About page never shared it; it has
+   always had its own .ab-qual. */
 
 /* Guarantees ribbon */
 .ribbon { padding: 0; }
@@ -2431,6 +2476,44 @@ button, input, select, textarea { font: inherit; color: inherit; }
   text-transform: uppercase;
 }
 
+/* Unlit is the resting state: the manifest is legible but recessive, and each
+   row comes up as its lane finishes drawing on the globe. Scroll drives both
+   from one number (initCorridorReveal), so a row can never light for a lane
+   that has not arrived. Colour and weight only — nothing here moves, because
+   five rows sliding in beside a rotating globe is two animations competing. */
+.corridor__lanes tr:not(:first-child) td {
+  color: var(--muted);
+  transition: color 500ms var(--ease);
+}
+.corridor__lanes tr:not(:first-child) td:first-child::before {
+  opacity: 0.3;
+  transition: opacity 500ms var(--ease);
+}
+.corridor__lanes tr.is-lit td { color: var(--ink); }
+.corridor__lanes tr.is-lit td.role { color: var(--accent); }
+.corridor__lanes tr.is-lit td:first-child::before { opacity: 1; }
+
+/* A hairline that fills left-to-right as the row lights, so the manifest reads
+   as a route being walked rather than a list being ticked. */
+.corridor__lanes tr:not(:first-child) td:first-child::after {
+  content: "";
+  position: absolute;
+  left: 0; bottom: -1px;
+  width: 100%; height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 700ms var(--ease);
+}
+.corridor__lanes tr.is-lit td:first-child::after { transform: scaleX(1); }
+
+/* No scroll choreography to hook into, so the finished state is the state. */
+@media (prefers-reduced-motion: reduce) {
+  .corridor__lanes tr:not(:first-child) td { color: var(--ink); }
+  .corridor__lanes tr:not(:first-child) td:first-child::before { opacity: 1; }
+  .corridor__lanes tr:not(:first-child) td:first-child::after { transform: scaleX(1); }
+}
+
 /* Below this the globe is never mounted, so the grid collapses to the SVG. */
 @media (max-width: 999px) {
   .corridor__grid { display: block; }
@@ -2536,18 +2619,49 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .corridor__stack p { font-size: 13px; color: var(--muted); }
 
-/* Closing CTA band */
-.closing { text-align: center; }
-.closing__title { max-width: 22ch; margin: 0 auto 18px; }
-.closing__copy { max-width: 52ch; margin: 0 auto 40px; color: var(--muted); font-size: 15.5px; }
-.closing__actions { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px; }
-.closing__note {
-  margin-top: 36px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.14em;
+/* Closing CTA band. Two columns on one hairline: the ask, and the terms a
+   counterparty checks before writing. Left-aligned like everything above it. */
+.closing__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  gap: clamp(40px, 6vw, 100px);
+  align-items: start;
+}
+
+.closing__title { max-width: 20ch; margin-bottom: 18px; text-wrap: balance; }
+.closing__copy { max-width: 46ch; margin-bottom: 36px; color: var(--muted); font-size: 15.5px; }
+.closing__actions { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
+
+/* The terms read as a register: mono keys, hairline per row, values in ink.
+   Same rhythm as the corridor manifest, one column narrower. */
+.closing__terms { margin: 0; border-top: 1px solid var(--hairline); }
+.closing__terms > div {
+  display: grid;
+  grid-template-columns: minmax(0, 0.62fr) minmax(0, 1fr);
+  gap: 12px 24px;
+  padding: var(--idx-row-y) 0;
+  border-bottom: 1px solid var(--hairline-soft);
+}
+.closing__terms dt {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
+  padding-top: 2px;
+}
+.closing__terms dd {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+/* The quotation clause is a condition of trade, not a value — set quieter so
+   the three facts above it stay scannable. */
+.closing__terms > div:last-child dd { font-size: 13px; color: var(--muted); }
+
+@media (max-width: 860px) {
+  .closing__grid { grid-template-columns: 1fr; gap: 48px; }
 }
 
 /* ----------------------------------------------------------------- 20. FOOTER */
@@ -3300,10 +3414,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .nav__inner { gap: 12px; }
   .nav__mark { grid-column: 2; font-size: 16px; }
 
-  .qualify { grid-template-columns: 1fr; gap: 40px; }
   .feature { grid-template-columns: 1fr; }
   .feature__media { aspect-ratio: 16 / 9; min-height: 0; }
   .contact-grid { grid-template-columns: 1fr; gap: 56px; }
+  .qual__item { grid-template-columns: 1fr; gap: 6px; }
   .grid-products { grid-template-columns: repeat(2, 1fr); }
 
   .corridor__figure { display: none; }
@@ -3359,7 +3473,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .hero__meta { font-size: 10px; gap: 9px; margin-bottom: 22px; }
   .hero__sep { display: none; }
 
-  .qualify__item { grid-template-columns: 1fr; gap: 8px; }
 
   .drawer { top: auto; left: 0; right: 0; bottom: 0; height: 92vh; height: 92svh; width: 100%;
             transform: translateY(100%); border-radius: 14px 14px 0 0;

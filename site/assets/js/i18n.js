@@ -65,11 +65,21 @@
     'ribbon.i3': 'Прозрачные банковские инструменты — аккредитив, CAD',
 
     /* ------------------------------------------------------ closing ------ */
+    'closing.tag': 'Торговый отдел',
     'closing.title': 'Обсудим ваши потребности в поставках',
     'closing.copy': 'Объёмы, порты назначения и условия расчётов определяются под конкретный запрос. Торговый отдел отвечает в течение одного рабочего дня.',
     'closing.wa': 'Прямая линия торгового отдела',
     'closing.mail': 'Отправить официальный запрос',
     'closing.note': 'Цены и ставки фрахта предоставляются только по официальному письменному запросу',
+    /* Terms register beside the ask. CIF/FOB and L/C/CAD are the trade's own
+       Latin notation and are not translated — a Russian-reading counterparty
+       expects them exactly as they appear on the contract. */
+    'closing.t1k': 'Ответ',
+    'closing.t1v': 'Один рабочий день',
+    'closing.t2k': 'Инкотермс',
+    'closing.t2v': '2020',
+    'closing.t3k': 'Расчёты',
+    'closing.t4k': 'Котировка',
 
     /* ------------------------------------------------------- footer ------ */
     'footer.legal': 'ARMINAK CARAVAN FOODSTUFF AND BEVERAGES TRADING LTD',

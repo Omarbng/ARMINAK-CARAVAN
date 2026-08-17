@@ -502,53 +502,88 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
 </section>
 
 <!-- ======================================================= QUALIFICATION -->
-<section class="section--tight" id="about" style="padding-bottom: clamp(72px, 8vw, 128px)">
+<!-- Four criteria squeezed into a narrow right-hand column read as a caption to
+     the heading beside them. They are the argument, so they get the full
+     measure: a ledger the width of the page, each criterion set at reading
+     size with its index in the same gutter the corridor manifest uses. -->
+<section class="section--tight qual" id="about" style="padding-bottom: clamp(72px, 8vw, 128px)">
   <div class="shell">
-    <div class="qualify">
-      <div>
-        <span class="label fade-up" data-i18n="qualify.tag">Client Qualification</span>
-        <h2 class="t-sub qualify__title fade-up stagger-1 u-mt-s" data-i18n="qualify.title">You will enjoy working with ARMINAK CARAVAN if:</h2>
-        <p class="qualify__close fade-up stagger-2" data-i18n="qualify.close">If this aligns with your business philosophy — welcome to our Caravan.</p>
-        <a class="qualify__more fade-up stagger-3" href="about.html" data-i18n="qualify.more">Heritage &amp; standards →</a>
-      </div>
+    <div class="qual__head">
+      <span class="label fade-up" data-i18n="qualify.tag">Client Qualification</span>
+      <h2 class="t-section qual__title fade-up stagger-1 u-mt-s" data-i18n="qualify.title">You will enjoy working with ARMINAK CARAVAN if:</h2>
+    </div>
 
-      <ol class="qualify__list">
-        <li class="qualify__item fade-up">
-          <span class="qualify__num tabular">01</span>
-          <p class="qualify__text" data-i18n="qualify.i1">You value long-term supply stability.</p>
-        </li>
-        <li class="qualify__item fade-up stagger-1">
-          <span class="qualify__num tabular">02</span>
-          <p class="qualify__text" data-i18n="qualify.i2">You expect uncompromising quality and standards.</p>
-        </li>
-        <li class="qualify__item fade-up stagger-2">
-          <span class="qualify__num tabular">03</span>
-          <p class="qualify__text" data-i18n="qualify.i3">You require reliable trade corridors.</p>
-        </li>
-        <li class="qualify__item fade-up stagger-3">
-          <span class="qualify__num tabular">04</span>
-          <p class="qualify__text" data-i18n="qualify.i4">You believe in transparent, institutional B2B relationships.</p>
-        </li>
-      </ol>
+    <ol class="qual__list">
+      <li class="qual__item fade-up">
+        <span class="qual__num">01</span>
+        <p class="qual__text" data-i18n="qualify.i1">You value long-term supply stability.</p>
+      </li>
+      <li class="qual__item fade-up stagger-1">
+        <span class="qual__num">02</span>
+        <p class="qual__text" data-i18n="qualify.i2">You expect uncompromising quality and standards.</p>
+      </li>
+      <li class="qual__item fade-up stagger-2">
+        <span class="qual__num">03</span>
+        <p class="qual__text" data-i18n="qualify.i3">You require reliable trade corridors.</p>
+      </li>
+      <li class="qual__item fade-up stagger-3">
+        <span class="qual__num">04</span>
+        <p class="qual__text" data-i18n="qualify.i4">You believe in transparent, institutional B2B relationships.</p>
+      </li>
+    </ol>
+
+    <!-- The welcome is the point the four criteria have been building to, so
+         it closes the ledger on the gold rule rather than sitting in a margin. -->
+    <div class="qual__foot fade-up">
+      <p class="qual__close" data-i18n="qualify.close">If this aligns with your business philosophy — welcome to our Caravan.</p>
+      <a class="qual__more" href="about.html" data-i18n="qualify.more">Heritage &amp; standards →</a>
     </div>
   </div>
 </section>
 
 <!-- ========================================================= CLOSING BAND -->
 <section class="section section--inverse closing">
-  <div class="shell">
-    <h2 class="t-section closing__title fade-up" data-i18n="closing.title">Discuss your supply requirements</h2>
-    <p class="closing__copy fade-up stagger-1" data-i18n="closing.copy">Volumes, destination ports and settlement terms are quoted against a specific enquiry. Our trading desk replies within one business day.</p>
+  <!-- Was centred: title, copy, button, footnote, all stacked down the middle.
+       That is the one layout every B2B site ends on, and nothing else on this
+       page is centred — the hero, the corridors and the qualification ledger
+       all read left. So it turns: the ask on the left, the terms of doing
+       business on the right, on the same hairline. -->
+  <div class="shell closing__grid">
+    <div class="closing__ask">
+      <span class="label fade-up" data-i18n="closing.tag">Trading desk</span>
+      <h2 class="t-section closing__title fade-up stagger-1 u-mt-s" data-i18n="closing.title">Discuss your supply requirements</h2>
+      <p class="closing__copy fade-up stagger-2" data-i18n="closing.copy">Volumes, destination ports and settlement terms are quoted against a specific enquiry. Our trading desk replies within one business day.</p>
 
-    <div class="closing__actions fade-up stagger-2">
-      <a class="btn btn--primary" href="https://wa.me/971500000000" target="_blank" rel="noopener">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23a8.2 8.2 0 0 1 5.83 2.42 8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.53.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.22.25-.85.83-.85 2.03 0 1.2.87 2.35.99 2.51.12.17 1.71 2.61 4.15 3.66.58.25 1.03.4 1.39.51.58.19 1.11.16 1.53.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.28Z"/></svg>
-        <span data-i18n="closing.wa">Direct Trading Desk</span>
-      </a>
-      <a class="link-quiet closing__alt" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20—%20ARMINAK%20CARAVAN" data-i18n="closing.mail">Send Official Inquiry</a>
+      <div class="closing__actions fade-up stagger-3">
+        <a class="btn btn--primary" href="https://wa.me/971500000000" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.15h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.23 8.25-8.23a8.2 8.2 0 0 1 5.83 2.42 8.19 8.19 0 0 1 2.41 5.82c0 4.54-3.7 8.23-8.24 8.23Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.78.97-.15.16-.29.18-.53.06-.25-.13-1.05-.39-2-1.23-.74-.66-1.24-1.47-1.38-1.72-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.12-.15.16-.25.25-.41.08-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.16 0-.43.06-.65.31-.22.25-.85.83-.85 2.03 0 1.2.87 2.35.99 2.51.12.17 1.71 2.61 4.15 3.66.58.25 1.03.4 1.39.51.58.19 1.11.16 1.53.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.28Z"/></svg>
+          <span data-i18n="closing.wa">Direct Trading Desk</span>
+        </a>
+        <a class="link-quiet closing__alt" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20—%20ARMINAK%20CARAVAN" data-i18n="closing.mail">Send Official Inquiry</a>
+      </div>
     </div>
 
-    <p class="closing__note fade-up stagger-3" data-i18n="closing.note">Prices and freight rates are released against a formal written request only</p>
+    <!-- The footnote was doing this job alone, in 11px, under everything. The
+         four facts a counterparty actually checks before writing belong beside
+         the ask, not beneath it. -->
+    <dl class="closing__terms fade-up stagger-2">
+      <div>
+        <dt data-i18n="closing.t1k">Response</dt>
+        <dd data-i18n="closing.t1v">One business day</dd>
+      </div>
+      <div>
+        <dt data-i18n="closing.t2k">Incoterms</dt>
+        <dd>CIF · FOB <span data-i18n="closing.t2v">2020</span></dd>
+      </div>
+      <div>
+        <dt data-i18n="closing.t3k">Settlement</dt>
+        <dd>L/C · CAD</dd>
+      </div>
+      <div>
+        <dt data-i18n="closing.t4k">Quotation</dt>
+        <dd data-i18n="closing.note">Prices and freight rates are released against a formal written request only</dd>
+      </div>
+    </dl>
   </div>
 </section>
 

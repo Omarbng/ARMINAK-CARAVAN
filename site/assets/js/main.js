@@ -650,11 +650,66 @@
         if (hint) hint.hidden = false;
         var lanes = qs('#corridorLanes');
         if (lanes) lanes.hidden = false;
+        initCorridorReveal(g);
       }).catch(function () {
         /* Older engine, blocked module, anything at all — the SVG is still
            sitting there doing its job. */
       });
     }, { rootMargin: '200px 0px' }).observe(host);
+  }
+
+  /* The corridors build as you arrive at them rather than playing once and
+     stopping. Scroll position is the timeline: the section's travel through
+     the viewport maps to 0..1, each waypoint owns a fifth of it, and the globe
+     and the manifest read the same number — so a row lights at the exact
+     moment its lane finishes drawing.
+
+     Tied to scroll rather than to a timer because the two then cannot drift,
+     and because scrolling back up unwinds it. A reader who scrolls half way,
+     stops, and comes back gets the corridor half drawn and waiting, which is
+     the behaviour that makes it feel like an instrument rather than a video. */
+  function initCorridorReveal(globe) {
+    var section = qs('#corridors');
+    if (!section) return;
+
+    var rows = [].slice.call(document.querySelectorAll('#corridorLanes tr'))
+                 .slice(1);                  /* drop the head row */
+    var ticking = false;
+
+    function measure() {
+      var r = section.getBoundingClientRect();
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+
+      /* Start when the section is a third of the way up the viewport, finish
+         when its bottom reaches two thirds. Anchoring to the section rather
+         than to the globe keeps the manifest and the sphere on one clock. */
+      var start = vh * 0.72;
+      var end   = vh * 0.24;
+      var span  = Math.max(1, (r.height + start - end));
+      return (start - r.top) / span;
+    }
+
+    function apply() {
+      ticking = false;
+      var p = measure();
+      if (globe && globe.setProgress) globe.setProgress(p);
+
+      /* Same fifths the globe uses, so the two never disagree. */
+      var scaled = p * rows.length;
+      for (var i = 0; i < rows.length; i++) {
+        rows[i].classList.toggle('is-lit', scaled - i > 0.34);
+      }
+    }
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(apply);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    apply();
   }
 
   /* ----------------------------------------------------------------- NAV -- */

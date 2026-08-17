@@ -136,28 +136,46 @@ export async function mountGlobe(host, opts = {}) {
   } catch (e) { /* the lanes still read without a coastline */ }
 
   /* Lanes: three feeding in, one leaving. Same gold, different weight — the
-     feeders recede, the delivery lane leads. */
+     feeders recede, the delivery lane leads.
+
+     Each lane keeps its index geometry so setProgress can draw it on rather
+     than fade it in. A TubeGeometry's indices run in order along the curve, so
+     clamping the draw range to a fraction of them literally extends the tube
+     from origin toward the hub — the route is drawn the way it is travelled,
+     which is the entire point of showing a corridor rather than a dot. */
   const hub = NODES.find(n => n.role === 'hub');
   const laneMats = [];
+  const lanes = [];                          /* one per origination, in NODES order */
+
+  function addLane(from, to, lift, radius, opacity, segs) {
+    const curve = greatCircle(from, to, lift);
+    const geo = new THREE.TubeGeometry(curve, segs, radius, 8, false);
+    const m = new THREE.MeshBasicMaterial({ color: ACCENT, transparent: true, opacity: opacity });
+    laneMats.push(['accent', m]);
+    const mesh = new THREE.Mesh(geo, m);
+    mesh.visible = false;
+    world.add(mesh);
+    return { mesh, geo, curve, total: geo.index.count, baseOpacity: opacity };
+  }
+
   for (const n of NODES) {
     if (n.role !== 'origination') continue;
-    const m = new THREE.MeshBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.5 });
-    laneMats.push(['accent', m]);
-    world.add(new THREE.Mesh(new THREE.TubeGeometry(greatCircle(n, hub), 128, 0.0038, 8, false), m));
+    lanes.push(addLane(n, hub, 0.17, 0.0038, 0.5, 128));
   }
-  const out = NODES.find(n => n.role === 'delivery');
-  const pulseCurve = greatCircle(hub, out, 0.2);
-  const outMat = new THREE.MeshBasicMaterial({ color: ACCENT, transparent: true, opacity: 0.95 });
-  laneMats.push(['accent', outMat]);
-  world.add(new THREE.Mesh(new THREE.TubeGeometry(pulseCurve, 160, 0.0072, 8, false), outMat));
 
-  const pulseMat = new THREE.MeshBasicMaterial({ color: ACCENT });
+  const out = NODES.find(n => n.role === 'delivery');
+  const outLane = addLane(hub, out, 0.2, 0.0072, 0.95, 160);
+  const pulseCurve = outLane.curve;
+
+  const pulseMat = new THREE.MeshBasicMaterial({ color: ACCENT, transparent: true, opacity: 1 });
   laneMats.push(['accent', pulseMat]);
   const pulse = new THREE.Mesh(new THREE.SphereGeometry(0.017, 16, 16), pulseMat);
+  pulse.visible = false;
   world.add(pulse);
 
   /* Nodes, and HTML labels so the type stays the site's own. */
   const labels = [];
+  const marks = [];                          /* dot + ring + label, in NODES order */
   for (const n of NODES) {
     const v = toVec(n.lat, n.lon, R * 1.004);
     const isHub = n.role === 'hub';
@@ -183,7 +201,60 @@ export async function mountGlobe(host, opts = {}) {
     el.className = 'globe__lbl';
     el.innerHTML = '<b>' + n.name + '</b>';
     host.appendChild(el);
-    labels.push({ el, v });
+    const label = { el, v, lit: 0 };
+    labels.push(label);
+
+    dot.visible = false;
+    ring.visible = false;
+    marks.push({ dot, ring, ringMat, dotMat, label, isHub });
+  }
+
+  /* ---- scroll reveal -------------------------------------------------------
+     One 0..1 value drives the whole instrument. The section allots a slice of
+     it to each waypoint in manifest order — origination, origination,
+     origination, hub, delivery — and inside a slice the node pops first and
+     its lane then draws toward the hub. Reversible by construction, because
+     everything is recomputed from p rather than advanced by events: scrolling
+     back up unbuilds it in the same order. */
+  const STEPS = NODES.length;                /* 5 */
+  let progress = -1;
+
+  function setProgress(p) {
+    p = p < 0 ? 0 : p > 1 ? 1 : p;
+    if (Math.abs(p - progress) < 0.001) return;
+    progress = p;
+
+    const scaled = p * STEPS;                /* 0..5, one unit per waypoint */
+
+    for (let i = 0; i < STEPS; i++) {
+      const local = Math.min(1, Math.max(0, scaled - i));   /* this step's own 0..1 */
+      const m = marks[i];
+
+      /* Node lands in the first third of its slice, lane draws over the rest. */
+      const nodeIn = Math.min(1, local / 0.34);
+      m.dot.visible = nodeIn > 0;
+      m.ring.visible = nodeIn > 0;
+      if (nodeIn > 0) {
+        var s = 0.4 + 0.6 * nodeIn;
+        m.dot.scale.setScalar(s);
+        m.ring.scale.setScalar(0.6 + 0.4 * nodeIn);
+        m.ringMat.opacity = (m.isHub ? 0.8 : 0.5) * nodeIn;
+      }
+      m.label.lit = nodeIn;
+
+      /* The lane out of this node. Originations feed the hub; the hub's own
+         slice draws the delivery lane, since that is the leg it originates. */
+      const lane = i < lanes.length ? lanes[i] : (NODES[i].role === 'hub' ? outLane : null);
+      if (lane) {
+        const drawn = Math.min(1, Math.max(0, (local - 0.28) / 0.72));
+        lane.mesh.visible = drawn > 0;
+        /* Round to a whole triangle or the tube ends in a torn face. */
+        lane.geo.setDrawRange(0, Math.floor(lane.total * drawn / 3) * 3);
+      }
+    }
+
+    /* The travelling pulse only makes sense once its lane exists. */
+    pulse.visible = scaled >= STEPS - 0.15;
   }
 
   function onResize() {
@@ -224,17 +295,26 @@ export async function mountGlobe(host, opts = {}) {
       tmp.project(camera);
       l.el.style.left = ((tmp.x * 0.5 + 0.5) * rect.width) + 'px';
       l.el.style.top  = ((-tmp.y * 0.5 + 0.5) * rect.height - 30) + 'px';
-      l.el.style.opacity = facing > 0.12 ? '1' : '0';
+      /* Two gates, both of which must pass: facing the camera, and revealed by
+         the scroll. A label for a waypoint that has not arrived yet would give
+         the reveal away before it happens. */
+      l.el.style.opacity = facing > 0.12 ? String(l.lit) : '0';
     }
     renderer.render(scene, camera);
   }
 
   renderer.setAnimationLoop(loop);
 
+  /* Nothing is visible until the page says how far it has scrolled. Reduced
+     motion has no scroll choreography to hook into, so it gets the finished
+     state immediately rather than an empty globe. */
+  setProgress(reduced ? 1 : 0);
+
   return {
     /* Nothing to render while it is off screen. */
     pause() { if (running) { renderer.setAnimationLoop(null); running = false; } },
     resume() { if (!running) { renderer.setAnimationLoop(loop); running = true; } },
+    setProgress: reduced ? function () {} : setProgress,
     dom: renderer.domElement,
   };
 }
