@@ -106,24 +106,6 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
 
 <main id="main">
 
-<!-- ============================================================ SECTION RAIL -->
-<!-- Once the bar leaves the film it is a mark and one button, which is not
-     navigation. This is: a fixed index of the page down the left margin, with
-     the section you are in marked. It only exists past the hero, on a viewport
-     wide enough to have a margin to spare, and it is a plain nav of in-page
-     anchors — so with no JS it is still a usable list of links, just always
-     visible instead of appearing on scroll. -->
-<nav class="rail" id="rail" aria-label="Sections">
-  <ol class="rail__list">
-    <li><a class="rail__item" href="#hero"><i aria-hidden="true"></i><span data-i18n="rail.hero">Top</span></a></li>
-    <li><a class="rail__item" href="#products"><i aria-hidden="true"></i><span data-i18n="rail.products">Products</span></a></li>
-    <li><a class="rail__item" href="#categories"><i aria-hidden="true"></i><span data-i18n="rail.categories">Categories</span></a></li>
-    <li><a class="rail__item" href="#corridors"><i aria-hidden="true"></i><span data-i18n="rail.corridors">Corridors</span></a></li>
-    <li><a class="rail__item" href="#about"><i aria-hidden="true"></i><span data-i18n="rail.about">Qualification</span></a></li>
-    <li><a class="rail__item" href="#desk"><i aria-hidden="true"></i><span data-i18n="rail.desk">Trading desk</span></a></li>
-  </ol>
-</nav>
-
 <!-- ================================================================== HERO -->
 <!-- Full-bleed desert film. Two separately reframed cuts: the 16:9 one for
      landscape, a 9:16 one for phones. The poster is server-rendered and is the
@@ -564,7 +546,7 @@ PRODUCT = HEAD.replace("%SLUG%", "product.html").replace("%TITLE%", "Product —
 
 <main id="main">
 
-  <section class="pagehead" style="padding-bottom: clamp(20px, 2vw, 32px)">
+  <section class="pagehead" id="top" style="padding-bottom: clamp(20px, 2vw, 32px)">
     <div class="shell">
       <a class="link-quiet" href="catalogue.html" data-i18n="pdp.back">← Shop all</a>
     </div>
@@ -651,8 +633,15 @@ PRODUCT = HEAD.replace("%SLUG%", "product.html").replace("%TITLE%", "Product —
 INSIGHTS_MAIN = (ROOT / "insights.html").read_text(encoding="utf-8")
 start = INSIGHTS_MAIN.index('<main id="main">')
 end = INSIGHTS_MAIN.index('</main>') + len('</main>')
+# Section ids for the navigation panel's "on this page" list. Applied on the
+# extracted body because this page is its own source — idempotent, since a
+# later build reads output that already carries them and the match fails.
 INSIGHTS_BODY = INSIGHTS_MAIN[start:end].replace('section--navy', 'section--inverse') \
-                                        .replace('btn--brass', 'btn--primary')
+                                        .replace('btn--brass', 'btn--primary') \
+                                        .replace('<section class="pagehead">', '<section class="pagehead" id="top">', 1) \
+                                        .replace('<section class="section--tight">', '<section class="section--tight" id="featured">', 1) \
+                                        .replace('<section class="section">', '<section class="section" id="notes">', 1) \
+                                        .replace('<section class="section section--inverse closing">', '<section class="section section--inverse closing" id="desk">', 1)
 
 INSIGHTS = HEAD.replace("%SLUG%", "insights.html").replace("%TITLE%", "Market Insights — Grain, Oils &amp; Freight Analysis | ARMINAK CARAVAN") \
                .replace("%DESC%", "Weekly market notes from ARMINAK CARAVAN on Black Sea grain, vegetable oils, freight corridors and trade finance.") \
@@ -668,7 +657,9 @@ start = CONTACT_MAIN.index('<main id="main">')
 end = CONTACT_MAIN.index('</main>') + len('</main>')
 CONTACT_BODY = CONTACT_MAIN[start:end].replace('section--sand2', 'section--tight') \
                                       .replace('btn--brass', 'btn--primary') \
-                                      .replace(' style="height:56px;padding:0 28px;font-size:13px"', '')
+                                      .replace(' style="height:56px;padding:0 28px;font-size:13px"', '') \
+                                      .replace('<section class="pagehead">', '<section class="pagehead" id="top">', 1) \
+                                      .replace('<section class="section section--tight">', '<section class="section section--tight" id="legal">', 1)
 
 CONTACT = HEAD.replace("%SLUG%", "contact.html").replace("%TITLE%", "Contacts &amp; Institutional Desk | ARMINAK CARAVAN, KEZAD Free Zone Abu Dhabi") \
               .replace("%DESC%", "Contact ARMINAK CARAVAN — KEZAD Free Zone, Abu Dhabi. Institutional contact desk, WhatsApp trading line and consultation booking.") \
@@ -814,7 +805,7 @@ corridor_html = "\n".join(
 ABOUT_BODY = f'''<main id="main">
 
 <!-- ============================================================== HERITAGE -->
-<section class="section--tight ab-hero">
+<section class="section--tight ab-hero" id="story">
   <div class="shell">
     <span class="label fade-up" data-i18n="ab.tag">About the company</span>
     <h1 class="ab-hero__title fade-up stagger-1">
@@ -908,7 +899,7 @@ ABOUT_BODY = f'''<main id="main">
 </section>
 
 <!-- =============================================================== CLOSING -->
-<section class="section section--inverse closing">
+<section class="section section--inverse closing" id="desk">
   <div class="shell">
     <h2 class="t-section closing__title fade-up" data-i18n="ab.cta.title">Discuss your supply requirements</h2>
     <p class="closing__copy fade-up stagger-1" data-i18n="ab.cta.copy">Volumes, destination ports and settlement terms are quoted against a specific enquiry. Our trading desk replies within one business day.</p>

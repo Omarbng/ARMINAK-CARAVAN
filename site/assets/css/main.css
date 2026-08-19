@@ -315,14 +315,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
   opacity: 0.7;
 }
 
-.nav__menu {
-  grid-column: 2;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: clamp(18px, 2vw, 30px);
-  counter-reset: navitem;          /* the panel numbers itself — see mobile */
-}
+/* The page links that used to sit here are gone — they live in the panel now.
+   .nav__menu, .nav__link and .nav__burger went with them, base rules and
+   mobile-panel rules both: the bar no longer has a second layout below 1024,
+   because the trigger is the same control at every width. */
 
 .nav__side {
   grid-column: 3;
@@ -330,37 +326,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
   align-items: center;
   justify-content: flex-end;
   gap: clamp(12px, 1.4vw, 20px);
-}
-
-.nav__link {
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: -0.005em;
-  color: var(--ink);
-  position: relative;
-  padding: 6px 0;
-  white-space: nowrap;
-  transition: color 450ms var(--ease);
-}
-
-/* Same rule-drawn-from-the-left as the footer links, so the two ends of the
-   page share one hover language. */
-.nav__link::after {
-  content: "";
-  position: absolute;
-  left: 0; bottom: 0;
-  width: 100%; height: 1.5px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 380ms var(--ease);
-}
-.nav__link:hover::after,
-.nav__link:focus-visible::after { transform: scaleX(1); }
-
-.nav__link[aria-current="page"]::after {
-  transform: scaleX(1);
-  background: currentColor;
 }
 
 /* The desk CTA. The site's whole conversion is "request a quotation" and the
@@ -397,7 +362,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @keyframes navProgress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
 /* Panel-only tail: hidden while the menu is a horizontal bar. */
-.nav__panelFoot { display: none; }
 
 /* Theme toggle */
 .theme-toggle {
@@ -460,9 +424,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
    hero's cream until the page scrolls past it. Only pages that actually have
    a #hero ever get this class (main.js). */
 .nav--over .nav__mark,
-.nav--over .nav__link,
+.nav--over .navtrig,
 .nav--over .lang__btn { color: #FDF6EA; }
-.nav--over .nav__burger span { background: #FDF6EA; }
+.nav--over .navtrig__bars i { background: #FDF6EA; }
 .nav--over :focus-visible { outline-color: #FDF6EA; }
 
 /* Over the film the bar has no ground of its own, so the solid CTA becomes an
@@ -528,27 +492,18 @@ button, input, select, textarea { font: inherit; color: inherit; }
    moves opacity and Y only.                                                 */
 
 @media (prefers-reduced-motion: no-preference) {
+  .navtrig,
   .nav__mark,
-  .nav__menu > .nav__link,
   .nav__side > * {
     animation: navIn 620ms var(--ease) both;
   }
 
-  .nav__mark { animation-delay: 220ms; }
-
-  /* Sections read as one group arriving, not four separate events — 70ms is
-     under the ~100ms that starts to feel like a queue. */
-  .nav__menu > .nav__link:nth-child(1) { animation-delay: 470ms; }
-  .nav__menu > .nav__link:nth-child(2) { animation-delay: 540ms; }
-  .nav__menu > .nav__link:nth-child(3) { animation-delay: 610ms; }
-  .nav__menu > .nav__link:nth-child(4) { animation-delay: 680ms; }
-
-  .nav__side > .lang    { animation-delay: 820ms; }
-  .nav__side > .nav__cta { animation-delay: 900ms; }
-
-  /* The burger replaces the sections on narrow screens, so it lands where the
-     first section link would have. */
-  .nav__burger { animation: navIn 620ms var(--ease) both; animation-delay: 470ms; }
+  /* Left to right, in the order a reader builds the bar: the way in, who this
+     is, the language, the ask. */
+  .navtrig             { animation-delay: 220ms; }
+  .nav__mark           { animation-delay: 380ms; }
+  .nav__side > .lang   { animation-delay: 760ms; }
+  .nav__side > .nav__cta { animation-delay: 860ms; }
 }
 
 @keyframes navIn {
@@ -556,158 +511,227 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 /* Burger */
-.nav__burger {
-  display: none;
-  appearance: none;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  width: 40px; height: 40px;
-  padding: 10px 8px;
-  flex-direction: column;
-  justify-content: center;
-  gap: 6px;
-}
+/* --------------------------------------------------- 5b. NAVIGATION PANEL */
+/* The site's only navigation. A trigger at the top left, and one sheet holding
+   both the pages and the current page's sections.
 
-.nav__burger span {
-  display: block;
-  height: 1.5px;
-  width: 100%;
-  background: var(--ink);
-  border-radius: 1px;
-  transition: transform 400ms var(--ease), opacity 300ms var(--ease), background 450ms var(--ease);
-}
+   It replaced three things — page links in the bar, a burger panel below
+   1024px, and a floating section rail — so the important property is that it is
+   the SAME control at every width. There is no viewport at which navigation
+   works differently, which is the thing that made the old arrangement feel like
+   two systems bolted together.                                              */
 
-.nav__burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(3.75px) rotate(45deg); }
-.nav__burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
-.nav__burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-3.75px) rotate(-45deg); }
-
-/* ------------------------------------------------------- 5b. SECTION RAIL */
-/* A reading index down the left margin. Two states, and the difference between
-   them is the whole design:
-
-   At rest it is six ticks and nothing else. No labels, not even for the
-   current section — that was the overlap: the shell's gutter is only ~44px at
-   1280, so a word beside a tick lands directly on the section heading. Ticks
-   alone are 26px at their longest, which fits the gutter with room to spare,
-   so the resting state cannot collide with anything.
-
-   Reached for, it becomes a panel: the labels arrive and a frosted plate comes
-   up behind them, blurring the page so the list reads cleanly over whatever
-   happens to be there. That is what makes the labels safe to overlap content —
-   they are explicitly an overlay for as long as you are pointing at them,
-   rather than type competing with type.                                     */
-
-.rail {
-  position: fixed;
-  /* Sits in the gutter when there is no outer margin, and moves out into the
-     margin once the viewport is wider than the shell. */
-  left: max(16px, calc((100vw - 1560px) / 2 - 30px));
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 90;                      /* under the nav (100) and the drawer */
-  padding: 14px 16px;
-  margin: -14px -16px;              /* padding is for the plate, not the layout */
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 500ms var(--ease), visibility 0s linear 500ms;
-}
-
-/* Shown by main.js once the film is behind you — the hero has its own scroll
-   cue and does not need an index. */
-.rail.is-on {
-  opacity: 1;
-  visibility: visible;
-  transition: opacity 500ms var(--ease), visibility 0s linear 0s;
-}
-
-/* The frosted plate. Same construction as the bar's: a pseudo-element, so the
-   filter never becomes a containing block for anything. */
-.rail::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: 12px;
-  background: rgb(from var(--bg) r g b / 0.82);
-  -webkit-backdrop-filter: blur(22px) saturate(1.3);
-          backdrop-filter: blur(22px) saturate(1.3);
-  border: 1px solid var(--hairline-soft);
-  opacity: 0;
-  transform: scale(0.97);
-  transform-origin: left center;
-  transition: opacity 320ms var(--ease), transform 320ms var(--ease);
-}
-
-.rail:hover::before,
-.rail:focus-within::before { opacity: 1; transform: none; }
-
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-  .rail::before { background: var(--bg); }
-}
-@supports not (color: rgb(from white r g b / 1)) {
-  .rail::before { background: var(--bg-elev); }
-}
-
-.rail__list { display: flex; flex-direction: column; gap: 2px; }
-
-.rail__item {
+.navtrig {
+  grid-column: 1;
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 5px 0;
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 6px 2px;
+  margin-left: -2px;
+  cursor: pointer;
+  color: var(--ink);
   font-family: var(--font-mono);
   font-size: 10px;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   text-transform: uppercase;
+  transition: color 450ms var(--ease);
+}
+
+.navtrig__bars { display: grid; gap: 3.5px; width: 18px; }
+.navtrig__bars i {
+  display: block;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 1px;
+  transition: transform 400ms var(--ease), opacity 250ms var(--ease),
+              background 450ms var(--ease);
+}
+
+/* Middle bar is shorter at rest, so the icon reads as an index rather than a
+   hamburger — three equal lines is the most generic mark on the web. */
+.navtrig__bars i:nth-child(2) { width: 70%; }
+
+.navtrig[aria-expanded="true"] .navtrig__bars i:nth-child(1) { transform: translateY(5px) rotate(45deg); }
+.navtrig[aria-expanded="true"] .navtrig__bars i:nth-child(2) { opacity: 0; }
+.navtrig[aria-expanded="true"] .navtrig__bars i:nth-child(3) { transform: translateY(-5px) rotate(-45deg); }
+
+.navtrig:hover { color: var(--accent-hover); }
+.nav--over .navtrig:hover { color: var(--hero-accent, #E3C07A); }
+
+/* The label is the affordance — an unlabelled icon is a guess. It goes on the
+   narrowest screens, where the icon alone has to carry it. */
+@media (max-width: 460px) {
+  .navtrig__label { display: none; }
+}
+
+/* ---- the sheet ---- */
+
+.navpanel {
+  position: fixed;
+  inset: 0;
+  z-index: 200;                       /* over the bar (100) — it covers it */
+  visibility: hidden;
+  transition: visibility 0s linear 460ms;
+}
+.navpanel[data-open="true"] { visibility: visible; transition-delay: 0s; }
+
+.navpanel__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(12, 16, 24, 0.42);
+  -webkit-backdrop-filter: blur(3px);
+          backdrop-filter: blur(3px);
+  opacity: 0;
+  transition: opacity 460ms var(--ease);
+}
+.navpanel[data-open="true"] .navpanel__scrim { opacity: 1; }
+
+/* Slides from the left, because that is where the trigger is — a sheet that
+   arrives from the side you did not press reads as unrelated to the press. */
+.navpanel__sheet {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: min(420px, 88vw);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(22px, 3vh, 38px);
+  padding: clamp(22px, 3vw, 34px) clamp(24px, 3vw, 40px) clamp(26px, 3vw, 36px);
+  background: var(--bg);
+  border-right: 1px solid var(--hairline);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  transform: translateX(-100%);
+  transition: transform 460ms var(--ease);
+}
+.navpanel[data-open="true"] .navpanel__sheet { transform: none; }
+
+.navpanel__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.navpanel__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+}
+
+.navpanel__close {
+  appearance: none;
+  background: none;
+  border: 1px solid var(--hairline);
+  border-radius: 50%;
+  width: 34px; height: 34px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  color: var(--ink);
+  transition: border-color 300ms var(--ease), color 300ms var(--ease);
+}
+.navpanel__close svg { width: 15px; height: 15px; }
+.navpanel__close:hover { border-color: var(--ink); }
+
+/* ---- groups ---- */
+
+/* Same numbered-manifest spec as the corridor waypoints, the qualification
+   ledger and the footer columns. The navigation is not exempt from the page's
+   own system. */
+.navpanel__h {
+  display: grid;
+  grid-template-columns: var(--idx-gutter) 1fr;
+  align-items: baseline;
+  padding-bottom: 11px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--hairline-soft);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.navpanel__h i {
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: var(--idx-size);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+}
+
+.navpanel__list { display: flex; flex-direction: column; }
+
+/* The tick-and-label language the rail used, kept because it was the part of
+   that experiment worth keeping — a length change reads as position where a
+   colour change alone does not. */
+.navpanel__link {
+  display: grid;
+  grid-template-columns: 26px 1fr;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 0;
+  color: var(--ink-soft);
+  transition: color 260ms var(--ease);
+}
+
+.navpanel__link i {
+  display: block;
+  height: 1px;
+  width: 14px;
+  background: currentColor;
+  opacity: 0.4;
+  transition: width 380ms var(--ease), opacity 260ms var(--ease),
+              background 260ms var(--ease);
+}
+
+.navpanel__link span {
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+
+.navpanel__link:hover { color: var(--ink); }
+.navpanel__link:hover i { width: 22px; opacity: 1; }
+
+/* Sections are a level below pages, so they are set smaller — the panel should
+   not suggest that jumping within a page is the same move as changing page. */
+.navpanel__link--sec { padding: 9px 0; }
+.navpanel__link--sec span { font-size: 14.5px; font-weight: 500; }
+
+.navpanel__link[aria-current="page"],
+.navpanel__link.is-current { color: var(--ink); }
+.navpanel__link[aria-current="page"] i,
+.navpanel__link.is-current i { width: 26px; opacity: 1; background: var(--accent); }
+
+/* ---- foot ---- */
+
+.navpanel__foot {
+  margin-top: auto;
+  padding-top: clamp(18px, 2.4vh, 26px);
+  border-top: 1px solid var(--hairline-soft);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.navpanel__mail {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
   color: var(--muted);
   transition: color 300ms var(--ease);
 }
-
-/* The tick is the resting state, so it carries everything: 14px hairline for
-   a section you are not in, 26px gold for the one you are. A length change
-   reads from the corner of the eye where a colour change alone does not. */
-.rail__item i {
-  display: block;
-  width: 14px;
-  height: 1px;
-  flex: none;
-  background: currentColor;
-  opacity: 0.45;
-  transition: width 420ms var(--ease), opacity 300ms var(--ease),
-              background 300ms var(--ease);
-}
-
-/* Labels are laid out but not painted, so the plate is already the right size
-   before they fade in — width:0 would make the panel grow as they arrive. */
-.rail__item span {
-  opacity: 0;
-  transform: translateX(-4px);
-  transition: opacity 260ms var(--ease), transform 260ms var(--ease);
-  white-space: nowrap;
-}
-
-/* One hover names every section, rather than one word at a time under the
-   cursor. */
-.rail:hover .rail__item span,
-.rail:focus-within .rail__item span { opacity: 1; transform: none; }
-
-.rail__item:hover { color: var(--ink); }
-.rail__item:hover i { opacity: 1; width: 20px; }
-
-.rail__item.is-current { color: var(--ink); }
-.rail__item.is-current i { width: 26px; opacity: 1; background: var(--accent); }
-
-/* Below this the shell fills the viewport and there is no margin to sit in;
-   narrow screens have the burger for this anyway. */
-@media (max-width: 1359px) {
-  .rail { display: none; }
-}
+.navpanel__mail:hover { color: var(--accent-hover); }
 
 @media (prefers-reduced-motion: reduce) {
-  .rail, .rail::before, .rail__item, .rail__item i, .rail__item span {
-    transition: none;
-  }
+  .navpanel__sheet, .navpanel__scrim, .navpanel__link,
+  .navpanel__link i, .navtrig__bars i { transition: none; }
 }
 
 /* ---------------------------------------------------------------- 6. BUTTONS */
@@ -3556,97 +3580,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
   /* Full height, not a dropdown. Opening the menu already locks the body to
      no-scroll, so a short panel left the page visible underneath but frozen —
      which reads as a bug. */
-  .nav__menu {
-    position: fixed;
-    top: var(--nav-h);
-    left: 0; right: 0; bottom: 0;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0;
-    background: var(--bg);
-    padding: 8px var(--gutter) max(28px, env(safe-area-inset-bottom));
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    transform: translateY(-12px);
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 400ms var(--ease), transform 400ms var(--ease), visibility 0s linear 400ms;
-  }
-
-  .nav__menu.is-open {
-    opacity: 1;
-    transform: translateY(0);
-    visibility: visible;
-    transition: opacity 400ms var(--ease), transform 400ms var(--ease), visibility 0s linear 0s;
-  }
-
-  .nav__menu .nav__link {
-    display: flex;
-    align-items: baseline;
-    gap: 14px;
-    width: 100%;
-    padding: 16px 0;
-    font-size: 16px;
-    color: var(--ink);
-    border-bottom: 1px solid var(--hairline-soft);
-    opacity: 1;
-  }
-  /* The manifest indices from the footer columns, generated rather than
-     marked up — data-i18n rewrites textContent, so a numbered span in the
-     markup would be wiped on every language switch. */
-  .nav__menu .nav__link::before {
-    counter-increment: navitem;
-    content: "0" counter(navitem);
-    font-family: var(--font-mono);
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    color: var(--accent);
-  }
-  /* The underline rule is a desktop affordance; in the panel the row itself
-     is the target. */
-  .nav__menu .nav__link::after { display: none; }
-  .nav__menu .nav__link[aria-current="page"] { color: var(--accent); }
-  /* The drawer-style menu is a page-coloured panel, so its links stay ink
-     even while the bar itself is over the film. */
-  .nav--over .nav__menu .nav__link { color: var(--ink); }
-
-  /* The desk actions sit at the foot of the panel rather than crowding a
-     76px-tall bar. margin-top:auto holds them to the bottom on tall screens
-     and lets them scroll on short ones. */
-  .nav__panelFoot {
-    display: block;
-    width: 100%;
-    margin-top: auto;
-    padding-top: 28px;
-  }
-  .nav__panelMail {
-    display: block;
-    margin-top: 16px;
-    text-align: center;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    color: var(--muted);
-  }
-  .nav--over .nav__panelMail { color: var(--muted); }
-
-  /* Language moves into the panel: three controls plus a 15-character
-     wordmark did not fit a 390px bar, and the toggle was being clipped. */
-  .nav__panelLang { display: flex; justify-content: center; width: 100%; margin-top: 22px; }
-  .nav__panelLang .lang__btn { font-size: 13px; padding: 8px 12px; }
-  .nav__side .lang { display: none; }
-
-  /* A 46px numeral gutter is a lot of a 375px column, so the manifest tightens
-     rather than pushing its content into a two-word measure. */
-  :root { --idx-gutter: 34px; --idx-row-y: 13px; }
-
   .nav__cta { display: none; }
 
   /* The menu is fixed-position here, so it vacates its cell and the burger
      takes the first track — which is the mark's track on desktop, so the mark
      shifts one column over and sits beside it. */
-  .nav__burger { display: flex; grid-column: 1; margin-left: -8px; }
   .nav__inner { gap: 12px; }
   .nav__mark { grid-column: 2; font-size: 16px; }
 

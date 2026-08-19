@@ -37,7 +37,7 @@ PAGE = '''<!doctype html>
 
 <main id="main">
 
-  <section class="pagehead">
+  <section class="pagehead" id="top">
     <div class="shell">
       <span class="label pagehead__tag fade-up" data-i18n="cat.tag">Product Catalogue</span>
       <h1 class="t-section pagehead__title fade-up stagger-1" data-i18n="cat.title">Shop all</h1>
@@ -124,34 +124,28 @@ PAGE = '''<!doctype html>
 
 NAV = '''<header class="nav" id="nav">
   <div class="nav__inner">
-    <button class="nav__burger" id="navBurger" aria-expanded="false" aria-controls="navMenu" aria-label="Menu">
-      <span></span><span></span><span></span>
+    <!-- ONE navigation for the whole site. The bar used to carry four page
+         links at desktop and hide them behind a burger below 1024, and a
+         separate floating rail listed the sections of the current page — three
+         mechanisms for one job, none of which knew about the others.
+
+         Now the bar carries a single trigger and everything lives in the panel
+         it opens: the pages, and the sections of the page you are on. Same
+         control at every width, so there is no layout at which navigation
+         works differently. This block is the source of every _nav_*.html
+         partial (see the writes at the bottom of this file) — editing those by
+         hand does not survive the next run. -->
+    <button class="navtrig" id="navTrig" type="button"
+            aria-expanded="false" aria-controls="navPanel">
+      <span class="navtrig__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="navtrig__label" data-i18n="nav.index">Index</span>
     </button>
 
-    <nav class="nav__menu" id="navMenu" aria-label="Primary">
-      <a class="nav__link" href="catalogue.html"%CAT% data-i18n="nav.catalogue">Catalogue</a>
-      <a class="nav__link" href="about.html"%ABT% data-i18n="nav.about">About</a>
-      <a class="nav__link" href="insights.html"%INS% data-i18n="nav.insights">Insights</a>
-      <a class="nav__link" href="contact.html"%CON% data-i18n="nav.contact">Contact</a>
+    <a class="nav__mark" href="index.html">ARMINAK CARAVAN<sup>&trade;</sup></a>
 
-      <div class="nav__panelFoot">
-        <a class="btn btn--primary btn--full" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
-        <a class="nav__panelMail" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20—%20ARMINAK%20CARAVAN">trading@arminakcaravan.ae</a>
-        <div class="lang nav__panelLang" role="group" aria-label="Language">
-          <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
-          <button class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
-        </div>
-      </div>
-    </nav>
-
-    <a class="nav__mark" href="index.html">ARMINAK CARAVAN<sup>™</sup></a>
-
-    <!-- No theme toggle here. It was the eighth control in the bar, it is
-         duplicated verbatim in the footer, and it is a preference rather than
-         navigation — so the bar carries the mark, the sections, the language
-         and the one action. This block is the source of every _nav_*.html
-         partial (see the writes at the bottom of this file), so editing those
-         by hand does not survive the next run. -->
+    <!-- No page links and no theme toggle. The links moved into the panel; the
+         toggle is a preference, is duplicated in the footer, and was the
+         eighth control in a bar that should read as a mark and one action. -->
     <div class="nav__side">
       <div class="lang" role="group" aria-label="Language">
         <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
@@ -162,7 +156,41 @@ NAV = '''<header class="nav" id="nav">
   </div>
 
   <span class="nav__progress" aria-hidden="true"></span>
-</header>'''
+</header>
+
+<!-- ============================================================ NAV PANEL -->
+<!-- Rendered on every page, closed. Two groups: where you can go, and where
+     you are. The section group is generated per page and omitted entirely on
+     leaf pages that have nothing worth jumping to. -->
+<div class="navpanel" id="navPanel" data-open="false">
+  <div class="navpanel__scrim" data-nav-close></div>
+
+  <nav class="navpanel__sheet" aria-label="Site navigation">
+    <div class="navpanel__head">
+      <span class="navpanel__eyebrow">ARMINAK CARAVAN</span>
+      <button class="navpanel__close" type="button" data-nav-close aria-label="Close navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="navpanel__group">
+      <h2 class="navpanel__h"><i aria-hidden="true">01</i><span data-i18n="nav.g.pages">Pages</span></h2>
+      <ul class="navpanel__list">
+        <li><a class="navpanel__link" href="index.html"%HOME%><i aria-hidden="true"></i><span data-i18n="nav.home">Home</span></a></li>
+        <li><a class="navpanel__link" href="catalogue.html"%CAT%><i aria-hidden="true"></i><span data-i18n="nav.catalogue">Catalogue</span></a></li>
+        <li><a class="navpanel__link" href="about.html"%ABT%><i aria-hidden="true"></i><span data-i18n="nav.about">About</span></a></li>
+        <li><a class="navpanel__link" href="insights.html"%INS%><i aria-hidden="true"></i><span data-i18n="nav.insights">Market Insights</span></a></li>
+        <li><a class="navpanel__link" href="contact.html"%CON%><i aria-hidden="true"></i><span data-i18n="nav.contact">Contact</span></a></li>
+      </ul>
+    </div>
+
+%SECTIONS%
+    <div class="navpanel__foot">
+      <a class="btn btn--primary btn--full" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
+      <a class="navpanel__mail" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20&mdash;%20ARMINAK%20CARAVAN">trading@arminakcaravan.ae</a>
+    </div>
+  </nav>
+</div>'''
 
 DRAWER = '''<!-- ==================================================== SPEC / RFQ DRAWER -->
 <div class="drawer-backdrop" id="drawerBackdrop"></div>
@@ -333,11 +361,54 @@ FOOTER = '''<footer class="footer">
 </footer>'''
 
 
+# The "on this page" list, per page. Anchor, i18n key, English label.
+# A page with nothing worth jumping to gets no group at all rather than a group
+# with one entry in it — product.html is a leaf reached from the catalogue.
+PAGE_SECTIONS = {
+    "home": [("#hero",          "nav.s.top",      "Top"),
+             ("#products",      "nav.s.products", "Products"),
+             ("#categories",    "nav.s.cats",     "Categories"),
+             ("#corridors",     "nav.s.corr",     "Trade corridors"),
+             ("#about",         "nav.s.qual",     "Qualification"),
+             ("#desk",          "nav.s.desk",     "Trading desk")],
+    "cat":  [("#top",           "nav.s.top",      "Top")],
+    "abt":  [("#story",         "nav.s.story",    "Heritage"),
+             ("#qualification", "nav.s.qual",     "Qualification"),
+             ("#standards",     "nav.s.std",      "Standards"),
+             ("#corridors",     "nav.s.corr",     "Trade corridors"),
+             ("#desk",          "nav.s.desk",     "Trading desk")],
+    "ins":  [("#top",           "nav.s.top",      "Top"),
+             ("#featured",      "nav.s.feat",     "Featured report"),
+             ("#notes",         "nav.s.notes",    "Recent notes"),
+             ("#desk",          "nav.s.desk",     "Trading desk")],
+    "con":  [("#top",           "nav.s.top",      "Top"),
+             ("#consultation",  "nav.s.consult",  "Consultation"),
+             ("#legal",         "nav.s.legal",    "Terms & documents")],
+    "":     [],
+}
+
+
+def sections_block(active):
+    rows = PAGE_SECTIONS.get(active, [])
+    if not rows:
+        return ""
+    items = "\n".join(
+        f'        <li><a class="navpanel__link navpanel__link--sec" href="{href}">'
+        f'<i aria-hidden="true"></i><span data-i18n="{key}">{label}</span></a></li>'
+        for href, key, label in rows)
+    return ('    <div class="navpanel__group navpanel__group--sec" id="navSections">\n'
+            '      <h2 class="navpanel__h"><i aria-hidden="true">02</i>'
+            '<span data-i18n="nav.g.here">On this page</span></h2>\n'
+            f'      <ul class="navpanel__list">\n{items}\n      </ul>\n'
+            '    </div>\n')
+
+
 def nav_for(active):
     n = NAV
-    for key, marker in (("cat", "%CAT%"), ("abt", "%ABT%"), ("ins", "%INS%"), ("con", "%CON%")):
+    for key, marker in (("home", "%HOME%"), ("cat", "%CAT%"), ("abt", "%ABT%"),
+                        ("ins", "%INS%"), ("con", "%CON%")):
         n = n.replace(marker, ' aria-current="page"' if active == key else "")
-    return n
+    return n.replace("%SECTIONS%", sections_block(active))
 
 
 if __name__ == "__main__":

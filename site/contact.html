@@ -27,34 +27,28 @@
 <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
 <header class="nav" id="nav">
   <div class="nav__inner">
-    <button class="nav__burger" id="navBurger" aria-expanded="false" aria-controls="navMenu" aria-label="Menu">
-      <span></span><span></span><span></span>
+    <!-- ONE navigation for the whole site. The bar used to carry four page
+         links at desktop and hide them behind a burger below 1024, and a
+         separate floating rail listed the sections of the current page — three
+         mechanisms for one job, none of which knew about the others.
+
+         Now the bar carries a single trigger and everything lives in the panel
+         it opens: the pages, and the sections of the page you are on. Same
+         control at every width, so there is no layout at which navigation
+         works differently. This block is the source of every _nav_*.html
+         partial (see the writes at the bottom of this file) — editing those by
+         hand does not survive the next run. -->
+    <button class="navtrig" id="navTrig" type="button"
+            aria-expanded="false" aria-controls="navPanel">
+      <span class="navtrig__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      <span class="navtrig__label" data-i18n="nav.index">Index</span>
     </button>
 
-    <nav class="nav__menu" id="navMenu" aria-label="Primary">
-      <a class="nav__link" href="catalogue.html" data-i18n="nav.catalogue">Catalogue</a>
-      <a class="nav__link" href="about.html" data-i18n="nav.about">About</a>
-      <a class="nav__link" href="insights.html" data-i18n="nav.insights">Insights</a>
-      <a class="nav__link" href="contact.html" aria-current="page" data-i18n="nav.contact">Contact</a>
+    <a class="nav__mark" href="index.html">ARMINAK CARAVAN<sup>&trade;</sup></a>
 
-      <div class="nav__panelFoot">
-        <a class="btn btn--primary btn--full" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
-        <a class="nav__panelMail" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20—%20ARMINAK%20CARAVAN">trading@arminakcaravan.ae</a>
-        <div class="lang nav__panelLang" role="group" aria-label="Language">
-          <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
-          <button class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
-        </div>
-      </div>
-    </nav>
-
-    <a class="nav__mark" href="index.html">ARMINAK CARAVAN<sup>™</sup></a>
-
-    <!-- No theme toggle here. It was the eighth control in the bar, it is
-         duplicated verbatim in the footer, and it is a preference rather than
-         navigation — so the bar carries the mark, the sections, the language
-         and the one action. This block is the source of every _nav_*.html
-         partial (see the writes at the bottom of this file), so editing those
-         by hand does not survive the next run. -->
+    <!-- No page links and no theme toggle. The links moved into the panel; the
+         toggle is a preference, is duplicated in the footer, and was the
+         eighth control in a bar that should read as a mark and one action. -->
     <div class="nav__side">
       <div class="lang" role="group" aria-label="Language">
         <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
@@ -67,9 +61,51 @@
   <span class="nav__progress" aria-hidden="true"></span>
 </header>
 
+<!-- ============================================================ NAV PANEL -->
+<!-- Rendered on every page, closed. Two groups: where you can go, and where
+     you are. The section group is generated per page and omitted entirely on
+     leaf pages that have nothing worth jumping to. -->
+<div class="navpanel" id="navPanel" data-open="false">
+  <div class="navpanel__scrim" data-nav-close></div>
+
+  <nav class="navpanel__sheet" aria-label="Site navigation">
+    <div class="navpanel__head">
+      <span class="navpanel__eyebrow">ARMINAK CARAVAN</span>
+      <button class="navpanel__close" type="button" data-nav-close aria-label="Close navigation">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+
+    <div class="navpanel__group">
+      <h2 class="navpanel__h"><i aria-hidden="true">01</i><span data-i18n="nav.g.pages">Pages</span></h2>
+      <ul class="navpanel__list">
+        <li><a class="navpanel__link" href="index.html"><i aria-hidden="true"></i><span data-i18n="nav.home">Home</span></a></li>
+        <li><a class="navpanel__link" href="catalogue.html"><i aria-hidden="true"></i><span data-i18n="nav.catalogue">Catalogue</span></a></li>
+        <li><a class="navpanel__link" href="about.html"><i aria-hidden="true"></i><span data-i18n="nav.about">About</span></a></li>
+        <li><a class="navpanel__link" href="insights.html"><i aria-hidden="true"></i><span data-i18n="nav.insights">Market Insights</span></a></li>
+        <li><a class="navpanel__link" href="contact.html" aria-current="page"><i aria-hidden="true"></i><span data-i18n="nav.contact">Contact</span></a></li>
+      </ul>
+    </div>
+
+    <div class="navpanel__group navpanel__group--sec" id="navSections">
+      <h2 class="navpanel__h"><i aria-hidden="true">02</i><span data-i18n="nav.g.here">On this page</span></h2>
+      <ul class="navpanel__list">
+        <li><a class="navpanel__link navpanel__link--sec" href="#top"><i aria-hidden="true"></i><span data-i18n="nav.s.top">Top</span></a></li>
+        <li><a class="navpanel__link navpanel__link--sec" href="#consultation"><i aria-hidden="true"></i><span data-i18n="nav.s.consult">Consultation</span></a></li>
+        <li><a class="navpanel__link navpanel__link--sec" href="#legal"><i aria-hidden="true"></i><span data-i18n="nav.s.legal">Terms & documents</span></a></li>
+      </ul>
+    </div>
+
+    <div class="navpanel__foot">
+      <a class="btn btn--primary btn--full" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
+      <a class="navpanel__mail" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20&mdash;%20ARMINAK%20CARAVAN">trading@arminakcaravan.ae</a>
+    </div>
+  </nav>
+</div>
+
 <main id="main">
 
-  <section class="pagehead">
+  <section class="pagehead" id="top">
     <div class="shell">
       <span class="label pagehead__tag fade-up" data-i18n="con.tag">Contacts</span>
       <h1 class="t-section pagehead__title fade-up stagger-1" data-i18n="con.title">Institutional Contact Desk</h1>
@@ -183,7 +219,7 @@
   </section>
 
   <!-- ------------------------------------------------------------ legal -->
-  <section class="section section--tight">
+  <section class="section section--tight" id="legal">
     <div class="shell">
       <div class="grid-notes">
         <article class="note fade-up" id="terms">

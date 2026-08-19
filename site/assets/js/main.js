@@ -91,77 +91,118 @@
     sync();                              /* a reload can restore ticks */
   }
 
-  /* -------------------------------------------------------- SECTION RAIL -- */
-  /* The left-margin index. Two jobs: appear once the film is behind you, and
-     say which section you are in.
+  /* ----------------------------------------------------- NAVIGATION ------ */
+  /* One panel, every page, every width. It replaced three separate things: the
+     page links in the bar at desktop, the burger panel those folded into below
+     1024, and a floating rail that listed the current page's sections. Three
+     mechanisms for one job, none of which knew about the others.
 
-     "Which section" is resolved by scroll position against each target's top,
-     walking from the bottom up and taking the first one that has passed the
-     mark. An IntersectionObserver is the usual reflex here and it is the wrong
-     tool: these sections are taller than the viewport, so several are
-     intersecting at once and the observer cannot say which one you are
-     reading. A single comparison against one line can.
+     Two responsibilities: open and close the panel, and keep the "on this page"
+     list pointing at the section actually being read.
 
-     The line sits at 38% of the viewport rather than the top, so a section
-     becomes current when it dominates the screen, not when its first pixel
-     appears. */
+     Note this runs on every page, and on pages with no section group the second
+     half returns early — the panel is still the navigation, it just has nothing
+     local to track. */
 
-  function initRail() {
-    var rail = qs('#rail');
-    if (!rail) return;
+  function initNavPanel() {
+    var panel = qs('#navPanel');
+    var trig = qs('#navTrig');
+    if (!panel || !trig) return;
 
-    var items = [].slice.call(rail.querySelectorAll('.rail__item'));
-    if (!items.length) return;
+    var sheet = qs('.navpanel__sheet', panel);
+    var lastFocus = null;
 
-    /* Resolve the anchors once. A missing target is dropped rather than
-       guarded on every frame — the rail is generated with the page, so a
-       broken href is a build error, not a runtime condition. */
-    var targets = [];
-    items.forEach(function (a) {
-      var el = document.getElementById(a.getAttribute('href').slice(1));
-      if (el) targets.push({ a: a, el: el });
-      else a.parentNode.hidden = true;
+    function setOpen(open) {
+      panel.setAttribute('data-open', open ? 'true' : 'false');
+      trig.setAttribute('aria-expanded', open ? 'true' : 'false');
+      document.body.classList.toggle('no-scroll', open);
+
+      if (open) {
+        lastFocus = document.activeElement;
+        /* The first link, not the sheet — a keyboard user should land on
+           something actionable rather than tab past the close button first. */
+        var first = qs('.navpanel__link', panel);
+        if (first) first.focus();
+      } else if (lastFocus && lastFocus.focus) {
+        lastFocus.focus();
+      }
+    }
+
+    trig.addEventListener('click', function () {
+      setOpen(panel.getAttribute('data-open') !== 'true');
     });
-    if (!targets.length) return;
 
-    var hero = qs('#hero');
-    var current = null;
-    var ticking = false;
+    qsa('[data-nav-close]', panel).forEach(function (el) {
+      el.addEventListener('click', function () { setOpen(false); });
+    });
 
-    function apply() {
+    /* Every link closes it, in-page ones included — those otherwise leave a
+       full-height sheet sitting over the section just scrolled to. */
+    qsa('a', panel).forEach(function (a) {
+      a.addEventListener('click', function () { setOpen(false); });
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && panel.getAttribute('data-open') === 'true') setOpen(false);
+    });
+
+    /* Focus must not walk out of an open sheet into the page behind it. */
+    if (sheet) {
+      sheet.addEventListener('keydown', function (e) {
+        if (e.key !== 'Tab') return;
+        var f = qsa('a[href], button:not([disabled])', sheet);
+        if (!f.length) return;
+        var first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      });
+    }
+
+    /* ---- which section am I in ---- */
+
+    var secs = [];
+    qsa('.navpanel__link--sec', panel).forEach(function (a) {
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (el) secs.push({ a: a, el: el });
+      else a.parentNode.hidden = true;        /* anchor with no target: build bug */
+    });
+    if (!secs.length) return;
+
+    var current = null, ticking = false;
+
+    function mark() {
       ticking = false;
       var y = window.scrollY || window.pageYOffset;
       var vh = window.innerHeight || document.documentElement.clientHeight;
 
-      /* Off over the film: the hero has its own scroll cue, and an index of a
-         page you have not started reading is noise. */
-      var past = hero ? y > hero.offsetHeight * 0.66 : y > 8;
-      rail.classList.toggle('is-on', past);
-
-      var mark = y + vh * 0.38;
-      var found = targets[0];
-      for (var i = targets.length - 1; i >= 0; i--) {
-        if (targets[i].el.offsetTop <= mark) { found = targets[i]; break; }
+      /* One line at 38% of the viewport, walked bottom-up. These sections are
+         taller than the viewport, so several are on screen at once and an
+         IntersectionObserver cannot say which is being read; one comparison
+         against one line can. */
+      var line = y + vh * 0.38;
+      var found = secs[0];
+      for (var i = secs.length - 1; i >= 0; i--) {
+        if (secs[i].el.offsetTop <= line) { found = secs[i]; break; }
       }
 
       if (found.a === current) return;
-      if (current) current.classList.remove('is-current');
+      if (current) { current.classList.remove('is-current'); current.removeAttribute('aria-current'); }
       found.a.classList.add('is-current');
       found.a.setAttribute('aria-current', 'true');
-      if (current) current.removeAttribute('aria-current');
       current = found.a;
     }
 
     function onScroll() {
       if (ticking) return;
       ticking = true;
-      requestAnimationFrame(apply);
+      requestAnimationFrame(mark);
     }
 
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
-    apply();
+    mark();
   }
+
 
   /* ---------------------------------------------------------------- HERO -- */
   /* Full-bleed desert film with a windowed entrance: the caravan opens inside
@@ -577,8 +618,6 @@
     if (!nav) return;
 
     var hero = qs('#hero');
-    var burger = qs('#navBurger');
-    var menu = qs('#navMenu');
 
     /* Over the film the bar is transparent and cream; past the hero it picks
        up its blurred page-coloured background. Pages without a hero only ever
@@ -615,27 +654,6 @@
     window.addEventListener('resize', onScroll);
     document.addEventListener('ac:herosettled', onScroll);
 
-    if (!burger || !menu) return;
-
-    function closeMenu() {
-      burger.setAttribute('aria-expanded', 'false');
-      menu.classList.remove('is-open');
-      document.body.classList.remove('no-scroll');
-    }
-
-    burger.addEventListener('click', function () {
-      var open = burger.getAttribute('aria-expanded') === 'true';
-      burger.setAttribute('aria-expanded', open ? 'false' : 'true');
-      menu.classList.toggle('is-open', !open);
-      document.body.classList.toggle('no-scroll', !open);
-    });
-
-    /* Every link in the panel, not just .nav__link — the panel's quotation
-       button and mail line are same-page anchors on contact.html, and would
-       otherwise leave the menu open over a body still locked to no-scroll. */
-    qsa('a', menu).forEach(function (a) { a.addEventListener('click', closeMenu); });
-    window.addEventListener('resize', function () { if (window.innerWidth > 1024) closeMenu(); });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
   }
 
   /* -------------------------------------------------------- SCROLL REVEAL -- */
@@ -1099,7 +1117,7 @@
     initDrawer();
     initForms();
     initHero();
-    initRail();
+    initNavPanel();
     initQualify();
     initScramble();
     initCorridorGlobe();
