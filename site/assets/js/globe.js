@@ -56,6 +56,11 @@ export async function mountGlobe(host, opts = {}) {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
   const dataUrl = opts.dataUrl || 'assets/data/coastlines.json';
 
+  /* Phone build. Matched to the CSS breakpoint rather than to a guess about
+     screen size, so the layout and the geometry budget can never disagree. */
+  const compact = matchMedia('(max-width: 999px)').matches;
+  const touch = matchMedia('(pointer: coarse)').matches;
+
   let renderer;
   try {
     renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -97,13 +102,21 @@ export async function mountGlobe(host, opts = {}) {
   controls.autoRotate = !reduced;
   controls.autoRotateSpeed = 0.28;
 
+  /* On a phone a one-finger drag over the canvas is how you scroll the page,
+     not how you turn a globe. OrbitControls returns early from pointerdown
+     when disabled — so it never calls preventDefault and the swipe reaches the
+     document — while autoRotate lives in update() and keeps running regardless.
+     The globe therefore still turns on its own, taps still pick, and the page
+     scrolls straight through it. */
+  if (touch) controls.enabled = false;
+
   const world = new THREE.Group();
   scene.add(world);
 
   /* three r155+ dropped legacy lighting, so these intensities are deliberate:
      anything lower renders the paper as mud. */
   const globeMat = new THREE.MeshLambertMaterial({ color: PAPER });
-  const globeMesh = new THREE.Mesh(new THREE.SphereGeometry(R, 96, 96), globeMat);
+  const globeMesh = new THREE.Mesh(new THREE.SphereGeometry(R, compact ? 56 : 96, compact ? 56 : 96), globeMat);
   world.add(globeMesh);
   scene.add(new THREE.AmbientLight(0xffffff, 2.5));
   const key = new THREE.DirectionalLight(0xffffff, 1.9);
@@ -114,13 +127,18 @@ export async function mountGlobe(host, opts = {}) {
   scene.add(fill);
 
   /* Graticule */
+  /* A phone shows this at roughly a third the diameter, so a graticule at full
+     density is a moiré rather than a grid — and thousands of extra segments for
+     a mesh nobody can resolve. */
+  const gStep = compact ? 30 : 15;           /* degrees between lines */
+  const gSeg  = compact ? 10 : 5;            /* tessellation along a line */
   const gpts = [];
-  for (let lon = -180; lon < 180; lon += 15)
-    for (let lat = -85; lat < 85; lat += 5)
-      gpts.push(toVec(lat, lon, R * 1.001), toVec(lat + 5, lon, R * 1.001));
-  for (let lat = -60; lat <= 60; lat += 15)
-    for (let lon = -180; lon < 180; lon += 5)
-      gpts.push(toVec(lat, lon, R * 1.001), toVec(lat, lon + 5, R * 1.001));
+  for (let lon = -180; lon < 180; lon += gStep)
+    for (let lat = -85; lat < 85; lat += gSeg)
+      gpts.push(toVec(lat, lon, R * 1.001), toVec(lat + gSeg, lon, R * 1.001));
+  for (let lat = -60; lat <= 60; lat += gStep)
+    for (let lon = -180; lon < 180; lon += gSeg)
+      gpts.push(toVec(lat, lon, R * 1.001), toVec(lat, lon + gSeg, R * 1.001));
   const gratMat = new THREE.LineBasicMaterial({ color: INK, transparent: true, opacity: 0.09 });
   world.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(gpts), gratMat));
 
@@ -129,10 +147,13 @@ export async function mountGlobe(host, opts = {}) {
   try {
     const data = await (await fetch(dataUrl)).json();
     const cpts = [];
+    /* Every other vertex on a phone: at this diameter the dropped detail is
+       well under a pixel, and it halves the coastline geometry. */
+    const step = compact ? 2 : 1;
     for (const line of data.lines)
-      for (let i = 0; i < line.length - 1; i++)
+      for (let i = 0; i + step < line.length; i += step)
         cpts.push(toVec(line[i][1], line[i][0], R * 1.003),
-                  toVec(line[i + 1][1], line[i + 1][0], R * 1.003));
+                  toVec(line[i + step][1], line[i + step][0], R * 1.003));
     world.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(cpts), coastMat));
   } catch (e) { /* the lanes still read without a coastline */ }
 
@@ -355,25 +376,19 @@ export async function mountGlobe(host, opts = {}) {
 
   /* Pick a waypoint, or pass null to release. Everything is recomputed from
      the stored scroll position rather than nudged, so releasing a pick lands
-     back exactly on whatever the scroll had built. */
-  let targetYaw = null;
+     back exactly on whatever the scroll had built.
 
+     Picking deliberately does NOT turn the globe. The default view already
+     frames all five waypoints — Black Sea through to East Africa sit inside
+     one hemisphere — so swinging the sphere on every click only pushed them
+     out toward the limb where the projection squashes them and the outermost
+     one clips off the edge. The sphere holds still; the lanes do the talking.
+     Auto-rotation is parked for the same reason: a highlighted route that
+     slowly drifts away is not a highlight. */
   function select(i, silent) {
     if (i === selected) i = null;            /* clicking the same one releases */
     selected = i;
     controls.autoRotate = !reduced && selected === null;
-
-    if (selected !== null) {
-      /* Turn the picked waypoint toward the reader. Only the horizontal
-         component — tilting the pole to chase a latitude looks like a fault. */
-      const v = marks[selected].label.v;
-      const want = Math.atan2(camera.position.z, camera.position.x)
-                 - Math.atan2(v.z, v.x);
-      const cur = world.rotation.y;
-      targetYaw = cur + Math.atan2(Math.sin(want - cur), Math.cos(want - cur));
-    } else {
-      targetYaw = null;
-    }
 
     progress = -1;                           /* force a full recompute */
     setProgress(lastP);
@@ -385,7 +400,10 @@ export async function mountGlobe(host, opts = {}) {
      0.011 of a unit sphere, which is far too small to ask anyone to hit. */
   const ray = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
-  const PICK_ANGLE = 0.24;                   /* ~14° of arc counts as "on it" */
+  /* ~14° of arc counts as "on it" — more on touch, where the target is a
+     fingertip and the sphere is a third the size. */
+  const PICK_ANGLE = touch ? 0.34 : 0.24;
+  const MOVE_TOL = touch ? 14 : 6;           /* px of travel that still reads as a tap */
 
   function hitTest(ev) {
     const r = renderer.domElement.getBoundingClientRect();
@@ -415,10 +433,10 @@ export async function mountGlobe(host, opts = {}) {
     const moved = Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y);
     const quick = performance.now() - downAt.t < 500;
     downAt = null;
-    if (moved > 6 || !quick) return;
+    if (moved > MOVE_TOL || !quick) return;
     select(hitTest(e));
   });
-  renderer.domElement.addEventListener('pointermove', function (e) {
+  if (!touch) renderer.domElement.addEventListener('pointermove', function (e) {
     if (downAt) return;                       /* mid-drag: leave the cursor */
     renderer.domElement.style.cursor = hitTest(e) === null ? '' : 'pointer';
   });
@@ -452,12 +470,6 @@ export async function mountGlobe(host, opts = {}) {
 
   function loop(time) {
     controls.update();
-
-    /* Ease the picked waypoint round to face the reader. */
-    if (targetYaw !== null) {
-      const d = targetYaw - world.rotation.y;
-      world.rotation.y += Math.abs(d) < 0.0005 ? d : d * 0.075;
-    }
 
     if (selected !== null) {
       /* One marker per leg of the picked route, all running together. */

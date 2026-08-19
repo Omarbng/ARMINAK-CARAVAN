@@ -51,6 +51,118 @@
      codec-probing stack is the kind of thing that gets "fixed" by someone
      later. */
 
+  /* --------------------------------------------------------- QUALIFY ----- */
+  /* Reads the four checkboxes and moves three things: the count, the meter,
+     and one data-state that the stylesheet turns into wording and into the
+     quotation button appearing.
+
+     The wording lives in the markup and the language file, not here — this
+     function never writes a sentence, so the RU/EN switch keeps ownership of
+     the copy and there is nothing to translate twice. */
+
+  function initQualify() {
+    var list = qs('#qualList');
+    var result = qs('#qualResult');
+    if (!list || !result) return;
+
+    var boxes = [].slice.call(list.querySelectorAll('.qual__box'));
+    if (!boxes.length) return;
+
+    var count = qs('#qualCount');
+    var meter = qs('#qualMeter');
+
+    /* Opts the section into the reveal behaviour. Until this lands the
+       quotation button is simply visible, which is the correct no-JS state. */
+    result.classList.add('is-live');
+
+    function sync() {
+      var n = 0;
+      boxes.forEach(function (b) { if (b.checked) n++; });
+
+      if (count) count.textContent = String(n);
+      if (meter) meter.style.width = (n / boxes.length * 100) + '%';
+      result.setAttribute('data-state', n === 0 ? '0' : n === boxes.length ? 'all' : 'some');
+    }
+
+    /* One listener on the list rather than four on the inputs: change bubbles,
+       and the section is generated so the count can grow without touching
+       this. */
+    list.addEventListener('change', sync);
+    sync();                              /* a reload can restore ticks */
+  }
+
+  /* -------------------------------------------------------- SECTION RAIL -- */
+  /* The left-margin index. Two jobs: appear once the film is behind you, and
+     say which section you are in.
+
+     "Which section" is resolved by scroll position against each target's top,
+     walking from the bottom up and taking the first one that has passed the
+     mark. An IntersectionObserver is the usual reflex here and it is the wrong
+     tool: these sections are taller than the viewport, so several are
+     intersecting at once and the observer cannot say which one you are
+     reading. A single comparison against one line can.
+
+     The line sits at 38% of the viewport rather than the top, so a section
+     becomes current when it dominates the screen, not when its first pixel
+     appears. */
+
+  function initRail() {
+    var rail = qs('#rail');
+    if (!rail) return;
+
+    var items = [].slice.call(rail.querySelectorAll('.rail__item'));
+    if (!items.length) return;
+
+    /* Resolve the anchors once. A missing target is dropped rather than
+       guarded on every frame — the rail is generated with the page, so a
+       broken href is a build error, not a runtime condition. */
+    var targets = [];
+    items.forEach(function (a) {
+      var el = document.getElementById(a.getAttribute('href').slice(1));
+      if (el) targets.push({ a: a, el: el });
+      else a.parentNode.hidden = true;
+    });
+    if (!targets.length) return;
+
+    var hero = qs('#hero');
+    var current = null;
+    var ticking = false;
+
+    function apply() {
+      ticking = false;
+      var y = window.scrollY || window.pageYOffset;
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+
+      /* Off over the film: the hero has its own scroll cue, and an index of a
+         page you have not started reading is noise. */
+      var past = hero ? y > hero.offsetHeight * 0.66 : y > 8;
+      rail.classList.toggle('is-on', past);
+
+      var mark = y + vh * 0.38;
+      var found = targets[0];
+      for (var i = targets.length - 1; i >= 0; i--) {
+        if (targets[i].el.offsetTop <= mark) { found = targets[i]; break; }
+      }
+
+      if (found.a === current) return;
+      if (current) current.classList.remove('is-current');
+      found.a.classList.add('is-current');
+      found.a.setAttribute('aria-current', 'true');
+      if (current) current.removeAttribute('aria-current');
+      current = found.a;
+    }
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(apply);
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    apply();
+  }
+
   /* ---------------------------------------------------------------- HERO -- */
   /* Full-bleed desert film with a windowed entrance: the caravan opens inside
      a framed window on the ivory ground, then the window opens outward and the
@@ -285,7 +397,11 @@
     if (!host || !window.matchMedia) return;
     if (!window.IntersectionObserver || !window.Promise) return;
 
-    if (!matchMedia('(min-width: 1000px)').matches) return;
+    /* The globe used to be desktop-only, which left phones on the old flat
+       route diagram. It now mounts everywhere WebGL exists — but it is ~856KB
+       of three.js, OrbitControls and coastline data, so the gates that matter
+       on a phone stay: it is imported lazily when the section scrolls into
+       view, never on Data Saver, and never against reduced motion. */
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
@@ -461,19 +577,27 @@
        During the intro the ground behind the bar is ivory, not film, so cream
        would be invisible — the bar keeps page colours until the window opens
        and the film actually reaches the top of the screen. */
+    /* Exactly one of three states, always. The previous version had a fourth,
+       unnamed one: during the intro it removed BOTH classes and returned, which
+       leaves a bar with no background over page content. That is the overlap —
+       the mark and the quotation button sitting directly on whatever scrolls
+       under them, with the press marquee reading straight through the bar.
+
+       The fix is that "solid" is decided by scroll position alone. Whether the
+       intro is still running only decides the text colour, never whether the
+       bar has a background. */
     function onScroll() {
       var y = window.scrollY || window.pageYOffset;
-      if (!hero) {
-        nav.classList.toggle('nav--scrolled', y > 8);
-        return;
-      }
-      if (document.documentElement.classList.contains('ac-intro')) {
-        nav.classList.remove('nav--over', 'nav--scrolled');
-        return;
-      }
-      var over = y < hero.offsetHeight - nav.offsetHeight;
-      nav.classList.toggle('nav--over', over);
-      nav.classList.toggle('nav--scrolled', !over);
+      var intro = document.documentElement.classList.contains('ac-intro');
+
+      /* No hero on this page: the bar is over page content from 8px down. */
+      var onFilm = hero ? y < hero.offsetHeight - nav.offsetHeight : y <= 8;
+
+      /* Cream type needs the film behind it. During the window beat the ground
+         is still ivory, so the bar keeps page colours even though it has not
+         scrolled yet. */
+      nav.classList.toggle('nav--over', onFilm && !intro);
+      nav.classList.toggle('nav--scrolled', !onFilm);
     }
 
     onScroll();
@@ -974,6 +1098,8 @@
     initDrawer();
     initForms();
     initHero();
+    initRail();
+    initQualify();
     initScramble();
     initCorridorGlobe();
   }

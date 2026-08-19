@@ -106,6 +106,24 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
 
 <main id="main">
 
+<!-- ============================================================ SECTION RAIL -->
+<!-- Once the bar leaves the film it is a mark and one button, which is not
+     navigation. This is: a fixed index of the page down the left margin, with
+     the section you are in marked. It only exists past the hero, on a viewport
+     wide enough to have a margin to spare, and it is a plain nav of in-page
+     anchors — so with no JS it is still a usable list of links, just always
+     visible instead of appearing on scroll. -->
+<nav class="rail" id="rail" aria-label="Sections">
+  <ol class="rail__list">
+    <li><a class="rail__item" href="#hero"><i aria-hidden="true"></i><span data-i18n="rail.hero">Top</span></a></li>
+    <li><a class="rail__item" href="#products"><i aria-hidden="true"></i><span data-i18n="rail.products">Products</span></a></li>
+    <li><a class="rail__item" href="#categories"><i aria-hidden="true"></i><span data-i18n="rail.categories">Categories</span></a></li>
+    <li><a class="rail__item" href="#corridors"><i aria-hidden="true"></i><span data-i18n="rail.corridors">Corridors</span></a></li>
+    <li><a class="rail__item" href="#about"><i aria-hidden="true"></i><span data-i18n="rail.about">Qualification</span></a></li>
+    <li><a class="rail__item" href="#desk"><i aria-hidden="true"></i><span data-i18n="rail.desk">Trading desk</span></a></li>
+  </ol>
+</nav>
+
 <!-- ================================================================== HERO -->
 <!-- Full-bleed desert film. Two separately reframed cuts: the 16:9 one for
      landscape, a 9:16 one for phones. The poster is server-rendered and is the
@@ -271,7 +289,7 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
 </section>
 
 <!-- ============================================================= TAB RAILS -->
-<section class="section--tight" data-tabs>
+<section class="section--tight" id="products" data-tabs>
   <div class="shell">
     <div class="rowhead fade-up">
       <div class="tabs" role="tablist">
@@ -359,7 +377,10 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
     <div class="corridor__grid">
       <div>
         <div class="corridor__globe" id="corridorGlobe" aria-hidden="true"></div>
-        <p class="corridor__hint" id="corridorHint" hidden data-i18n="corridor.drag">Drag to turn · click a waypoint to trace its route</p>
+        <p class="corridor__hint" id="corridorHint" hidden>
+          <span class="corridor__hint--fine" data-i18n="corridor.drag">Drag to turn · click a waypoint to trace its route</span>
+          <span class="corridor__hint--coarse" data-i18n="corridor.tap">Tap a waypoint to trace its route</span>
+        </p>
       </div>
 
       <table class="corridor__lanes" id="corridorLanes" hidden>
@@ -538,47 +559,98 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
 </section>
 
 <!-- ======================================================= QUALIFICATION -->
-<!-- Four criteria squeezed into a narrow right-hand column read as a caption to
-     the heading beside them. They are the argument, so they get the full
-     measure: a ledger the width of the page, each criterion set at reading
-     size with its index in the same gutter the corridor manifest uses. -->
+<!-- ======================================================= QUALIFICATION -->
+<!-- The section is called Client Qualification, so it lets the client qualify
+     themselves. Four criteria as real checkboxes: tick the ones that describe
+     your business and the section answers — the meter fills, the count moves,
+     and at four of four the welcome line and the quotation request arrive.
+
+     Before this it was four assertions in large type with numerals beside
+     them, which is a listicle: nothing for the reader to do and no reason to
+     believe any of it. The interaction is the argument. Someone who has ticked
+     four boxes has just told themselves they are the right counterparty, which
+     is the job this section was always meant to do.
+
+     Real <input type="checkbox"> with real <label>, so keyboard, space to
+     toggle, focus rings and screen-reader state all come for free. With no JS
+     the boxes still tick; only the meter and the verdict stay put, and the
+     criteria and the closing line are both still readable — which is exactly
+     what the old version was. -->
 <section class="section--tight qual" id="about" style="padding-bottom: clamp(72px, 8vw, 128px)">
   <div class="shell">
     <div class="qual__head">
       <span class="label fade-up" data-i18n="qualify.tag">Client Qualification</span>
       <h2 class="t-section qual__title fade-up stagger-1 u-mt-s" data-i18n="qualify.title">You will enjoy working with ARMINAK CARAVAN if:</h2>
+      <p class="qual__lead fade-up stagger-2" data-i18n="qualify.lead">Four things we hold ourselves to. Mark the ones that matter to your business.</p>
     </div>
 
-    <ol class="qual__list">
+    <ul class="qual__list" id="qualList">
       <li class="qual__item fade-up">
-        <span class="qual__num">01</span>
-        <p class="qual__text" data-i18n="qualify.i1">You value long-term supply stability.</p>
+        <input class="qual__box" type="checkbox" id="q1">
+        <label class="qual__label" for="q1">
+          <span class="qual__tick" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m3.4 8.6 3 3 6.2-7.2"/></svg>
+          </span>
+          <span class="qual__num" aria-hidden="true">01</span>
+          <span class="qual__text" data-i18n="qualify.i1">You value long-term supply stability.</span>
+        </label>
       </li>
       <li class="qual__item fade-up stagger-1">
-        <span class="qual__num">02</span>
-        <p class="qual__text" data-i18n="qualify.i2">You expect uncompromising quality and standards.</p>
+        <input class="qual__box" type="checkbox" id="q2">
+        <label class="qual__label" for="q2">
+          <span class="qual__tick" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m3.4 8.6 3 3 6.2-7.2"/></svg>
+          </span>
+          <span class="qual__num" aria-hidden="true">02</span>
+          <span class="qual__text" data-i18n="qualify.i2">You expect uncompromising quality and standards.</span>
+        </label>
       </li>
       <li class="qual__item fade-up stagger-2">
-        <span class="qual__num">03</span>
-        <p class="qual__text" data-i18n="qualify.i3">You require reliable trade corridors.</p>
+        <input class="qual__box" type="checkbox" id="q3">
+        <label class="qual__label" for="q3">
+          <span class="qual__tick" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m3.4 8.6 3 3 6.2-7.2"/></svg>
+          </span>
+          <span class="qual__num" aria-hidden="true">03</span>
+          <span class="qual__text" data-i18n="qualify.i3">You require reliable trade corridors.</span>
+        </label>
       </li>
       <li class="qual__item fade-up stagger-3">
-        <span class="qual__num">04</span>
-        <p class="qual__text" data-i18n="qualify.i4">You believe in transparent, institutional B2B relationships.</p>
+        <input class="qual__box" type="checkbox" id="q4">
+        <label class="qual__label" for="q4">
+          <span class="qual__tick" aria-hidden="true">
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="m3.4 8.6 3 3 6.2-7.2"/></svg>
+          </span>
+          <span class="qual__num" aria-hidden="true">04</span>
+          <span class="qual__text" data-i18n="qualify.i4">You believe in transparent, institutional B2B relationships.</span>
+        </label>
       </li>
-    </ol>
+    </ul>
 
-    <!-- The welcome is the point the four criteria have been building to, so
-         it closes the ledger on the gold rule rather than sitting in a margin. -->
-    <div class="qual__foot fade-up">
-      <p class="qual__close" data-i18n="qualify.close">If this aligns with your business philosophy — welcome to our Caravan.</p>
-      <a class="qual__more" href="about.html" data-i18n="qualify.more">Heritage &amp; standards →</a>
+    <!-- The answer. aria-live so the verdict is announced when it changes
+         rather than only being visible. -->
+    <div class="qual__result fade-up" id="qualResult" data-state="0">
+      <div class="qual__meter" aria-hidden="true"><i id="qualMeter"></i></div>
+
+      <div class="qual__answer" aria-live="polite">
+        <p class="qual__verdict">
+          <span class="qual__count tabular" id="qualCount">0</span><span class="qual__of tabular">/4</span>
+          <span class="qual__say qual__say--none" data-i18n="qualify.s0">Mark what applies to you</span>
+          <span class="qual__say qual__say--some" data-i18n="qualify.s1">We are built for this</span>
+          <span class="qual__say qual__say--all" data-i18n="qualify.close">If this aligns with your business philosophy — welcome to our Caravan.</span>
+        </p>
+
+        <div class="qual__act">
+          <a class="btn btn--primary qual__cta" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
+          <a class="qual__more" href="about.html" data-i18n="qualify.more">Heritage &amp; standards →</a>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- ========================================================= CLOSING BAND -->
-<section class="section section--inverse closing">
+<section class="section section--inverse closing" id="desk">
   <!-- Was centred: title, copy, button, footnote, all stacked down the middle.
        That is the one layout every B2B site ends on, and nothing else on this
        page is centred — the hero, the corridors and the qualification ledger

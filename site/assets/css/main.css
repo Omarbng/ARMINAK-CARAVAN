@@ -445,9 +445,16 @@ button, input, select, textarea { font: inherit; color: inherit; }
    scroll-padding-top, which is correctly the taller of the two. */
 .nav--scrolled {
   --nav-h: 58px;
-  background: var(--scrim-nav);
-  -webkit-backdrop-filter: blur(14px) saturate(1.1);
-  backdrop-filter: blur(14px) saturate(1.1);
+  /* Opaque, not a 0.86 scrim. --scrim-nav is rgba(247,244,237,0.86) and the
+     page is #F7F4ED, so that was 86% ivory over ivory: invisible by
+     construction, and it never actually occluded anything. Whatever scrolled
+     under the bar read straight through it — which is the overlap. A blur is
+     no help either; it blurs what shows through instead of stopping it.
+
+     Fully opaque page colour, so the bar is a surface. The hairline is what
+     separates it from the content, which is how every other edge on this site
+     is drawn. */
+  background: var(--bg);
   border-bottom-color: var(--hairline);
 }
 .nav--scrolled .nav__mark { font-size: 17px; }
@@ -467,6 +474,50 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .nav__mark, .nav__cta {
   transition: font-size 350ms var(--ease), height 350ms var(--ease),
               padding 350ms var(--ease);
+}
+
+/* ---- Bar entrance ---------------------------------------------------------
+   The bar used to be simply present on first paint, all seven things at once,
+   which is why the buttons top-right announced themselves before the mark did.
+   It now assembles left to right in the order a reader would build it: mark,
+   sections, language, action.
+
+   Pure CSS on purpose. A CSS animation runs once when the element is created,
+   which is exactly "every load and every refresh" with no JS, no class to add
+   and remove, and no chance of the bar being stuck invisible if a script
+   fails — `both` fill only holds the start state through the delay, and the
+   delays are short enough that a failed stylesheet is the only way to lose it.
+
+   Colour is deliberately not animated here: .nav--over swaps the mark and
+   links to cream over the film, and animating colour would fight it. This
+   moves opacity and Y only.                                                 */
+
+@media (prefers-reduced-motion: no-preference) {
+  .nav__mark,
+  .nav__menu > .nav__link,
+  .nav__side > * {
+    animation: navIn 620ms var(--ease) both;
+  }
+
+  .nav__mark { animation-delay: 220ms; }
+
+  /* Sections read as one group arriving, not four separate events — 70ms is
+     under the ~100ms that starts to feel like a queue. */
+  .nav__menu > .nav__link:nth-child(1) { animation-delay: 470ms; }
+  .nav__menu > .nav__link:nth-child(2) { animation-delay: 540ms; }
+  .nav__menu > .nav__link:nth-child(3) { animation-delay: 610ms; }
+  .nav__menu > .nav__link:nth-child(4) { animation-delay: 680ms; }
+
+  .nav__side > .lang    { animation-delay: 820ms; }
+  .nav__side > .nav__cta { animation-delay: 900ms; }
+
+  /* The burger replaces the sections on narrow screens, so it lands where the
+     first section link would have. */
+  .nav__burger { animation: navIn 620ms var(--ease) both; animation-delay: 470ms; }
+}
+
+@keyframes navIn {
+  from { opacity: 0; transform: translateY(-7px); }
 }
 
 /* Burger */
@@ -495,6 +546,96 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .nav__burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(3.75px) rotate(45deg); }
 .nav__burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .nav__burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-3.75px) rotate(-45deg); }
+
+/* ------------------------------------------------------- 5b. SECTION RAIL */
+/* A reading index down the left margin, not a second navigation bar. It states
+   where you are in the page and lets you leave for anywhere else in it.
+
+   Deliberately quiet: mono at 10px, a 1px tick per section, and no fill or
+   panel behind it. The site frames things with hairlines and crop marks rather
+   than chrome, and a floating pill of links here would read as a widget bolted
+   onto the page. What carries the state is the tick — it lengthens and takes
+   the gold when its section is the one you are in, which is legible from the
+   corner of the eye without asking to be read.
+
+   Labels are hidden until hover so the resting state is six ticks and a word,
+   which is quiet enough to live permanently on screen. */
+
+.rail {
+  position: fixed;
+  left: max(14px, calc((100vw - 1560px) / 2 - 26px));
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 90;                      /* under the nav (100) and the drawer */
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 500ms var(--ease), visibility 0s linear 500ms;
+}
+
+/* Shown by main.js once the film is behind you — the hero has its own scroll
+   cue and does not need an index. */
+.rail.is-on {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 500ms var(--ease), visibility 0s linear 0s;
+}
+
+.rail__list { display: flex; flex-direction: column; gap: 2px; }
+
+.rail__item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color 300ms var(--ease);
+}
+
+/* The tick is the state. 14px and hairline at rest, 26px and gold when
+   current — a length change reads at a glance where a colour change alone
+   does not. */
+.rail__item i {
+  display: block;
+  width: 14px;
+  height: 1px;
+  flex: none;
+  background: currentColor;
+  opacity: 0.45;
+  transition: width 420ms var(--ease), opacity 300ms var(--ease),
+              background 300ms var(--ease);
+}
+
+.rail__item span {
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 300ms var(--ease), transform 300ms var(--ease);
+  white-space: nowrap;
+}
+
+/* Hovering anywhere on the rail names every section, so the labels arrive as
+   one list rather than one word at a time under the cursor. */
+.rail:hover .rail__item span,
+.rail:focus-within .rail__item span { opacity: 1; transform: none; }
+
+.rail__item:hover { color: var(--ink); }
+.rail__item:hover i { opacity: 1; width: 20px; }
+
+.rail__item.is-current { color: var(--ink); }
+.rail__item.is-current i { width: 26px; opacity: 1; background: var(--accent); }
+.rail__item.is-current span { opacity: 1; transform: none; }
+
+/* No margin to put it in, and a phone has the burger for this. */
+@media (max-width: 1279px) {
+  .rail { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rail, .rail__item, .rail__item i, .rail__item span { transition: none; }
+}
 
 /* ---------------------------------------------------------------- 6. BUTTONS */
 
@@ -2114,68 +2255,174 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 /* Qualification — compact editorial strip */
 /* ---- Client qualification (home) ------------------------------------------
-   A ledger, not a sidebar. Full measure, one criterion per rule, index in the
-   shared --idx gutter so it lines up with the corridor manifest directly above
-   it and the footer columns directly below.                                  */
+   A self-qualifier, not a list. See the markup note in build_pages.py for why.
+   Everything below serves one idea: the row should feel selectable before it
+   is clicked, and settled after.                                            */
 
-.qual__head { max-width: 34ch; margin-bottom: clamp(36px, 4vw, 56px); }
+.qual__head { max-width: 40ch; margin-bottom: clamp(28px, 3vw, 40px); }
 .qual__title { text-wrap: balance; }
+.qual__lead {
+  margin-top: 14px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--muted);
+  max-width: 46ch;
+}
 
 .qual__list { border-top: 1px solid var(--hairline); }
 
-.qual__item {
-  display: grid;
-  grid-template-columns: var(--idx-gutter) 1fr;
-  align-items: baseline;
-  padding: clamp(18px, 2.2vw, 30px) 0;
-  border-bottom: 1px solid var(--hairline-soft);
-  transition: background 400ms var(--ease);
+.qual__item { position: relative; border-bottom: 1px solid var(--hairline-soft); }
+
+/* The input is the state and the focus target; the label is the whole row, so
+   anywhere on a criterion is a hit area. Hidden with clip rather than
+   display:none — display:none removes it from the tab order. */
+.qual__box {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
-/* The criteria are statements a reader is meant to agree with one at a time,
-   so they are set at reading size rather than list size. */
-.qual__text {
-  font-size: clamp(17px, 1.7vw, 22px);
-  font-weight: 500;
-  line-height: 1.45;
-  letter-spacing: -0.012em;
-  color: var(--ink);
-  max-width: 46ch;
+.qual__label {
+  display: grid;
+  grid-template-columns: 26px var(--idx-gutter) 1fr;
+  align-items: baseline;
+  gap: 0 14px;
+  padding: clamp(17px, 2vw, 26px) 0;
+  cursor: pointer;
+  transition: background 320ms var(--ease);
 }
+
+/* A square that becomes a mark. Sits on the text baseline rather than centred
+   in the row, so it reads as part of the sentence. */
+.qual__tick {
+  position: relative;
+  top: 0.18em;
+  width: 20px; height: 20px;
+  border: 1.5px solid var(--hairline);
+  border-radius: 3px;
+  color: transparent;
+  display: grid;
+  place-items: center;
+  transition: border-color 260ms var(--ease), background 260ms var(--ease),
+              color 260ms var(--ease);
+}
+.qual__tick svg { width: 13px; height: 13px; }
 
 .qual__num {
   font-family: var(--font-mono);
   font-size: var(--idx-size);
   font-weight: 500;
   letter-spacing: 0.06em;
-  color: var(--accent);
+  color: var(--muted);
   font-variant-numeric: tabular-nums;
+  transition: color 260ms var(--ease);
 }
 
-/* Hovering a criterion warms its row. The whole section is a question being
-   put to the reader, and this is the cheapest way to make it feel answerable
-   rather than printed. */
+.qual__text {
+  font-size: clamp(16px, 1.55vw, 20px);
+  font-weight: 500;
+  line-height: 1.45;
+  letter-spacing: -0.012em;
+  color: var(--ink-soft);
+  max-width: 48ch;
+  transition: color 260ms var(--ease);
+}
+
 @media (hover: hover) and (pointer: fine) {
-  .qual__item:hover { background: var(--accent-soft); }
+  .qual__label:hover { background: var(--accent-soft); }
+  .qual__label:hover .qual__tick { border-color: var(--accent); }
 }
 
-.qual__foot {
+/* Checked. The row commits: gold mark, full-strength text, gold numeral. */
+.qual__box:checked + .qual__label .qual__tick {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #FFFFFF;
+}
+.qual__box:checked + .qual__label .qual__text { color: var(--ink); }
+.qual__box:checked + .qual__label .qual__num { color: var(--accent); }
+
+/* Keyboard users get the ring on the row, since the input itself is clipped. */
+.qual__box:focus-visible + .qual__label {
+  outline: 1.5px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+/* ---- the answer ---- */
+
+.qual__result { margin-top: clamp(26px, 3vw, 40px); }
+
+.qual__meter {
+  height: 2px;
+  background: var(--hairline-soft);
+  overflow: hidden;
+}
+.qual__meter i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  transition: width 520ms var(--ease);
+}
+
+.qual__answer {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 16px 40px;
-  margin-top: clamp(30px, 3.4vw, 46px);
-  padding-top: clamp(20px, 2.2vw, 28px);
-  border-top: 2px solid var(--accent);
+  gap: 18px 40px;
+  padding-top: clamp(18px, 2vw, 26px);
 }
 
-.qual__close {
-  font-size: clamp(17px, 1.8vw, 21px);
+.qual__verdict {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  font-size: clamp(16px, 1.7vw, 21px);
   font-weight: 600;
   letter-spacing: -0.014em;
   line-height: 1.4;
-  max-width: 44ch;
+  max-width: 46ch;
+}
+
+.qual__count { color: var(--accent); font-variant-numeric: tabular-nums; }
+.qual__of { color: var(--muted); font-weight: 500; margin-right: 12px; }
+
+/* Three mutually exclusive readings of the same count. JS only moves
+   data-state, so the wording stays with the language file. */
+.qual__say { display: none; font-weight: 600; }
+.qual__result[data-state="0"] .qual__say--none { display: inline; color: var(--muted); }
+.qual__result[data-state="some"] .qual__say--some { display: inline; }
+.qual__result[data-state="all"] .qual__say--all { display: inline; }
+
+.qual__act { display: flex; align-items: center; gap: 22px; flex-wrap: wrap; }
+
+/* The request is the point of the section, but it has not earned attention
+   until something is marked — so it arrives rather than sitting there.
+
+   Gated on .is-live, which initQualify adds. Written the other way round
+   first, and that hid the button permanently when JS was off: data-state never
+   changed, so opacity:0 and pointer-events:none were the final state and the
+   one real call to action on the section was unreachable. The enhancement has
+   to be the thing that opts in, never the fallback. */
+.qual__result.is-live .qual__cta {
+  opacity: 0;
+  transform: translateY(6px);
+  pointer-events: none;
+  transition: opacity 460ms var(--ease), transform 460ms var(--ease);
+}
+.qual__result.is-live[data-state="some"] .qual__cta,
+.qual__result.is-live[data-state="all"] .qual__cta {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
 }
 
 .qual__more {
@@ -2200,14 +2447,16 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .qual__more:hover::after,
 .qual__more:focus-visible::after { transform: scaleX(1); }
 
-@media (max-width: 640px) {
-  .qual__foot { display: block; }
-  .qual__more { display: inline-block; margin-top: 16px; }
+@media (max-width: 700px) {
+  .qual__label { grid-template-columns: 24px 1fr; gap: 0 12px; }
+  .qual__num { display: none; }          /* the tick is the marker here */
+  .qual__answer { display: block; }
+  .qual__act { margin-top: 20px; }
 }
 
-/* The home page's old two-column .qualify block is gone — replaced by the
-   full-measure .qual ledger above. The About page never shared it; it has
-   always had its own .ab-qual. */
+@media (prefers-reduced-motion: reduce) {
+  .qual__meter i, .qual__cta, .qual__tick, .qual__label { transition: none; }
+}
 
 /* Guarantees ribbon */
 .ribbon { padding: 0; }
@@ -2437,9 +2686,76 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 /* Below this the globe is never mounted, so the grid collapses to the SVG. */
+/* ------------------------------------------------- corridor on a phone --- */
+/* The globe and the manifest used to be hidden below 1000px, which left phones
+   on the flat route diagram — a different design from the one the section
+   actually is now. Both are present at every width; the sphere just gets
+   smaller and the manifest restacks.
+
+   Everything here is guarded on :not([hidden]) because the markup ships the
+   globe and table hidden and main.js only reveals them once WebGL has actually
+   mounted. An unguarded `display` would beat the hidden attribute and show an
+   empty table on the devices that fall back to the flat SVG. */
 @media (max-width: 999px) {
-  .corridor__grid { display: block; }
-  .corridor__globe, .corridor__hint, .corridor__lanes { display: none; }
+  .corridor__grid { grid-template-columns: 1fr; gap: 30px; }
+
+  /* Sized off the viewport, not the column: a square that fills the measure
+     eats a whole phone screen. Capped so a tablet does not get a giant one. */
+  .corridor__globe {
+    width: min(76vw, 380px);
+    margin: 0 auto;
+    max-height: none;
+  }
+  .corridor__hint { text-align: center; }
+
+  /* The manifest restacks: name and role on one line, port beneath, aligned to
+     the name rather than to the numeral. Three columns of trade data do not
+     fit 390px, and shrinking the type until they do makes it unreadable. */
+  .corridor__lanes:not([hidden]) { display: block; }
+  .corridor__lanes tbody { display: block; }
+  .corridor__lanes tr:first-child { display: none; }   /* the column heads */
+  /* display:none stops an element incrementing a counter, so with the head row
+     gone the offset that made Black Sea read 01 instead shifted it to 00. */
+  .corridor__lanes { counter-reset: lane 0; }
+
+  .corridor__lanes tr:not(:first-child) {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: 3px 14px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--hairline-soft);
+    transition: border-color 600ms var(--ease);
+  }
+  .corridor__lanes tr:not(:first-child) td { display: block; padding: 0; border-bottom: 0; }
+  .corridor__lanes tr:not(:first-child) td:first-child { grid-area: 1 / 1; font-size: 16px; }
+  .corridor__lanes td.role { grid-area: 1 / 2; text-align: right; font-size: 10px; }
+  .corridor__lanes tr:not(:first-child) td:nth-child(2) {
+    grid-area: 2 / 1 / 2 / 3;
+    padding-left: var(--idx-gutter);
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* The left-to-right fill rule lived on the name cell, so restacked it would
+     only ever underline half a row. The whole row's rule carries the state
+     instead — a colour change rather than a wipe, which is the one thing that
+     survives a layout this narrow. */
+  .corridor__lanes tr:not(:first-child) td:first-child::after { display: none; }
+  .corridor__lanes tr.is-lit { border-bottom-color: var(--accent); }
+  .corridor__lanes tr.is-picked { border-bottom-color: var(--accent); border-bottom-width: 2px; }
+
+  /* Rows are tap targets here, so they need the height for it. */
+  .corridor__lanes tr:not(:first-child) { min-height: 54px; align-content: center; }
+  .corridor__lanes tr:not(:first-child):hover td { color: inherit; }  /* no hover on touch */
+}
+
+/* One hint per input model — "drag to turn" is a lie on a phone, where a drag
+   scrolls the page. */
+.corridor__hint--coarse { display: none; }
+@media (pointer: coarse) {
+  .corridor__hint--fine { display: none; }
+  .corridor__hint--coarse { display: inline; }
 }
 .corridor__svg { width: 100%; height: auto; overflow: visible; }
 
