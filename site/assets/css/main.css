@@ -124,116 +124,19 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 :focus-visible { outline: 1.5px solid var(--focus); outline-offset: 3px; border-radius: 2px; }
 
-/* ------------------------------------------- 2b. SAND GRAINS AT THE EDGES */
-/* "россыпь полупрозрачных текстурных песчинок по бокам/краям экрана" —
-   marked mandatory by the client. A fixed, pointer-transparent tile masked to
-   the left and right margins, so the desert frames every page without ever
-   sitting under body copy. Static by design: a continuously animated
-   full-page particle field would cost phone battery for no visual gain. */
+/* ------------------------------------------ 2b. (SAND EDGES, REMOVED) ----- */
+/* The screen-margin grains lived here: a fixed, masked tile with a rendered
+   alpha clip and a WebGL veil layered over it as upgrades. The client
+   originally marked them mandatory and has now asked for them gone — "remove
+   the elements on the sides of the site and keep just the video itself".
 
-.sand-edges {
-  position: fixed;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  background-image: url("../img/sand-grains.svg");
-  background-repeat: repeat;
-  background-size: 300px 300px;
-  opacity: 0.5;
-  -webkit-mask-image: linear-gradient(to right,
-      #000 0%, rgba(0,0,0,0.5) 6%, transparent 15%,
-      transparent 85%, rgba(0,0,0,0.5) 94%, #000 100%);
-  mask-image: linear-gradient(to right,
-      #000 0%, rgba(0,0,0,0.5) 6%, transparent 15%,
-      transparent 85%, rgba(0,0,0,0.5) 94%, #000 100%);
-  animation: sandDrift 90s linear infinite;
-}
+   Deliberately deleted rather than hidden. Three stacked fallbacks and a
+   codec-probing loader left behind a display:none rule would be dead weight
+   nobody could safely touch later. The shader itself (sand.js / ACSand) stays,
+   because the hero still draws its sand with it — see mountHeroSand.
 
-[data-theme="dark"] .sand-edges {
-  background-image: url("../img/sand-grains-dark.svg");
-  opacity: 0.34;
-}
-
-/* Best case: the rendered sand itself — the same clip that blows across the
-   hero, masked by the parent to the margins, so every page is framed by real
-   grains rather than a drawn approximation of them. The mask lives on
-   .sand-edges and applies to this subtree, so the film never reaches body
-   copy. Falls back to the shader, then to the tile. */
-.sand-edges--film {
-  background-image: none;
-  animation: none;
-  opacity: 1;
-}
-
-.sand-edges__film {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  opacity: 0;
-  transition: opacity 1600ms var(--ease);
-}
-
-/* The clip is graded for dark footage: sunlit grains are near-white, which on
-   ivory is nothing at all. Blending is what makes them read, not opacity —
-   multiply lets the shaded grains bite into the page while the lit ones stay
-   politely invisible, which is exactly how sand behaves against a pale ground.
-   On the matte dark theme the relationship inverts: screen lets the lit grains
-   carry and drops the shaded ones. */
-.sand-edges__film {
-  mix-blend-mode: multiply;
-}
-.sand-edges__film.is-ready { opacity: 0.72; }
-
-[data-theme="dark"] .sand-edges--film { background-image: none; opacity: 1; }
-[data-theme="dark"] .sand-edges__film { mix-blend-mode: screen; }
-[data-theme="dark"] .sand-edges__film.is-ready { opacity: 0.5; }
-
-/* When WebGL is available the tiled dots are replaced by the real sand shader.
-   The element keeps its edge mask, so the veil still lives in the margins. */
-.sand-edges--gl {
-  background-image: none;
-  animation: none;
-  opacity: 1;
-}
-
-.sand-edges__gl {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-/* Needs the theme prefix to outrank [data-theme="dark"] .sand-edges above,
-   otherwise the dark dot tile keeps painting under the shader. */
-[data-theme="dark"] .sand-edges--gl {
-  background-image: none;
-  opacity: 0.8;
-}
-
-/* Barely-there drift, so the edges read as moving air rather than wallpaper. */
-@keyframes sandDrift {
-  from { background-position: 0 0; }
-  to   { background-position: 300px -150px; }
-}
-
-@media (max-width: 768px) {
-  /* Narrow screens have no side margin to spare — tighten to a thin frame. */
-  .sand-edges {
-    opacity: 0.4;
-    -webkit-mask-image: linear-gradient(to right,
-        #000 0%, transparent 15%, transparent 85%, #000 100%);
-    mask-image: linear-gradient(to right,
-        #000 0%, transparent 15%, transparent 85%, #000 100%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sand-edges { animation: none; }
-}
+   git log is the way back: this block and its JS were removed together in one
+   commit. */
 
 /* The grains float over the page — that is the "camels inside the site"
    feeling the client asked for. Masked to the margins and pointer-transparent,
@@ -3569,6 +3472,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
 /* -------------------------------------------------------------------- 24. PRINT */
 
 @media print {
-  .nav, .drawer, .drawer-backdrop, .hero__cue, .hero__video, .sand-edges, .theme-toggle { display: none !important; }
+  .nav, .drawer, .drawer-backdrop, .hero__cue, .hero__video, .theme-toggle { display: none !important; }
   .fade-up { opacity: 1; transform: none; }
 }

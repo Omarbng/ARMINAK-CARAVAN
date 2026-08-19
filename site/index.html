@@ -72,7 +72,6 @@
 
 <body>
 <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
-<div class="sand-edges" aria-hidden="true"></div>
 <header class="nav" id="nav">
   <div class="nav__inner">
     <button class="nav__burger" id="navBurger" aria-expanded="false" aria-controls="navMenu" aria-label="Menu">
@@ -125,22 +124,29 @@
      Saver. Copy stays bottom-left — the plate is bright sand edge to edge and
      the scrim is weighted there.
 
-     v4 is a new master and a different film: a 24s six-shot cut at true
-     1080p, no generation watermark anywhere, and — the part that matters most
-     here — a sealed loop. Frames 0 and 575 are the same hazed wide shot, so
-     it returns to its own first frame instead of cutting from a drone wide
-     back to a side view, which is what made every earlier version read as
-     restless behind the headline.
+     v5 is the shader-sand master, cut down and repaired. Three edits, none of
+     them reversible in CSS:
 
-     It also opens and closes inside a sand whiteout, pale enough to sit a few
-     shades off the ivory page ground. That is what .hero__fade now exploits:
-     the film does not end on an edge, it thins into the page.
+       - The third shot, a handler leading two camels at 5.17s to 7.46s, is
+         cut. The generation failed there: melted and duplicated camel heads, a
+         prismatic rainbow artifact bottom left, and a half-composited layer
+         running diagonally across the frame. That is the edit the client saw;
+         no grade or encode fixes it. 10s becomes 7.71s.
+       - The generation sparkle is delogo'd out at x1702-1777 y863-935.
+       - The loop is sealed by hand. This master cuts from a distant dune wide
+         straight back to a near caravan, so the tail is cross-dissolved into
+         the head over 0.6s and the film now ends on its own first frame.
+         7.71s becomes 7.13s.
 
-     Live sand still draws over it (mountHeroSand). v1–v3 remain on disk under
+     Camels carry loads in both surviving wide shots, which is the detail the
+     client called out. The portrait cut is offset to x=900 rather than centred
+     because a centre crop loses the caravan in the closing wide.
+
+     Live sand still draws over it (mountHeroSand). v1-v4 remain on disk under
      the same six filenames, so going back is only the paths below. -->
 <section class="hero" id="hero"
-         data-video-desktop="assets/hero/v4/hero-desktop.mp4"
-         data-video-mobile="assets/hero/v4/hero-mobile.mp4">
+         data-video-desktop="assets/hero/v5/hero-desktop.mp4"
+         data-video-mobile="assets/hero/v5/hero-mobile.mp4">
   <!-- The stage is what opens. It is full-bleed the whole time and clipped to
        a window, so the caravan never scales or squashes on the way out — the
        frame opens around it. -->
@@ -149,11 +155,11 @@
       <div class="hero__layer">
         <picture>
           <source media="(max-width: 768px), (orientation: portrait)" type="image/webp"
-                  srcset="assets/hero/v4/poster-mobile.webp">
+                  srcset="assets/hero/v5/poster-mobile.webp">
           <source media="(max-width: 768px), (orientation: portrait)" type="image/jpeg"
-                  srcset="assets/hero/v4/poster-mobile.jpg">
-          <source type="image/webp" srcset="assets/hero/v4/poster-desktop.webp">
-          <img class="hero__poster" src="assets/hero/v4/poster-desktop.jpg" alt=""
+                  srcset="assets/hero/v5/poster-mobile.jpg">
+          <source type="image/webp" srcset="assets/hero/v5/poster-desktop.webp">
+          <img class="hero__poster" src="assets/hero/v5/poster-desktop.jpg" alt=""
                aria-hidden="true" fetchpriority="high" decoding="async"
                width="1920" height="1080">
         </picture>

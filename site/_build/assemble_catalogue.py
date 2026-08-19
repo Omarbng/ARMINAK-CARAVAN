@@ -32,7 +32,6 @@ PAGE = '''<!doctype html>
 
 <body>
 <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
-<div class="sand-edges" aria-hidden="true"></div>
 
 %NAV%
 

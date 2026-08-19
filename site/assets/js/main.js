@@ -35,135 +35,22 @@
     });
   }
 
-  /* --------------------------------------------------------- SAND EDGES -- */
-  /* The client asked for sand at the screen edges on every page, and then for
-     that sand to be real rather than drawn. Three tiers, best first:
+  /* ------------------------------------- (SAND EDGES, REMOVED) ---------- */
+  /* The screen-margin grains are gone at the client's request — "remove the
+     elements on the sides of the site and keep just the video itself".
 
-       1. the rendered clip — the same grains that blow across the hero
-       2. the WebGL veil — procedural, when the film can't play
-       3. the tiled SVG in the stylesheet — static, when neither can
+     Three tiers went with them, and they were the most delicate code in this
+     file: a rendered alpha clip, a UA probe to pick VP8-in-WebM vs
+     HEVC-in-MP4, a canvas read-back to verify the browser actually composited
+     that alpha (Chrome decodes HEVC happily and then paints the colour plane
+     as an opaque slab), a retry on the other codec, and a WebGL veil behind
+     all of it. Roughly 150 lines whose entire job was to put grains in a
+     margin that no longer exists.
 
-     All three wear the same CSS mask, so the desert stays in the margins and
-     never sits under body copy. */
-
-  var SAND_WEBM = 'assets/hero/sand.webm';   /* VP8 + alpha  */
-  var SAND_MP4  = 'assets/hero/sand.mp4';    /* HEVC + alpha, for WebKit */
-
-  function initSandEdges() {
-    var host = qs('.sand-edges');
-    if (!host) return;
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (conn && conn.saveData) return;        /* the static tile is free */
-
-    if (initSandFilm(host)) return;           /* real grains win */
-    initSandVeilGL(host);
-  }
-
-  /* Returns true once the rendered sand is on the page. */
-  function initSandFilm(host) {
-    var src = sandSource();
-    if (!src) return false;
-
-    var film = makeBackgroundVideo('sand-edges__film', src);
-    revealWhenTransparent(film, src === SAND_MP4 ? SAND_WEBM : SAND_MP4);
-    host.appendChild(film);
-    host.classList.add('sand-edges--film');
-
-    /* If the alpha check pulls the film, the margins fall back to the shader
-       veil rather than being left bare. */
-    film.addEventListener('ac:sandpulled', function () {
-      host.classList.remove('sand-edges--film');
-      initSandVeilGL(host);
-    });
-
-    function play() {
-      var p = film.play();
-      if (p && p.catch) p.catch(function () {});
-    }
-    play();
-
-    document.addEventListener('visibilitychange', function () {
-      if (document.visibilityState === 'visible') play(); else film.pause();
-    });
-
-    /* On the landing page the hero film carries its own storm, composited into
-       the plate at render time. Grains in the margins on top of that is double
-       the sand for a second decode, so the margins stand down while the hero
-       holds the screen — but only once the film is actually holding it.
-
-       During the window beat the film is a small frame on the ivory ground and
-       these margins are the only sand around it, which is the half of the
-       brief that asks for the sand to be real too. So the handover waits for
-       hero--revealed. The 1600ms opacity transition on the film makes it a
-       fade, not a cut, and it lands while the window is still opening. */
-    var hero = qs('#hero');
-    if (hero && 'IntersectionObserver' in window) {
-      var onScreen = false;
-
-      function sync() {
-        /* Keyed to the film, not to a separate sand layer: if the hero fell
-           back to its poster the plate is still, and the margins are then the
-           only sand there is. Both cuts carry the storm, so this holds on a
-           phone as well. */
-        var covered = onScreen &&
-                      hero.classList.contains('hero--revealed') &&
-                      !!hero.querySelector('.hero__video');
-        film.style.opacity = covered ? '0' : '';
-        if (covered) film.pause(); else play();
-      }
-
-      new IntersectionObserver(function (entries) {
-        onScreen = entries[0].isIntersecting;
-        sync();
-      }, { threshold: 0 }).observe(hero);
-
-      /* Opening the window is not an intersection change, so the observer
-         alone would leave the margins running under a full-bleed film. */
-      document.addEventListener('ac:herosettled', sync);
-    }
-
-    return true;
-  }
-
-  function initSandVeilGL(host) {
-    if (!window.ACSand) return;
-
-    var canvas = document.createElement('canvas');
-    canvas.className = 'sand-edges__gl';
-    host.appendChild(canvas);
-
-    var sand = window.ACSand(canvas, host, {
-      mode: 'veil',
-      base: 0.62, open: 0.62, openMs: 1,   /* ambient, no entry gust */
-      wind: 0.07,                          /* gentler than the hero storm */
-      scale: 0.6,                          /* soft veil — half res is invisible */
-      fps: 20,                             /* ambient margin texture, no fast motion */
-      seed: 11.3
-    });
-    if (!sand) { host.removeChild(canvas); return; }   /* keep the SVG dots */
-
-    host.classList.add('sand-edges--gl');
-
-    function accentHex() {
-      return getComputedStyle(document.documentElement)
-               .getPropertyValue('--sand').trim() || '#C7A87A';
-    }
-    sand.setColor(accentHex());
-    sand.resize();
-    sand.start();
-
-    var rt = null;
-    window.addEventListener('resize', function () {
-      clearTimeout(rt);
-      rt = setTimeout(sand.resize, 180);
-    });
-    document.addEventListener('visibilitychange', function () {
-      document.visibilityState === 'hidden' ? sand.stop() : sand.start();
-    });
-    document.addEventListener('ac:theme', function () { sand.setColor(accentHex()); });
-  }
+     Deleted rather than left unreferenced: nothing calls it, and a dormant
+     codec-probing stack is the kind of thing that gets "fixed" by someone
+     later. ACSand itself stays — the hero draws its sand with it, and that
+     path needs no alpha at all because it renders into a canvas. */
 
   /* ---------------------------------------------------------------- HERO -- */
   /* Full-bleed desert film with a windowed entrance: the caravan opens inside
@@ -419,82 +306,6 @@
     v.tabIndex = -1;
     v.src = src;
     return v;
-  }
-
-  /* Transparent video is the one place the codecs genuinely diverge: VP8 with
-     alpha in WebM everywhere except WebKit, HEVC with alpha in MP4 on WebKit.
-     Guessing wrong paints an opaque cream rectangle over the hero, so anything
-     unrecognised gets no sand layer at all — the film's own storm still runs. */
-  function sandSource() {
-    var ua = navigator.userAgent;
-    var webkit = /Safari/.test(ua) && !/Chrome|Chromium|Android|CriOS|FxiOS|Edg/.test(ua);
-    var probe = document.createElement('video');
-
-    if (webkit) {
-      return probe.canPlayType('video/mp4; codecs="hvc1"') ? SAND_MP4 : null;
-    }
-    return probe.canPlayType('video/webm; codecs="vp8"') ? SAND_WEBM : null;
-  }
-
-  /* The user-agent string only says which file to TRY. Whether the browser
-     actually composites that file's alpha is a different question, and getting
-     it wrong is not a subtle bug: Chrome decodes HEVC happily and then paints
-     the colour plane as an opaque slab over the hero. Verified in Chrome —
-     it is as bad as it sounds.
-
-     So the picture is checked, not assumed. One frame goes into a 64x36
-     canvas and the alpha channel is read back. Alpha compositing working means
-     transparent pixels stay transparent; a browser ignoring alpha returns 255
-     everywhere. Same-origin, so the canvas is never tainted, and it costs one
-     read of 2304 pixels, once. */
-  function verifyAlpha(video) {
-    try {
-      var c = document.createElement('canvas');
-      c.width = 64; c.height = 36;
-      var ctx = c.getContext('2d', { willReadFrequently: false });
-      if (!ctx) return null;                        /* can't tell — caller decides */
-      ctx.clearRect(0, 0, 64, 36);
-      ctx.drawImage(video, 0, 0, 64, 36);
-      var data = ctx.getImageData(0, 0, 64, 36).data;
-      var min = 255;
-      for (var i = 3; i < data.length; i += 4) {
-        if (data[i] < min) min = data[i];
-        if (min < 250) return true;                 /* genuine transparency found */
-      }
-      return false;                                 /* fully opaque: alpha ignored */
-    } catch (e) {
-      return null;                                  /* blocked — treat as unknown */
-    }
-  }
-
-  /* Fade the sand in only once its transparency is confirmed. If the picture
-     comes back opaque, the layer is pulled before it can ever be seen, and the
-     other codec gets one chance in case the engine guess was simply wrong. */
-  function revealWhenTransparent(video, altSrc) {
-    var checked = false;
-
-    video.addEventListener('loadeddata', function () {
-      if (checked) return;
-      checked = true;
-
-      var ok = verifyAlpha(video);
-      if (ok === false) {
-        video.classList.remove('is-ready');
-        if (altSrc) {
-          checked = false;                          /* one retry, other codec */
-          video.src = altSrc;
-          var p = video.play();
-          if (p && p.catch) p.catch(function () {});
-          return;
-        }
-        try { video.dispatchEvent(new CustomEvent('ac:sandpulled')); } catch (e) {}
-        if (video.parentNode) video.parentNode.removeChild(video);
-        return;
-      }
-      /* true, or null when the check itself was unavailable — the film's own
-         composited storm is the fallback either way, so showing it is safe. */
-      video.classList.add('is-ready');
-    });
   }
 
   /* ------------------------------------------------------- HERO SCRAMBLE -- */
@@ -1231,7 +1042,6 @@
   function boot() {
     initTheme();
     initDeskClock();
-    initSandEdges();
     initNav();
     initCorridor();
     initReveal();
