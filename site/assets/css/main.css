@@ -1344,37 +1344,25 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 /* ------------------------------------------------------------ 8. PRESS STRIP */
-/* Kinetic marquee: pure CSS, duplicated track, pauses on hover,
-   collapses to a static centred row under reduced motion.             */
+/* Five accreditations in one static centred row. Nothing moves — see the note
+   on .press__row for why the marquee that used to be here went.        */
 
 .press { padding: clamp(56px, 6vw, 96px) 0; text-align: center; }
 
 .press__tag { display: block; margin-bottom: clamp(28px, 3vw, 44px); }
 
-.marquee {
-  position: relative;
-  overflow: hidden;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent);
-  mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent);
-}
-
-.marquee__track {
+/* Static row. The marquee (a duplicated track sliding on a keyframe, masked at
+   both edges, paused on hover) is gone with the animation: four real
+   accreditations moving across the screen read as an ad, and the loop forced
+   the visible row to be aria-hidden with a duplicate hidden list beside it for
+   screen readers. A row that does not move needs neither. */
+.press__row {
   display: flex;
-  width: max-content;
-  animation: marqueeSlide 38s linear infinite;
-  will-change: transform;
-}
-
-.marquee:hover .marquee__track { animation-play-state: paused; }
-
-.marquee__group {
-  display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: clamp(48px, 7vw, 110px);
-  padding-right: clamp(48px, 7vw, 110px);
+  justify-content: center;
+  gap: clamp(20px, 4vw, 64px);
 }
-
-@keyframes marqueeSlide { to { transform: translate3d(-50%, 0, 0); } }
 
 .press__mark {
   font-family: var(--font-display);
@@ -1386,17 +1374,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
   white-space: nowrap;
 }
 
-.press__mark:nth-child(4n+2) { font-weight: 600; letter-spacing: 0.04em; }
-.press__mark:nth-child(4n+3) { letter-spacing: 0.3em; font-size: clamp(18px, 2vw, 26px); }
-.press__mark:nth-child(4n)   { font-weight: 600; letter-spacing: 0.1em; }
+/* One treatment for all five now. The alternating weights and tracking existed
+   to keep a long repeating track from looking like wallpaper; in a row of five
+   they just read as inconsistent. */
 
-@media (prefers-reduced-motion: reduce) {
-  .marquee { mask-image: none; -webkit-mask-image: none; }
-  .marquee__track { animation: none; width: 100%; justify-content: center; }
-  .marquee__group { flex-wrap: wrap; justify-content: center; gap: 24px 48px; padding: 0 var(--gutter); }
-  .marquee__group[aria-hidden="true"] { display: none; }
-  .marquee__group .press__mark:nth-child(n+5) { display: none; }
-}
 
 /* --------------------------------------------------------------- 9. TAB RAIL */
 
@@ -2556,36 +2537,76 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 /* Guarantees ribbon */
-.ribbon { padding: 0; }
-.ribbon .shell > .ribbon__grid {
+/* --------------------------------------------------------------- PROCESS --
+   The six-step sequence that replaced the guarantees ribbon. Its three claims
+   are steps 04, 05 and 06 here.
+
+   Set as a manifest, like the corridor waypoints, the qualification ledger and
+   the footer columns — same numeral, same hairline. The one addition is that a
+   step's rule is gold, because these are ordered: the numeral is load-bearing
+   information here rather than decoration.                                  */
+
+.flow__head { max-width: 46ch; margin-bottom: clamp(36px, 4vw, 58px); }
+.flow__title { text-wrap: balance; }
+.flow__copy { margin-top: 16px; max-width: 52ch; }
+
+.flow__grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-top: 1px solid var(--hairline);
-  border-bottom: 1px solid var(--hairline);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(28px, 3vw, 48px) clamp(28px, 4vw, 64px);
 }
 
-.ribbon__item {
-  padding: 26px clamp(16px, 2vw, 36px);
-  text-align: center;
-  font-size: 12px;
+.flow__step {
+  padding-top: 18px;
+  border-top: 1.5px solid var(--accent);
+}
+
+/* Steps 04-06 sit on a hairline instead, so the eye reads the grid as two
+   halves — commit, then execute — rather than six equal things. */
+.flow__step:nth-child(n+4) { border-top-color: var(--hairline); }
+
+.flow__num {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--idx-size);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 12px;
+}
+
+.flow__stepTitle {
+  font-size: clamp(17px, 1.5vw, 21px);
   font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  border-right: 1px solid var(--hairline);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  letter-spacing: -0.015em;
+  margin-bottom: 9px;
 }
-.ribbon__item:last-child { border-right: 0; }
 
-.ribbon__seo {
-  margin: 22px auto 0;
+.flow__stepCopy {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--muted);
+  max-width: 42ch;
+}
+
+.flow__seo {
+  margin: clamp(38px, 4vw, 60px) 0 0;
   max-width: 78ch;
-  text-align: center;
   font-size: 13px;
   line-height: 1.7;
   color: var(--muted);
+}
+
+@media (max-width: 1000px) {
+  .flow__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* The two-half reading only works in threes; on two columns every step gets
+     the same rule rather than a split that now lands mid-row. */
+  .flow__step:nth-child(n+4) { border-top-color: var(--accent); }
+}
+
+@media (max-width: 600px) {
+  .flow__grid { grid-template-columns: 1fr; gap: 26px; }
 }
 
 /* Trade corridor — monochrome restyle */
@@ -3604,16 +3625,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 
 @media (max-width: 860px) {
-  .ribbon .shell > .ribbon__grid { grid-template-columns: 1fr; }
-  .ribbon__item {
-    border-right: 0;
-    border-bottom: 1px solid var(--hairline);
-    padding: 18px 0;
-    text-align: left;
-    justify-content: flex-start;
-  }
-  .ribbon__item:last-child { border-bottom: 0; }
-
   .grid-notes { grid-template-columns: 1fr; }
   .drawer { width: 100%; }
   .press__row { gap: 24px 40px; }

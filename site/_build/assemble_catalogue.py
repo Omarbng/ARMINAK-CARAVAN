@@ -365,9 +365,12 @@ FOOTER = '''<footer class="footer">
 # A page with nothing worth jumping to gets no group at all rather than a group
 # with one entry in it — product.html is a leaf reached from the catalogue.
 PAGE_SECTIONS = {
+    # Mirrors the page order exactly. A panel that lists sections in a
+    # different sequence than the page presents them is worse than no panel.
     "home": [("#hero",          "nav.s.top",      "Top"),
-             ("#products",      "nav.s.products", "Products"),
-             ("#categories",    "nav.s.cats",     "Categories"),
+             ("#categories",    "nav.s.cats",     "What we trade"),
+             ("#products",      "nav.s.products", "Selected lines"),
+             ("#process",       "nav.s.flow",     "How we work"),
              ("#corridors",     "nav.s.corr",     "Trade corridors"),
              ("#about",         "nav.s.qual",     "Qualification"),
              ("#desk",          "nav.s.desk",     "Trading desk")],

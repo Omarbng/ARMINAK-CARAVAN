@@ -138,8 +138,9 @@
       <h2 class="navpanel__h"><i aria-hidden="true">02</i><span data-i18n="nav.g.here">On this page</span></h2>
       <ul class="navpanel__list">
         <li><a class="navpanel__link navpanel__link--sec" href="#hero"><i aria-hidden="true"></i><span data-i18n="nav.s.top">Top</span></a></li>
-        <li><a class="navpanel__link navpanel__link--sec" href="#products"><i aria-hidden="true"></i><span data-i18n="nav.s.products">Products</span></a></li>
-        <li><a class="navpanel__link navpanel__link--sec" href="#categories"><i aria-hidden="true"></i><span data-i18n="nav.s.cats">Categories</span></a></li>
+        <li><a class="navpanel__link navpanel__link--sec" href="#categories"><i aria-hidden="true"></i><span data-i18n="nav.s.cats">What we trade</span></a></li>
+        <li><a class="navpanel__link navpanel__link--sec" href="#products"><i aria-hidden="true"></i><span data-i18n="nav.s.products">Selected lines</span></a></li>
+        <li><a class="navpanel__link navpanel__link--sec" href="#process"><i aria-hidden="true"></i><span data-i18n="nav.s.flow">How we work</span></a></li>
         <li><a class="navpanel__link navpanel__link--sec" href="#corridors"><i aria-hidden="true"></i><span data-i18n="nav.s.corr">Trade corridors</span></a></li>
         <li><a class="navpanel__link navpanel__link--sec" href="#about"><i aria-hidden="true"></i><span data-i18n="nav.s.qual">Qualification</span></a></li>
         <li><a class="navpanel__link navpanel__link--sec" href="#desk"><i aria-hidden="true"></i><span data-i18n="nav.s.desk">Trading desk</span></a></li>
@@ -284,65 +285,20 @@
      it twice made the page feel busy without adding a fact. -->
 
 <!-- ============================================================ PRESS STRIP -->
-<section class="press">
+<!-- Static. This was a marquee scrolling eight duplicated marks, and animating
+     four real accreditations is what makes them read as decoration — the loop
+     also meant the row had to be aria-hidden with a second, hidden list beside
+     it for screen readers. One row, four marks, exposed once. -->
+<section class="press" id="verified">
   <div class="shell">
     <span class="label press__tag fade-up" data-i18n="home.pressTag">Quality verified by</span>
-    <!-- The marquee duplicates its marks for a seamless loop, so it is hidden
-         from assistive tech and the real list is exposed here once. -->
-    <ul class="visually-hidden">
-      <li>SGS</li><li>Intertek</li><li>Bureau Veritas</li><li>GAFTA</li>
+    <ul class="press__row fade-up stagger-1">
+      <li class="press__mark">SGS</li>
+      <li class="press__mark">INTERTEK</li>
+      <li class="press__mark">BUREAU VERITAS</li>
+      <li class="press__mark">GAFTA</li>
+      <li class="press__mark">FOSFA</li>
     </ul>
-  </div>
-  <div class="marquee fade-up stagger-1" aria-hidden="true">
-    <div class="marquee__track">
-      <div class="marquee__group">
-        <span class="press__mark">SGS</span>
-        <span class="press__mark">INTERTEK</span>
-        <span class="press__mark">BUREAU VERITAS</span>
-        <span class="press__mark">GAFTA</span>
-        <span class="press__mark">SGS</span>
-        <span class="press__mark">INTERTEK</span>
-        <span class="press__mark">BUREAU VERITAS</span>
-        <span class="press__mark">GAFTA</span>
-      </div>
-      <div class="marquee__group" aria-hidden="true">
-        <span class="press__mark">SGS</span>
-        <span class="press__mark">INTERTEK</span>
-        <span class="press__mark">BUREAU VERITAS</span>
-        <span class="press__mark">GAFTA</span>
-        <span class="press__mark">SGS</span>
-        <span class="press__mark">INTERTEK</span>
-        <span class="press__mark">BUREAU VERITAS</span>
-        <span class="press__mark">GAFTA</span>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============================================================= TAB RAILS -->
-<section class="section--tight" id="products" data-tabs>
-  <div class="shell">
-    <div class="rowhead fade-up">
-      <div class="tabs" role="tablist">
-        <button type="button" class="tabs__btn is-active" data-tab="trending" data-i18n="home.trending">Trending</button>
-        <button type="button" class="tabs__btn" data-tab="bestsellers" data-i18n="home.bestsellers">Core Line</button>
-        <button type="button" class="tabs__btn" data-tab="new" data-i18n="home.new">New</button>
-      </div>
-      <a class="link-quiet" href="catalogue.html" data-i18n="home.shopAll">Shop all →</a>
-    </div>
-
-    <div data-tab-panel="trending">
-      <div class="grid-products" data-rail
-           data-slugs="milling-wheat-grade-3,crude-sunflower-oil,refined-sugar-icumsa-45,skimmed-milk-powder"></div>
-    </div>
-    <div data-tab-panel="bestsellers" hidden>
-      <div class="grid-products" data-rail
-           data-slugs="feed-barley-grade-1,wheat-flour-type-550,uht-milk-3-2,durum-wheat-pasta"></div>
-    </div>
-    <div data-tab-panel="new" hidden>
-      <div class="grid-products" data-rail
-           data-slugs="flaxseed-food-grade,refined-rapeseed-oil,tomato-paste-28-30,chickpeas-kabuli-8mm"></div>
-    </div>
   </div>
 </section>
 
@@ -378,15 +334,87 @@
   </div>
 </section>
 
-<!-- ============================================================ GUARANTEES -->
-<section class="ribbon section--tight">
+<!-- ============================================================= TAB RAILS -->
+<section class="section--tight" id="products" data-tabs>
   <div class="shell">
-    <div class="ribbon__grid">
-      <div class="ribbon__item fade-up" data-i18n="ribbon.i1">Independent quality inspection — SGS / Intertek</div>
-      <div class="ribbon__item fade-up stagger-1" data-i18n="ribbon.i2">Reliable multi-corridor logistics</div>
-      <div class="ribbon__item fade-up stagger-2" data-i18n="ribbon.i3">Transparent banking instruments — L/C, CAD</div>
+    <div class="rowhead fade-up">
+      <div class="tabs" role="tablist">
+        <button type="button" class="tabs__btn is-active" data-tab="trending" data-i18n="home.trending">Trending</button>
+        <button type="button" class="tabs__btn" data-tab="bestsellers" data-i18n="home.bestsellers">Core Line</button>
+        <button type="button" class="tabs__btn" data-tab="new" data-i18n="home.new">New</button>
+      </div>
+      <a class="link-quiet" href="catalogue.html" data-i18n="home.shopAll">Shop all →</a>
     </div>
-    <p class="ribbon__seo fade-up" data-i18n="ribbon.seo">Global wheat trading, barley supply UAE, and full-container foodstuff programmes shipped from Abu Dhabi to the Gulf, East Africa and Central Asia.</p>
+
+    <div data-tab-panel="trending">
+      <div class="grid-products" data-rail
+           data-slugs="milling-wheat-grade-3,crude-sunflower-oil,refined-sugar-icumsa-45,skimmed-milk-powder"></div>
+    </div>
+    <div data-tab-panel="bestsellers" hidden>
+      <div class="grid-products" data-rail
+           data-slugs="feed-barley-grade-1,wheat-flour-type-550,uht-milk-3-2,durum-wheat-pasta"></div>
+    </div>
+    <div data-tab-panel="new" hidden>
+      <div class="grid-products" data-rail
+           data-slugs="flaxseed-food-grade,refined-rapeseed-oil,tomato-paste-28-30,chickpeas-kabuli-8mm"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================================== PROCESS -->
+<!-- The section the page did not have. A first-time institutional buyer is
+     deciding whether to send an enquiry at all, and the thing that decides it
+     is knowing what happens after they do. Every fact here was already on the
+     site — GOST contract standards, load-port inspection, the Gulf hub, CIF and
+     FOB, L/C and CAD, the one-business-day reply — but scattered across five
+     sections, so it never added up to a sequence.
+
+     It also absorbs the old guarantees ribbon. Those three claims (independent
+     inspection, multi-corridor logistics, transparent banking) are steps 04, 05
+     and 06 here, which is where they mean something, instead of three
+     free-floating assertions between two other sections. -->
+<section class="section flow" id="process">
+  <div class="shell">
+    <div class="flow__head">
+      <span class="label fade-up" data-i18n="flow.tag">How we work</span>
+      <h2 class="t-section flow__title fade-up stagger-1 u-mt-s" data-i18n="flow.title">From enquiry to documents against payment.</h2>
+      <p class="body-copy flow__copy fade-up stagger-2" data-i18n="flow.copy">Six steps, the same on every line we trade. Quality is proven before loading, and every parameter is fixed in the contract rather than negotiated on arrival.</p>
+    </div>
+
+    <ol class="flow__grid">
+      <li class="flow__step fade-up">
+        <span class="flow__num" aria-hidden="true">01</span>
+        <h3 class="flow__stepTitle" data-i18n="flow.s1t">Enquiry</h3>
+        <p class="flow__stepCopy" data-i18n="flow.s1c">Volumes, destination port and settlement terms. The trading desk replies within one business day.</p>
+      </li>
+      <li class="flow__step fade-up stagger-1">
+        <span class="flow__num" aria-hidden="true">02</span>
+        <h3 class="flow__stepTitle" data-i18n="flow.s2t">Offer</h3>
+        <p class="flow__stepCopy" data-i18n="flow.s2c">Priced against your specific enquiry on CIF, FOB or CFR — never a list price, because freight and origin decide the number.</p>
+      </li>
+      <li class="flow__step fade-up stagger-2">
+        <span class="flow__num" aria-hidden="true">03</span>
+        <h3 class="flow__stepTitle" data-i18n="flow.s3t">Contract</h3>
+        <p class="flow__stepCopy" data-i18n="flow.s3c">Laboratory parameters written into the contract against the GOST interstate standard for the line, on GAFTA or FOSFA forms.</p>
+      </li>
+      <li class="flow__step fade-up">
+        <span class="flow__num" aria-hidden="true">04</span>
+        <h3 class="flow__stepTitle" data-i18n="flow.s4t">Inspection</h3>
+        <p class="flow__stepCopy" data-i18n="flow.s4c">Independent inspection at the load port by SGS, Intertek or Bureau Veritas — before loading, not after arrival.</p>
+      </li>
+      <li class="flow__step fade-up stagger-1">
+        <span class="flow__num" aria-hidden="true">05</span>
+        <h3 class="flow__stepTitle" data-i18n="flow.s5t">Shipment</h3>
+        <p class="flow__stepCopy" data-i18n="flow.s5c">Originated at producer level, consolidated through the Gulf hub at Jebel Ali and delivered to your port.</p>
+      </li>
+      <li class="flow__step fade-up stagger-2">
+        <span class="flow__num" aria-hidden="true">06</span>
+        <h3 class="flow__stepTitle" data-i18n="flow.s6t">Settlement</h3>
+        <p class="flow__stepCopy" data-i18n="flow.s6c">Documents against an irrevocable letter of credit or cash against documents. No instrument you have not agreed in the contract.</p>
+      </li>
+    </ol>
+
+    <p class="flow__seo fade-up" data-i18n="ribbon.seo">Global wheat trading, barley supply UAE, and full-container foodstuff programmes shipped from Abu Dhabi to the Gulf, East Africa and Central Asia.</p>
   </div>
 </section>
 
@@ -441,7 +469,6 @@
   </div>
 </section>
 
-<!-- ======================================================= QUALIFICATION -->
 <!-- ======================================================= QUALIFICATION -->
 <!-- The section is called Client Qualification, so it lets the client qualify
      themselves. Four criteria as real checkboxes: tick the ones that describe
