@@ -225,11 +225,50 @@ button, input, select, textarea { font: inherit; color: inherit; }
   z-index: 100;
   height: var(--nav-h);
   display: flex;
-  align-items: center;
+  /* stretch, not center. Centering sized .nav__inner by its own content and
+     then centred it, so anything inside taller than the bar hung out below it
+     — which is what put the mark and the quotation button on top of the page,
+     with section headings reading straight through them. Stretching pins the
+     inner to exactly the bar's height and lets its own grid centre the items
+     inside that, so nothing can render outside the bar by construction. */
+  align-items: stretch;
   background: transparent;
   border-bottom: 1px solid transparent;
-  transition: background 450ms var(--ease),
-              border-color 450ms var(--ease);
+  transition: border-color 450ms var(--ease);
+}
+
+/* The frosted plate, on a pseudo-element rather than on .nav itself.
+   backdrop-filter makes its element a containing block for position:fixed
+   descendants, and .nav__menu is exactly that on narrow screens — put the
+   filter on .nav and the mobile panel stops being measured against the
+   viewport and collapses into the bar. A pseudo-element has no descendants to
+   trap, so the effect is free of that. */
+.nav::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  /* 0.78, not the 0.55 this started at. Rendered without the blur — which is
+     what a snapshot or an engine that skips backdrop-filter gives you — 0.55
+     ivory left a section heading perfectly legible straight through the bar.
+     The tint has to carry the occlusion on its own and the blur has to be the
+     thing that makes it feel like glass, never the thing doing the work. */
+  background: rgb(from var(--bg) r g b / 0.78);
+  -webkit-backdrop-filter: blur(24px) saturate(1.35);
+          backdrop-filter: blur(24px) saturate(1.35);
+  opacity: 0;
+  transition: opacity 450ms var(--ease);
+}
+.nav--scrolled::before { opacity: 1; }
+
+/* No blur available: a 0.55 tint alone would let text read through, so the
+   plate goes solid instead. Same for engines without relative colour. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav::before { background: var(--bg); }
+}
+@supports not (color: rgb(from white r g b / 1)) {
+  .nav::before { background: var(--scrim-nav); }
 }
 
 /* Three tracks rather than an absolutely-centred mark: the wordmark keeps the
@@ -239,6 +278,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .nav__inner {
   position: relative;
   width: 100%;
+  height: 100%;
+  min-height: 0;
   max-width: 1560px;
   margin: 0 auto;
   padding: 0 var(--gutter);
@@ -445,16 +486,10 @@ button, input, select, textarea { font: inherit; color: inherit; }
    scroll-padding-top, which is correctly the taller of the two. */
 .nav--scrolled {
   --nav-h: 58px;
-  /* Opaque, not a 0.86 scrim. --scrim-nav is rgba(247,244,237,0.86) and the
-     page is #F7F4ED, so that was 86% ivory over ivory: invisible by
-     construction, and it never actually occluded anything. Whatever scrolled
-     under the bar read straight through it — which is the overlap. A blur is
-     no help either; it blurs what shows through instead of stopping it.
-
-     Fully opaque page colour, so the bar is a surface. The hairline is what
-     separates it from the content, which is how every other edge on this site
-     is drawn. */
-  background: var(--bg);
+  /* The surface itself is .nav::before above — a real blur plus a 0.55 tint,
+     so content passing under the bar is softened out rather than read through
+     it. The old --scrim-nav was rgba(247,244,237,0.86) on a #F7F4ED page: 86%
+     ivory over ivory, invisible by construction, occluding nothing. */
   border-bottom-color: var(--hairline);
 }
 .nav--scrolled .nav__mark { font-size: 17px; }
@@ -548,25 +583,31 @@ button, input, select, textarea { font: inherit; color: inherit; }
 .nav__burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-3.75px) rotate(-45deg); }
 
 /* ------------------------------------------------------- 5b. SECTION RAIL */
-/* A reading index down the left margin, not a second navigation bar. It states
-   where you are in the page and lets you leave for anywhere else in it.
+/* A reading index down the left margin. Two states, and the difference between
+   them is the whole design:
 
-   Deliberately quiet: mono at 10px, a 1px tick per section, and no fill or
-   panel behind it. The site frames things with hairlines and crop marks rather
-   than chrome, and a floating pill of links here would read as a widget bolted
-   onto the page. What carries the state is the tick — it lengthens and takes
-   the gold when its section is the one you are in, which is legible from the
-   corner of the eye without asking to be read.
+   At rest it is six ticks and nothing else. No labels, not even for the
+   current section — that was the overlap: the shell's gutter is only ~44px at
+   1280, so a word beside a tick lands directly on the section heading. Ticks
+   alone are 26px at their longest, which fits the gutter with room to spare,
+   so the resting state cannot collide with anything.
 
-   Labels are hidden until hover so the resting state is six ticks and a word,
-   which is quiet enough to live permanently on screen. */
+   Reached for, it becomes a panel: the labels arrive and a frosted plate comes
+   up behind them, blurring the page so the list reads cleanly over whatever
+   happens to be there. That is what makes the labels safe to overlap content —
+   they are explicitly an overlay for as long as you are pointing at them,
+   rather than type competing with type.                                     */
 
 .rail {
   position: fixed;
-  left: max(14px, calc((100vw - 1560px) / 2 - 26px));
+  /* Sits in the gutter when there is no outer margin, and moves out into the
+     margin once the viewport is wider than the shell. */
+  left: max(16px, calc((100vw - 1560px) / 2 - 30px));
   top: 50%;
   transform: translateY(-50%);
   z-index: 90;                      /* under the nav (100) and the drawer */
+  padding: 14px 16px;
+  margin: -14px -16px;              /* padding is for the plate, not the layout */
   opacity: 0;
   visibility: hidden;
   transition: opacity 500ms var(--ease), visibility 0s linear 500ms;
@@ -578,6 +619,34 @@ button, input, select, textarea { font: inherit; color: inherit; }
   opacity: 1;
   visibility: visible;
   transition: opacity 500ms var(--ease), visibility 0s linear 0s;
+}
+
+/* The frosted plate. Same construction as the bar's: a pseudo-element, so the
+   filter never becomes a containing block for anything. */
+.rail::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 12px;
+  background: rgb(from var(--bg) r g b / 0.82);
+  -webkit-backdrop-filter: blur(22px) saturate(1.3);
+          backdrop-filter: blur(22px) saturate(1.3);
+  border: 1px solid var(--hairline-soft);
+  opacity: 0;
+  transform: scale(0.97);
+  transform-origin: left center;
+  transition: opacity 320ms var(--ease), transform 320ms var(--ease);
+}
+
+.rail:hover::before,
+.rail:focus-within::before { opacity: 1; transform: none; }
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .rail::before { background: var(--bg); }
+}
+@supports not (color: rgb(from white r g b / 1)) {
+  .rail::before { background: var(--bg-elev); }
 }
 
 .rail__list { display: flex; flex-direction: column; gap: 2px; }
@@ -595,9 +664,9 @@ button, input, select, textarea { font: inherit; color: inherit; }
   transition: color 300ms var(--ease);
 }
 
-/* The tick is the state. 14px and hairline at rest, 26px and gold when
-   current — a length change reads at a glance where a colour change alone
-   does not. */
+/* The tick is the resting state, so it carries everything: 14px hairline for
+   a section you are not in, 26px gold for the one you are. A length change
+   reads from the corner of the eye where a colour change alone does not. */
 .rail__item i {
   display: block;
   width: 14px;
@@ -609,15 +678,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
               background 300ms var(--ease);
 }
 
+/* Labels are laid out but not painted, so the plate is already the right size
+   before they fade in — width:0 would make the panel grow as they arrive. */
 .rail__item span {
   opacity: 0;
   transform: translateX(-4px);
-  transition: opacity 300ms var(--ease), transform 300ms var(--ease);
+  transition: opacity 260ms var(--ease), transform 260ms var(--ease);
   white-space: nowrap;
 }
 
-/* Hovering anywhere on the rail names every section, so the labels arrive as
-   one list rather than one word at a time under the cursor. */
+/* One hover names every section, rather than one word at a time under the
+   cursor. */
 .rail:hover .rail__item span,
 .rail:focus-within .rail__item span { opacity: 1; transform: none; }
 
@@ -626,15 +697,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
 
 .rail__item.is-current { color: var(--ink); }
 .rail__item.is-current i { width: 26px; opacity: 1; background: var(--accent); }
-.rail__item.is-current span { opacity: 1; transform: none; }
 
-/* No margin to put it in, and a phone has the burger for this. */
-@media (max-width: 1279px) {
+/* Below this the shell fills the viewport and there is no margin to sit in;
+   narrow screens have the burger for this anyway. */
+@media (max-width: 1359px) {
   .rail { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rail, .rail__item, .rail__item i, .rail__item span { transition: none; }
+  .rail, .rail::before, .rail__item, .rail__item i, .rail__item span {
+    transition: none;
+  }
 }
 
 /* ---------------------------------------------------------------- 6. BUTTONS */
@@ -2501,7 +2574,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
   margin-bottom: clamp(40px, 4vw, 64px);
 }
 
-.corridor__figure { position: relative; width: 100%; }
 
 /* ---- Globe -----------------------------------------------------------------
    The lanes drawn on the actual planet. It only ever replaces the flat figure
@@ -2699,6 +2771,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
 @media (max-width: 999px) {
   .corridor__grid { grid-template-columns: 1fr; gap: 30px; }
 
+  /* Centre the whole column rather than relying on the globe's own auto
+     margins, so the hint sits under the middle of the sphere too. */
+  .corridor__grid > div:first-child {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
   /* Sized off the viewport, not the column: a square that fills the measure
      eats a whole phone screen. Capped so a tablet does not get a giant one. */
   .corridor__globe {
@@ -2757,46 +2837,8 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .corridor__hint--fine { display: none; }
   .corridor__hint--coarse { display: inline; }
 }
-.corridor__svg { width: 100%; height: auto; overflow: visible; }
 
-.corridor__route {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-dasharray: var(--len, 2000);
-  stroke-dashoffset: var(--len, 2000);
-}
 
-.corridor.in-view .corridor__route {
-  transition: stroke-dashoffset 2600ms cubic-bezier(0.33, 0, 0.2, 1) 120ms;
-  stroke-dashoffset: 0;
-}
-
-.corridor__ghost {
-  fill: none;
-  stroke: var(--hairline);
-  stroke-width: 1;
-  stroke-dasharray: 2 6;
-  stroke-linecap: round;
-}
-
-.corridor__node { opacity: 0; }
-.corridor.in-view .corridor__node { opacity: 1; transition: opacity 600ms var(--ease); }
-.corridor.in-view .corridor__node:nth-of-type(1) { transition-delay: 400ms; }
-.corridor.in-view .corridor__node:nth-of-type(2) { transition-delay: 900ms; }
-.corridor.in-view .corridor__node:nth-of-type(3) { transition-delay: 1400ms; }
-.corridor.in-view .corridor__node:nth-of-type(4) { transition-delay: 1900ms; }
-.corridor.in-view .corridor__node:nth-of-type(5) { transition-delay: 2400ms; }
-
-.corridor__dot { fill: var(--accent); }
-.corridor__ring { fill: none; stroke: var(--accent); stroke-opacity: 0.45; }
-
-.corridor__pulse {
-  fill: var(--accent);
-  transform-box: fill-box;
-  transform-origin: center;
-}
 .corridor.in-view .corridor__pulse { animation: nodePulse 3.2s var(--ease) infinite; }
 
 @keyframes nodePulse {
@@ -2805,57 +2847,13 @@ button, input, select, textarea { font: inherit; color: inherit; }
   100% { transform: scale(3.4); opacity: 0; }
 }
 
-.corridor__label {
-  font-family: var(--font-ui);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  fill: var(--ink);
-}
-
-.corridor__sublabel {
-  font-family: var(--font-ui);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  fill: var(--muted);
-}
-
-.corridor__stack { display: none; }
-.corridor__svg-v { width: 100%; max-width: 320px; height: auto; overflow: visible; }
 
 /* The caravan riding the route. animateMotion places it, so the only job
    here is colour and a size that stays legible at both orientations. */
-.corridor__caravan { fill: var(--ink); color: var(--ink); opacity: 0.9; }
 
 @media (prefers-reduced-motion: reduce) {
-  .corridor__caravan animateMotion { display: none; }
 }
 
-.corridor__stack li {
-  position: relative;
-  padding: 0 0 32px 30px;
-  border-left: 1px solid var(--hairline);
-}
-.corridor__stack li:last-child { padding-bottom: 0; border-left-color: transparent; }
-.corridor__stack li::before {
-  content: "";
-  position: absolute;
-  left: -4.5px; top: 6px;
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-.corridor__stack h3 {
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink);
-  margin-bottom: 5px;
-}
-.corridor__stack p { font-size: 13px; color: var(--muted); }
 
 /* Closing CTA band. Two columns on one hairline: the ask, and the terms a
    counterparty checks before writing. Left-aligned like everything above it. */
@@ -3658,8 +3656,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .qual__item { grid-template-columns: 1fr; gap: 6px; }
   .grid-products { grid-template-columns: repeat(2, 1fr); }
 
-  .corridor__figure { display: none; }
-  .corridor__stack { display: block; }
 
   .shop { grid-template-columns: 1fr; }
   .filters { position: static; }
@@ -3770,8 +3766,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
   .hero__content .reveal { opacity: 1; transform: none; }
   .hero__title .line > span { transform: none; }
   .hero__dot::after { animation: none; }
-  .corridor__route { stroke-dashoffset: 0; }
-  .corridor__node { opacity: 1; }
   .card__quick { opacity: 1; transform: none; }
 }
 

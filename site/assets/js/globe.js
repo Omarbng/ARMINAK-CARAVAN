@@ -102,13 +102,18 @@ export async function mountGlobe(host, opts = {}) {
   controls.autoRotate = !reduced;
   controls.autoRotateSpeed = 0.28;
 
-  /* On a phone a one-finger drag over the canvas is how you scroll the page,
-     not how you turn a globe. OrbitControls returns early from pointerdown
-     when disabled — so it never calls preventDefault and the swipe reaches the
-     document — while autoRotate lives in update() and keeps running regardless.
-     The globe therefore still turns on its own, taps still pick, and the page
-     scrolls straight through it. */
-  if (touch) controls.enabled = false;
+  /* Touch needs the two gestures separated, and disabling the controls was the
+     wrong tool: OrbitControls stamps `touch-action: none` on the canvas inside
+     connect(), so the browser refuses to scroll over it whatever the enabled
+     flag says. The globe was interactive-looking but frozen, and the page would
+     not scroll past it either.
+
+     touch-action does the split properly instead. `pan-y` hands vertical
+     swipes to the browser — the page scrolls through the globe as it should —
+     while horizontal drags never become scrolls and so arrive as pointer
+     events, which is exactly the axis you want for turning a planet. Taps still
+     pick. Set after construction because connect() has already written it. */
+  if (touch) renderer.domElement.style.touchAction = 'pan-y';
 
   const world = new THREE.Group();
   scene.add(world);

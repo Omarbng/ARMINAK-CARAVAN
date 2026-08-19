@@ -402,17 +402,29 @@
        of three.js, OrbitControls and coastline data, so the gates that matter
        on a phone stay: it is imported lazily when the section scrolls into
        view, never on Data Saver, and never against reduced motion. */
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    /* There is no drawn fallback behind this any more, so whenever the globe is
+       not going to run the manifest has to carry the section by itself — shown,
+       and fully lit, since there is no scroll reveal to light it. */
+    function manifestOnly() {
+      var t = qs('#corridorLanes');
+      if (!t) return;
+      t.hidden = false;
+      [].slice.call(t.querySelectorAll('tr')).slice(1).forEach(function (r) {
+        r.classList.add('is-lit');
+      });
+    }
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { manifestOnly(); return; }
 
     var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-    if (conn && conn.saveData) return;
+    if (conn && conn.saveData) { manifestOnly(); return; }
 
     /* Cheap probe first — mounting three.js only to discover there is no
        context wastes the whole download. */
     try {
       var c = document.createElement('canvas');
-      if (!(c.getContext('webgl') || c.getContext('experimental-webgl'))) return;
-    } catch (e) { return; }
+      if (!(c.getContext('webgl') || c.getContext('experimental-webgl'))) { manifestOnly(); return; }
+    } catch (e) { manifestOnly(); return; }
 
     var started = false;
     var view = null;
@@ -428,11 +440,9 @@
       import('./globe.js').then(function (mod) {
         return mod.mountGlobe(host);
       }).then(function (g) {
-        if (!g) return;                       /* keep the flat route */
+        if (!g) { manifestOnly(); return; }   /* no context after all */
         view = g;
         host.classList.add('is-live');
-        var flat = qs('#corridorFlat');
-        if (flat) flat.hidden = true;
         var hint = qs('#corridorHint');
         if (hint) hint.hidden = false;
         var lanes = qs('#corridorLanes');
@@ -440,8 +450,8 @@
         initCorridorReveal(g);
         initCorridorPicking(g);
       }).catch(function () {
-        /* Older engine, blocked module, anything at all — the SVG is still
-           sitting there doing its job. */
+        /* Older engine, blocked module, anything at all. */
+        manifestOnly();
       });
     }, { rootMargin: '200px 0px' }).observe(host);
   }
@@ -648,14 +658,6 @@
     }, { rootMargin: '0px 0px -10% 0px', threshold: 0.08 });
 
     els.forEach(function (el) { io.observe(el); });
-  }
-
-  /* ------------------------------------------------------------ CORRIDOR -- */
-
-  function initCorridor() {
-    var route = qs('#corridorRoute');
-    if (!route || typeof route.getTotalLength !== 'function') return;
-    route.style.setProperty('--len', Math.ceil(route.getTotalLength()));
   }
 
   /* ------------------------------------------------------------ TAB RAILS -- */
@@ -1088,7 +1090,6 @@
     initTheme();
     initDeskClock();
     initNav();
-    initCorridor();
     initReveal();
     initTabs();
     initFavs();
