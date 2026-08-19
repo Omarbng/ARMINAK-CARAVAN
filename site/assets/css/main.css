@@ -2407,6 +2407,28 @@ button, input, select, textarea { font: inherit; color: inherit; }
 }
 .corridor__lanes tr.is-lit td:first-child::after { transform: scaleX(1); }
 
+/* Picking a waypoint. The rows are the keyboard path into the globe, so they
+   have to look and behave like controls: a pointer, a focus ring, and a picked
+   state that is louder than "connected" without introducing a second colour. */
+.corridor__lanes tr:not(:first-child) { cursor: pointer; }
+.corridor__lanes tr:not(:first-child):hover td { color: var(--ink); }
+.corridor__lanes tr:not(:first-child):focus-visible {
+  outline: 1.5px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.corridor__lanes tr.is-picked td { color: var(--ink); }
+.corridor__lanes tr.is-picked td.role { color: var(--accent); }
+.corridor__lanes tr.is-picked td:first-child::before { opacity: 1; color: var(--accent); }
+.corridor__lanes tr.is-picked td:first-child::after { transform: scaleX(1); height: 2px; }
+
+/* The unpicked rows recede so the picked leg is the only thing being read —
+   the same move the sphere makes with its lane opacity. */
+.corridor__lanes:has(tr.is-picked) tr:not(.is-picked):not(:first-child) td {
+  color: var(--muted);
+  transition: color 320ms var(--ease);
+}
+
 /* No scroll choreography to hook into, so the finished state is the state. */
 @media (prefers-reduced-motion: reduce) {
   .corridor__lanes tr:not(:first-child) td { color: var(--ink); }

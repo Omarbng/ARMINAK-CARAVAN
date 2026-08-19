@@ -322,6 +322,7 @@
         var lanes = qs('#corridorLanes');
         if (lanes) lanes.hidden = false;
         initCorridorReveal(g);
+        initCorridorPicking(g);
       }).catch(function () {
         /* Older engine, blocked module, anything at all — the SVG is still
            sitting there doing its job. */
@@ -395,6 +396,52 @@
     window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onScroll);
     apply();
+  }
+
+  /* Picking a waypoint — from the sphere or from the manifest, same state.
+
+     The globe is aria-hidden and cannot take focus, so the table is the real
+     control: rows are the keyboard path in, and the sphere is the pointer path.
+     Both call the same select(), and the globe reports back through onSelect so
+     whichever one you used, the other agrees.
+
+     The attributes are added here rather than in the markup because the
+     language switcher assigns textContent to those cells — anything nested in
+     them would be wiped on the first EN/RU switch. */
+  function initCorridorPicking(globe) {
+    if (!globe || !globe.select) return;
+
+    var rows = [].slice.call(document.querySelectorAll('#corridorLanes tr')).slice(1);
+    if (!rows.length) return;
+
+    function paint(i) {
+      rows.forEach(function (row, k) {
+        var on = k === i;
+        row.classList.toggle('is-picked', on);
+        row.setAttribute('aria-pressed', String(on));
+      });
+    }
+
+    rows.forEach(function (row, i) {
+      row.tabIndex = 0;
+      row.setAttribute('role', 'button');
+      row.setAttribute('aria-pressed', 'false');
+      /* silent: the table already knows, so it paints from the return value
+         rather than being told again through the callback. */
+      row.addEventListener('click', function () { paint(globe.select(i, true)); });
+      row.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        e.preventDefault();                  /* Space would scroll the page */
+        paint(globe.select(i, true));
+      });
+    });
+
+    /* The sphere reports its own picks so the table follows the pointer. */
+    if (globe.setOnSelect) globe.setOnSelect(paint);
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && globe.selected() !== null) paint(globe.select(null, true));
+    });
   }
 
   /* ----------------------------------------------------------------- NAV -- */

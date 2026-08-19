@@ -103,7 +103,8 @@ export async function mountGlobe(host, opts = {}) {
   /* three r155+ dropped legacy lighting, so these intensities are deliberate:
      anything lower renders the paper as mud. */
   const globeMat = new THREE.MeshLambertMaterial({ color: PAPER });
-  world.add(new THREE.Mesh(new THREE.SphereGeometry(R, 96, 96), globeMat));
+  const globeMesh = new THREE.Mesh(new THREE.SphereGeometry(R, 96, 96), globeMat);
+  world.add(globeMesh);
   scene.add(new THREE.AmbientLight(0xffffff, 2.5));
   const key = new THREE.DirectionalLight(0xffffff, 1.9);
   key.position.set(-1.1, 1.3, 1.9);
@@ -173,6 +174,19 @@ export async function mountGlobe(host, opts = {}) {
   pulse.visible = false;
   world.add(pulse);
 
+  /* Markers for a picked waypoint. Three, because picking the hub lights all
+     three feeders at once and they should run together rather than in turn —
+     the hub's whole story is that everything arrives there. */
+  const focusDots = [];
+  for (let i = 0; i < 3; i++) {
+    const fm = new THREE.MeshBasicMaterial({ color: ACCENT });
+    laneMats.push(['accent', fm]);
+    const d = new THREE.Mesh(new THREE.SphereGeometry(0.022, 16, 16), fm);
+    d.visible = false;
+    world.add(d);
+    focusDots.push(d);
+  }
+
   /* Nodes, and HTML labels so the type stays the site's own. */
   const labels = [];
   const marks = [];                          /* dot + ring + label, in NODES order */
@@ -231,12 +245,64 @@ export async function mountGlobe(host, opts = {}) {
   const STEPS = NODES.length;                /* 5 */
   const REVEAL_END = 0.9;
   let progress = -1;
+  let lastP = 0;                             /* so a pick can repaint at the
+                                                scroll position it happened at */
 
   /* Per-waypoint: has this leg finished connecting? Read by the manifest. */
   const connected = new Array(STEPS).fill(false);
 
+  /* ---- picking -------------------------------------------------------------
+     Which legs belong to a waypoint. An origination owns the feeder it sends
+     into the Gulf; the hub owns all three arriving at it; the delivery node
+     owns the outbound leg. */
+  function routeOf(i) {
+    if (i == null) return null;
+    if (i < lanes.length) return [lanes[i]];
+    if (NODES[i].role === 'hub') return lanes.slice();
+    return [outLane];
+  }
+
+  let selected = null;
+  let scrollHubIn = 0;
+  let onSelect = opts.onSelect || null;      /* set later via setOnSelect */
+
+  /* Every lane's weight is decided in one place, because two things want a
+     say: how far the scroll has built, and whether something is picked. A
+     picked route goes to full and forces itself drawn — clicking a waypoint
+     you have not scrolled to yet should still show you its route — and
+     everything else drops back so the picked one is the only thing read. */
+  function paintLanes() {
+    const route = routeOf(selected);
+    const all = lanes.concat([outLane]);
+    for (const l of all) {
+      const inRoute = route ? route.indexOf(l) > -1 : false;
+      if (route) {
+        l.mesh.material.opacity = inRoute ? 1 : 0.09;
+        if (inRoute) {
+          l.mesh.visible = true;
+          l.geo.setDrawRange(0, l.total);
+        }
+      } else {
+        l.mesh.material.opacity = l === outLane
+          ? outLane.baseOpacity
+          : l.baseOpacity + 0.22 * scrollHubIn;
+      }
+    }
+
+    /* A picked waypoint's own mark leads; the others step back so the eye
+       goes to the leg, not to the field of dots. */
+    for (let i = 0; i < STEPS; i++) {
+      const m = marks[i];
+      const dim = selected !== null && selected !== i;
+      m.dotMat.opacity = dim ? 0.35 : 1;
+      m.dotMat.transparent = true;
+      m.label.dim = dim;
+    }
+  }
+
   function setProgress(p) {
     p = p < 0 ? 0 : p > 1 ? 1 : p;
+    lastP = p;
     if (Math.abs(p - progress) < 0.001) return connected;
     progress = p;
 
@@ -273,21 +339,92 @@ export async function mountGlobe(host, opts = {}) {
       }
 
       /* A leg counts as connected when its lane lands. The hub has no lane of
-         its own, so it counts once the node itself is fully in. */
-      connected[i] = lane ? drawn >= 0.92 : nodeIn >= 1;
+         its own, so it takes the same end-of-slice phase — gating it on the
+         node alone lit it a third of the way in, which bunched it against the
+         waypoint before it. */
+      connected[i] = local >= 0.92 && (lane ? drawn >= 0.92 : nodeIn >= 1);
     }
 
     /* The hub arriving is what completes the three feeders, so they step up
        out of their receding weight as its slice runs. */
-    const hubIn = Math.min(1, Math.max(0, scaled - lanes.length));
-    for (const l of lanes) l.mesh.material.opacity = l.baseOpacity + 0.22 * hubIn;
-
-    /* The pulse rides the outbound leg, so it appears with that leg rather
-       than in the last three per cent of the timeline. */
-    pulse.visible = outLane.mesh.visible;
+    scrollHubIn = Math.min(1, Math.max(0, scaled - lanes.length));
+    paintLanes();
 
     return connected;
   }
+
+  /* Pick a waypoint, or pass null to release. Everything is recomputed from
+     the stored scroll position rather than nudged, so releasing a pick lands
+     back exactly on whatever the scroll had built. */
+  let targetYaw = null;
+
+  function select(i, silent) {
+    if (i === selected) i = null;            /* clicking the same one releases */
+    selected = i;
+    controls.autoRotate = !reduced && selected === null;
+
+    if (selected !== null) {
+      /* Turn the picked waypoint toward the reader. Only the horizontal
+         component — tilting the pole to chase a latitude looks like a fault. */
+      const v = marks[selected].label.v;
+      const want = Math.atan2(camera.position.z, camera.position.x)
+                 - Math.atan2(v.z, v.x);
+      const cur = world.rotation.y;
+      targetYaw = cur + Math.atan2(Math.sin(want - cur), Math.cos(want - cur));
+    } else {
+      targetYaw = null;
+    }
+
+    progress = -1;                           /* force a full recompute */
+    setProgress(lastP);
+    if (!silent && onSelect) onSelect(selected);
+    return selected;
+  }
+
+  /* Nearest-node-to-the-hit-point rather than a hitbox per dot: the dots are
+     0.011 of a unit sphere, which is far too small to ask anyone to hit. */
+  const ray = new THREE.Raycaster();
+  const ndc = new THREE.Vector2();
+  const PICK_ANGLE = 0.24;                   /* ~14° of arc counts as "on it" */
+
+  function hitTest(ev) {
+    const r = renderer.domElement.getBoundingClientRect();
+    ndc.x = ((ev.clientX - r.left) / r.width) * 2 - 1;
+    ndc.y = -((ev.clientY - r.top) / r.height) * 2 + 1;
+    ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObject(globeMesh, false)[0];
+    if (!hit) return null;
+    const local = world.worldToLocal(hit.point.clone()).normalize();
+    let best = null, bestAng = PICK_ANGLE;
+    for (let i = 0; i < STEPS; i++) {
+      if (!marks[i].dot.visible) continue;    /* not revealed yet — not pickable */
+      const ang = local.angleTo(marks[i].label.v.clone().normalize());
+      if (ang < bestAng) { bestAng = ang; best = i; }
+    }
+    return best;
+  }
+
+  /* OrbitControls owns the drag, so only a press that did not travel counts
+     as a click — otherwise every turn of the globe would also pick something. */
+  let downAt = null;
+  renderer.domElement.addEventListener('pointerdown', function (e) {
+    downAt = { x: e.clientX, y: e.clientY, t: performance.now() };
+  });
+  renderer.domElement.addEventListener('pointerup', function (e) {
+    if (!downAt) return;
+    const moved = Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y);
+    const quick = performance.now() - downAt.t < 500;
+    downAt = null;
+    if (moved > 6 || !quick) return;
+    select(hitTest(e));
+  });
+  renderer.domElement.addEventListener('pointermove', function (e) {
+    if (downAt) return;                       /* mid-drag: leave the cursor */
+    renderer.domElement.style.cursor = hitTest(e) === null ? '' : 'pointer';
+  });
+  renderer.domElement.addEventListener('pointerleave', function () {
+    renderer.domElement.style.cursor = '';
+  });
 
   function onResize() {
     const s = host.clientWidth;
@@ -315,7 +452,28 @@ export async function mountGlobe(host, opts = {}) {
 
   function loop(time) {
     controls.update();
-    pulse.position.copy(pulseCurve.getPointAt((time / 7000) % 1));
+
+    /* Ease the picked waypoint round to face the reader. */
+    if (targetYaw !== null) {
+      const d = targetYaw - world.rotation.y;
+      world.rotation.y += Math.abs(d) < 0.0005 ? d : d * 0.075;
+    }
+
+    if (selected !== null) {
+      /* One marker per leg of the picked route, all running together. */
+      const route = routeOf(selected);
+      const t = (time / 2400) % 1;
+      for (let i = 0; i < focusDots.length; i++) {
+        const on = i < route.length;
+        focusDots[i].visible = on;
+        if (on) focusDots[i].position.copy(route[i].curve.getPointAt(t));
+      }
+      pulse.visible = false;                 /* the ambient one would compete */
+    } else {
+      for (const d of focusDots) d.visible = false;
+      pulse.position.copy(pulseCurve.getPointAt((time / 7000) % 1));
+      pulse.visible = outLane.mesh.visible;
+    }
 
     const rect = host.getBoundingClientRect();
     const camDir = camera.position.clone().normalize();
@@ -330,7 +488,7 @@ export async function mountGlobe(host, opts = {}) {
       /* Two gates, both of which must pass: facing the camera, and revealed by
          the scroll. A label for a waypoint that has not arrived yet would give
          the reveal away before it happens. */
-      l.el.style.opacity = facing > 0.12 ? String(l.lit) : '0';
+      l.el.style.opacity = facing > 0.12 ? String(l.lit * (l.dim ? 0.4 : 1)) : '0';
     }
     renderer.render(scene, camera);
   }
@@ -349,6 +507,13 @@ export async function mountGlobe(host, opts = {}) {
     /* Reduced motion gets the finished state, and must still tell the
        manifest every leg is connected — otherwise the table stays grey. */
     setProgress: reduced ? function () { return connected.fill(true); } : setProgress,
+    /* Picking from the manifest table. silent=true suppresses onSelect so the
+       table can drive without being told what it already knows. */
+    select: select,
+    selected: function () { return selected; },
+    /* The page registers this after mount so a pick on the sphere can move the
+       manifest's own highlight. */
+    setOnSelect: function (fn) { onSelect = fn; },
     dom: renderer.domElement,
   };
 }

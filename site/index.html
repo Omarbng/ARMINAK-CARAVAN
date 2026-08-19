@@ -142,22 +142,38 @@
      client called out. The portrait cut is offset to x=900 rather than centred
      because a centre crop loses the caravan in the closing wide.
 
-     v6 is the same edit re-encoded at CRF 14 in a single pass: delogo, both
-     trims, the concat and the loop crossfade all happen in one filter graph,
-     so this is one generation off the master rather than two. 11.4 Mbps
-     against the master's 10.9 — at or above source, which is the point where
-     more bitrate only buys a better copy of the source's own artifacts. The
-     720p original is the real ceiling and no encode setting moves it.
+     v7 is the raw generated footage, and the reason to prefer it is that it is
+     raw. Every version from v2 on had sand composited over the plate by the
+     Remotion pass, and that pass is what made the picture look hazy and soft —
+     the client spotted it. It is also what produced the melted camel heads and
+     the rainbow artifact in v5's handler shot: that shot is clean in this
+     source, checked at 1:1, so all ten seconds survive here where v5 had to
+     lose one.
 
-     10.2MB desktop, 3.0MB mobile. Deliberately heavy: the client asked for
-     maximum quality now and will deal with delivery at hosting time.
+     Trade made knowingly: the wide cut drops from 1080p back to 1280x720,
+     because the clean source only exists at 720p. Sharp 720p beats hazed
+     1080p, and the haze was the actual complaint.
 
-     Nothing is drawn over the film. The live sand and the pointer parallax are
-     both gone. v1-v5 remain on disk under the same six filenames, so going
-     back is only the paths below. -->
+     Portrait is camel_9x16, a real reframe from the same shoot rather than a
+     centre crop of the wide — 1080x1920, and shot for the aspect, so nothing
+     is lost off the sides.
+
+     Both cuts: generation sparkle delogo'd (x1132 y571 on the wide, x972
+     y1533 on the portrait, where it runs into the frame edge), and the loop
+     sealed by hand — this footage ends on a distant dune and opens on a near
+     caravan, so the tail cross-dissolves into the head over 0.6s. 10s becomes
+     9.42s.
+
+     CRF 15, which is far above transparent for a 1.84 Mbps source. Note the
+     portrait is the heavier file (8.3MB against 3.7MB) because its source is
+     1080x1920 — more pixels than the wide. That is backwards for a phone and
+     worth revisiting at hosting time.
+
+     Nothing is drawn over the film. v1-v6 remain on disk under the same six
+     filenames, so going back is only the paths below. -->
 <section class="hero" id="hero"
-         data-video-desktop="assets/hero/v6/hero-desktop.mp4"
-         data-video-mobile="assets/hero/v6/hero-mobile.mp4">
+         data-video-desktop="assets/hero/v7/hero-desktop.mp4"
+         data-video-mobile="assets/hero/v7/hero-mobile.mp4">
   <!-- The stage is what opens. It is full-bleed the whole time and clipped to
        a window, so the caravan never scales or squashes on the way out — the
        frame opens around it. -->
@@ -166,13 +182,13 @@
       <div class="hero__layer">
         <picture>
           <source media="(max-width: 768px), (orientation: portrait)" type="image/webp"
-                  srcset="assets/hero/v6/poster-mobile.webp">
+                  srcset="assets/hero/v7/poster-mobile.webp">
           <source media="(max-width: 768px), (orientation: portrait)" type="image/jpeg"
-                  srcset="assets/hero/v6/poster-mobile.jpg">
-          <source type="image/webp" srcset="assets/hero/v6/poster-desktop.webp">
-          <img class="hero__poster" src="assets/hero/v6/poster-desktop.jpg" alt=""
+                  srcset="assets/hero/v7/poster-mobile.jpg">
+          <source type="image/webp" srcset="assets/hero/v7/poster-desktop.webp">
+          <img class="hero__poster" src="assets/hero/v7/poster-desktop.jpg" alt=""
                aria-hidden="true" fetchpriority="high" decoding="async"
-               width="1920" height="1080">
+               width="1280" height="720">
         </picture>
       </div>
     </div>
@@ -353,7 +369,7 @@
     <div class="corridor__grid">
       <div>
         <div class="corridor__globe" id="corridorGlobe" aria-hidden="true"></div>
-        <p class="corridor__hint" id="corridorHint" hidden data-i18n="corridor.drag">Drag to turn</p>
+        <p class="corridor__hint" id="corridorHint" hidden data-i18n="corridor.drag">Drag to turn · click a waypoint to trace its route</p>
       </div>
 
       <table class="corridor__lanes" id="corridorLanes" hidden>

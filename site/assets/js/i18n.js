@@ -38,7 +38,7 @@
     'corridor.r3': 'Происхождение',
     'corridor.r4': 'Перевалочный узел',
     'corridor.r5': 'Доставка',
-    'corridor.drag': 'Потяните, чтобы повернуть',
+    'corridor.drag': 'Потяните, чтобы повернуть · нажмите на пункт, чтобы увидеть его маршрут',
     'corridor.thWaypoint': 'Пункт',
     'corridor.thPort': 'Порт',
     'corridor.thRole': 'Роль',
