@@ -142,11 +142,22 @@
      client called out. The portrait cut is offset to x=900 rather than centred
      because a centre crop loses the caravan in the closing wide.
 
-     Live sand still draws over it (mountHeroSand). v1-v4 remain on disk under
-     the same six filenames, so going back is only the paths below. -->
+     v6 is the same edit re-encoded at CRF 14 in a single pass: delogo, both
+     trims, the concat and the loop crossfade all happen in one filter graph,
+     so this is one generation off the master rather than two. 11.4 Mbps
+     against the master's 10.9 — at or above source, which is the point where
+     more bitrate only buys a better copy of the source's own artifacts. The
+     720p original is the real ceiling and no encode setting moves it.
+
+     10.2MB desktop, 3.0MB mobile. Deliberately heavy: the client asked for
+     maximum quality now and will deal with delivery at hosting time.
+
+     Nothing is drawn over the film. The live sand and the pointer parallax are
+     both gone. v1-v5 remain on disk under the same six filenames, so going
+     back is only the paths below. -->
 <section class="hero" id="hero"
-         data-video-desktop="assets/hero/v5/hero-desktop.mp4"
-         data-video-mobile="assets/hero/v5/hero-mobile.mp4">
+         data-video-desktop="assets/hero/v6/hero-desktop.mp4"
+         data-video-mobile="assets/hero/v6/hero-mobile.mp4">
   <!-- The stage is what opens. It is full-bleed the whole time and clipped to
        a window, so the caravan never scales or squashes on the way out — the
        frame opens around it. -->
@@ -155,11 +166,11 @@
       <div class="hero__layer">
         <picture>
           <source media="(max-width: 768px), (orientation: portrait)" type="image/webp"
-                  srcset="assets/hero/v5/poster-mobile.webp">
+                  srcset="assets/hero/v6/poster-mobile.webp">
           <source media="(max-width: 768px), (orientation: portrait)" type="image/jpeg"
-                  srcset="assets/hero/v5/poster-mobile.jpg">
-          <source type="image/webp" srcset="assets/hero/v5/poster-desktop.webp">
-          <img class="hero__poster" src="assets/hero/v5/poster-desktop.jpg" alt=""
+                  srcset="assets/hero/v6/poster-mobile.jpg">
+          <source type="image/webp" srcset="assets/hero/v6/poster-desktop.webp">
+          <img class="hero__poster" src="assets/hero/v6/poster-desktop.jpg" alt=""
                aria-hidden="true" fetchpriority="high" decoding="async"
                width="1920" height="1080">
         </picture>
@@ -779,7 +790,6 @@
 <script src="assets/js/products.js"></script>
 <script src="assets/js/i18n-catalogue.js"></script>
 <script src="assets/js/i18n.js"></script>
-<script src="assets/js/sand.js"></script>
 <script src="assets/js/main.js"></script>
 </body>
 </html>

@@ -117,7 +117,6 @@ PAGE = '''<!doctype html>
 <script src="assets/js/products.js"></script>
 <script src="assets/js/i18n-catalogue.js"></script>
 <script src="assets/js/i18n.js"></script>
-<script src="assets/js/sand.js"></script>
 <script src="assets/js/main.js"></script>
 </body>
 </html>

@@ -210,51 +210,83 @@ export async function mountGlobe(host, opts = {}) {
   }
 
   /* ---- scroll reveal -------------------------------------------------------
-     One 0..1 value drives the whole instrument. The section allots a slice of
-     it to each waypoint in manifest order — origination, origination,
-     origination, hub, delivery — and inside a slice the node pops first and
-     its lane then draws toward the hub. Reversible by construction, because
-     everything is recomputed from p rather than advanced by events: scrolling
-     back up unbuilds it in the same order. */
+     One 0..1 value drives the whole instrument, and it is the ONLY source of
+     truth: setProgress returns the per-waypoint connected state and the page's
+     manifest reads that array rather than recomputing the same thresholds.
+     The two used to be worked out independently and had drifted — rows lit
+     when their lane was 8% drawn, not when it landed.
+
+     The five slices read as the trade actually runs: three originations each
+     draw their own feeder into the Gulf, the hub slice lands them (the feeders
+     brighten as it arrives), and the delivery slice draws the outbound leg.
+     The delivery lane belongs to East Africa, not to Jebel Ali — parked on the
+     hub it left the final fifth of the scroll with nothing to draw.
+
+     Reversible by construction, because everything is recomputed from p rather
+     than advanced by events: scrolling back up unbuilds it in the same order.
+
+     The build completes at REVEAL_END rather than at 1.0, so the last lane
+     lands slightly before the reader stops scrolling instead of needing the
+     timeline pushed to its exact end. */
   const STEPS = NODES.length;                /* 5 */
+  const REVEAL_END = 0.9;
   let progress = -1;
+
+  /* Per-waypoint: has this leg finished connecting? Read by the manifest. */
+  const connected = new Array(STEPS).fill(false);
 
   function setProgress(p) {
     p = p < 0 ? 0 : p > 1 ? 1 : p;
-    if (Math.abs(p - progress) < 0.001) return;
+    if (Math.abs(p - progress) < 0.001) return connected;
     progress = p;
 
-    const scaled = p * STEPS;                /* 0..5, one unit per waypoint */
+    const scaled = Math.min(STEPS, (p / REVEAL_END) * STEPS);
 
     for (let i = 0; i < STEPS; i++) {
       const local = Math.min(1, Math.max(0, scaled - i));   /* this step's own 0..1 */
       const m = marks[i];
 
       /* Node lands in the first third of its slice, lane draws over the rest. */
-      const nodeIn = Math.min(1, local / 0.34);
+      const nodeIn = Math.min(1, local / 0.30);
       m.dot.visible = nodeIn > 0;
       m.ring.visible = nodeIn > 0;
       if (nodeIn > 0) {
-        var s = 0.4 + 0.6 * nodeIn;
+        const s = 0.4 + 0.6 * nodeIn;
         m.dot.scale.setScalar(s);
         m.ring.scale.setScalar(0.6 + 0.4 * nodeIn);
         m.ringMat.opacity = (m.isHub ? 0.8 : 0.5) * nodeIn;
       }
       m.label.lit = nodeIn;
 
-      /* The lane out of this node. Originations feed the hub; the hub's own
-         slice draws the delivery lane, since that is the leg it originates. */
-      const lane = i < lanes.length ? lanes[i] : (NODES[i].role === 'hub' ? outLane : null);
+      /* Originations feed the hub; the delivery node draws the outbound leg.
+         The hub itself has no lane — its slice is the arrival, and it is paid
+         off by the feeders brightening below. */
+      const lane = i < lanes.length ? lanes[i]
+                 : (NODES[i].role === 'delivery' ? outLane : null);
+
+      let drawn = 0;
       if (lane) {
-        const drawn = Math.min(1, Math.max(0, (local - 0.28) / 0.72));
+        drawn = Math.min(1, Math.max(0, (local - 0.25) / 0.75));
         lane.mesh.visible = drawn > 0;
         /* Round to a whole triangle or the tube ends in a torn face. */
         lane.geo.setDrawRange(0, Math.floor(lane.total * drawn / 3) * 3);
       }
+
+      /* A leg counts as connected when its lane lands. The hub has no lane of
+         its own, so it counts once the node itself is fully in. */
+      connected[i] = lane ? drawn >= 0.92 : nodeIn >= 1;
     }
 
-    /* The travelling pulse only makes sense once its lane exists. */
-    pulse.visible = scaled >= STEPS - 0.15;
+    /* The hub arriving is what completes the three feeders, so they step up
+       out of their receding weight as its slice runs. */
+    const hubIn = Math.min(1, Math.max(0, scaled - lanes.length));
+    for (const l of lanes) l.mesh.material.opacity = l.baseOpacity + 0.22 * hubIn;
+
+    /* The pulse rides the outbound leg, so it appears with that leg rather
+       than in the last three per cent of the timeline. */
+    pulse.visible = outLane.mesh.visible;
+
+    return connected;
   }
 
   function onResize() {
@@ -314,7 +346,9 @@ export async function mountGlobe(host, opts = {}) {
     /* Nothing to render while it is off screen. */
     pause() { if (running) { renderer.setAnimationLoop(null); running = false; } },
     resume() { if (!running) { renderer.setAnimationLoop(loop); running = true; } },
-    setProgress: reduced ? function () {} : setProgress,
+    /* Reduced motion gets the finished state, and must still tell the
+       manifest every leg is connected — otherwise the table stays grey. */
+    setProgress: reduced ? function () { return connected.fill(true); } : setProgress,
     dom: renderer.domElement,
   };
 }

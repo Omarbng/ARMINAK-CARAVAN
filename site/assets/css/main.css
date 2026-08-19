@@ -795,47 +795,14 @@ button, input, select, textarea { font: inherit; color: inherit; }
    watching should not then wait out the lead. */
 .hero--fast { --win-open: 300ms; --copy-lead: 60ms; }
 
-/* The sand over the film is drawn live, not filmed and not baked. Both the
-   rendered alpha clip and the composited-in version were the same handful of
-   long bright slivers, which read as light streaking past rather than as sand.
-   Two canvases now: a suspension veil that mostly just warms and softens the
-   plate, and a dense grain layer on top of it. See mountHeroSand in main.js.
+/* Nothing is drawn over the film any more. The live sand canvases (a
+   multiplied suspension veil and a screened grain layer) and the pointer
+   parallax that moved them are both gone — "remove any effect from the video".
+   The plate plays as rendered.
 
-   The wrapper exists so the pointer parallax can move the whole storm further
-   than the plate behind it — grains hanging in the air are the nearest thing
-   to the camera, and that difference is the depth. */
-.hero__sandwrap {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  will-change: transform;
-}
-
-.hero__sand {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 1600ms var(--ease);
-}
-.hero__sand.is-ready { opacity: 1; }
-
-/* The veil is the atmosphere: it multiplies down into the plate so the air
-   reads as thick, rather than sitting on top of it as a bright film. */
-.hero__sand--veil { mix-blend-mode: multiply; opacity: 0; }
-.hero__sand--veil.is-ready { opacity: 0.78; }
-
-/* Grains catch the low sun, so these do add light — but at a fraction of the
-   old strength, and there are enough of them that none reads on its own. */
-.hero__sand--grain { mix-blend-mode: screen; }
-.hero__sand--grain.is-ready { opacity: 0.55; }
-
-/* Under the window beat the plate is a small frame on ivory ground; a
-   multiply veil across the whole hero would grey the ground too. */
-.ac-intro .hero__sandwrap { opacity: 0; }
+   The scrim below is NOT in that category and stays: it is what makes cream
+   type legible on lit sand, and the client's note was that the text is
+   positioned correctly, which it only is because of it. */
 
 /* Where the film becomes the page. The v4 master opens and closes inside a
    sand whiteout — pale, low-contrast, only a few shades off the ivory ground —
@@ -883,10 +850,11 @@ button, input, select, textarea { font: inherit; color: inherit; }
    meaning once the film goes full-bleed. */
 .ac-intro .hero__fade { opacity: 0; transition: none; }
 
-/* Two nested layers on purpose: JS parallax transforms .hero__media, the
-   scroll-driven exit transforms .hero__layer. An animation always beats an
-   inline style, so they must not share an element. */
-.hero__media { position: absolute; inset: 0; will-change: transform; }
+/* .hero__media held the JS pointer parallax and .hero__layer the scroll-driven
+   exit — separate elements because an animation always beats an inline style.
+   The parallax is gone, so this is now a plain wrapper; the will-change came
+   off with it rather than promoting a layer nothing transforms. */
+.hero__media { position: absolute; inset: 0; }
 .hero__layer { position: absolute; inset: 0; }
 
 .hero__poster,
