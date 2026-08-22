@@ -137,7 +137,11 @@ RING_W = 3.0
 # evening reads from the navy sky, the crescent and the star instead.
 
 MOON_C, MOON_R = (71.0, 26.0), 9.0
-MOON_CUT = (3.6, -2.6, 8.4)      # cutter offset dx, dy and radius
+# The cutter is offset DOWN-LEFT, so the bite comes out of the crescent's
+# lower-left and the thick limb is left standing on the upper right. Offsetting
+# it up-right instead leaves the mirror lune — same area, opposite side — which
+# sat 0.53 units OUTSIDE the disc and is what the client spotted.
+MOON_CUT = (-3.6, 2.6, 8.4)      # cutter offset dx, dy and radius
 STAR_C, STAR_R = (28.0, 22.0), 3.4
 
 
@@ -181,9 +185,15 @@ def crescent(cx=MOON_C[0], cy=MOON_C[1], R=MOON_R, cut=MOON_CUT):
     px, py = -oy/d, ox/d
     i1 = (bx + h*px, by + h*py)
     i2 = (bx - h*px, by - h*py)
+    # Flags matter more than they look. Two circles cross at two points, so
+    # "the arc from i1 to i2" names FOUR possible paths, and two of them close
+    # into a crescent of identical area on opposite sides of the pair. 1,1 / 0,0
+    # is the one that keeps the standing limb where the cutter is not; 1,0 / 0,1
+    # draws its mirror, which reads as a perfectly good crescent and is in the
+    # wrong place. Verified by measuring the render, not by reasoning.
     return (f"M {i1[0]:.3f} {i1[1]:.3f} "
-            f"A {R} {R} 0 1 0 {i2[0]:.3f} {i2[1]:.3f} "
-            f"A {r} {r} 0 0 1 {i1[0]:.3f} {i1[1]:.3f} Z")
+            f"A {R} {R} 0 1 1 {i2[0]:.3f} {i2[1]:.3f} "
+            f"A {r} {r} 0 0 0 {i1[0]:.3f} {i1[1]:.3f} Z")
 
 
 def star(cx=STAR_C[0], cy=STAR_C[1], r=STAR_R, waist=0.30):
@@ -545,7 +555,27 @@ def mark_only(kind, ink, warm, uid, one_ink=False, scene="moon"):
 
 # ===================================================================== emit ==
 
+def check_inside():
+    """Nothing in the sky may cross the disc. The crescent overhanging by half a
+    unit was invisible in the SVG source and obvious on paper, so it is checked
+    here rather than left to somebody's eye.
+
+    The bound is conservative: a shape of radius q centred d from the disc's
+    centre cannot reach past d + q, whichever lune the flags select."""
+    R_DISC = RING_R + 1
+    for label, (cx, cy), q in (("moon", MOON_C, MOON_R),
+                               ("star", STAR_C, STAR_R)):
+        d = math.hypot(cx - 50.0, cy - 50.0)
+        reach = d + q
+        assert reach < R_DISC, (
+            f"{label} reaches {reach:.2f} from the centre but the disc is "
+            f"{R_DISC} — it would print outside the seal")
+        print(f"  {label:<5} reach {reach:5.2f} / {R_DISC}   "
+              f"clearance {R_DISC - reach:4.2f}")
+
+
 def main():
+    check_inside()
     made = []
     for cw, (ink, warm, one) in COLOURWAYS.items():
         jobs = {

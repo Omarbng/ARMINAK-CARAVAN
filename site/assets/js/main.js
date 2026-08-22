@@ -1158,7 +1158,7 @@
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
-        if (typeof form.reportValidity === 'function' && !form.reportValidity()) return;
+        if (!validateForm(form)) return;
 
         var payload = {};
         var attachment = null;
@@ -1377,23 +1377,275 @@
         var file = input.files && input.files[0];
         wrap.classList.remove('has-file', 'is-invalid');
         input.setCustomValidity('');
+        clearError(input);
 
         if (!file) { name.textContent = ''; return; }
 
         if (file.size > FILE_MAX) {
           wrap.classList.add('is-invalid');
           name.textContent = file.name + ' — ' + fmtSize(file.size);
-          input.setCustomValidity(
-            window.ACI18N && window.ACI18N.current() === 'ru'
-              ? 'Файл больше 10 МБ. Пришлите его письмом на trading@arminakcaravan.ae.'
-              : 'That file is over 10 MB. Email it to trading@arminakcaravan.ae instead.');
-          input.reportValidity();
+          /* setCustomValidity still marks the input invalid so the form cannot
+             be submitted with it, but the message is shown in the page rather
+             than in the browser's bubble. */
+          input.setCustomValidity('over-size');
+          showError(input, 'form.err.big',
+            'That file is over 10 MB. Email it to trading@arminakcaravan.ae instead.');
           return;
         }
+        clearError(input);
 
         wrap.classList.add('has-file');
         name.textContent = file.name + ' · ' + fmtSize(file.size);
       });
+    });
+  }
+
+  /* ------------------------------------------------------------ VALIDATION -- */
+  /* Inline messages instead of the browser's validation bubble. The bubble is
+     another panel drawn by the operating system: unstyleable, gone on the next
+     click, positioned wherever the platform likes, and on some of them never
+     announced to a screen reader at all.
+
+     These sit in the page under the field, are tied to it with
+     aria-describedby, and stay until the field is fixed. Text comes from the
+     dictionary so it switches language with everything else. */
+
+  function fieldMessage(el) {
+    var v = el.validity;
+    if (v.valueMissing) return ['form.err.required', 'This field is required.'];
+    if (v.typeMismatch && el.type === 'email') return ['form.err.email', 'Enter a complete email address.'];
+    if (v.typeMismatch && el.type === 'tel') return ['form.err.tel', 'Enter a usable phone number.'];
+    if (v.tooShort) return ['form.err.short', 'That is too short to act on.'];
+    if (v.customError) return [null, el.validationMessage];
+    return ['form.err.generic', 'Check this field.'];
+  }
+
+  function errorSlot(el) {
+    /* The .pick wrapper is the visible control for a <select>, so the message
+       goes after that rather than after an off-screen element. */
+    var host = el.closest('.pick') || el;
+    var field = el.closest('.field') || host.parentNode;
+    var slot = qs('.field__error', field);
+    if (!slot) {
+      slot = document.createElement('p');
+      slot.className = 'field__error';
+      slot.id = (el.id || 'f' + Math.floor(Math.random() * 1e6)) + '-err';
+      var after = host.closest('.filefield') || host;
+      (after.parentNode === field ? field : after.parentNode).insertBefore(slot, after.nextSibling);
+    }
+    return slot;
+  }
+
+  function showError(el, key, fallback) {
+    var slot = errorSlot(el);
+    if (key) slot.setAttribute('data-i18n', key); else slot.removeAttribute('data-i18n');
+    slot.textContent = fallback;
+    slot.classList.add('is-visible');
+    el.setAttribute('aria-invalid', 'true');
+    el.setAttribute('aria-describedby', slot.id);
+    var pick = el.closest('.pick');
+    if (pick) pick.setAttribute('aria-invalid', 'true');
+    if (key && window.ACI18N) window.ACI18N.retranslate(slot.parentNode);
+  }
+
+  function clearError(el) {
+    var field = el.closest('.field') || el.parentNode;
+    var slot = field && qs('.field__error', field);
+    if (slot) { slot.classList.remove('is-visible'); slot.textContent = ''; }
+    el.removeAttribute('aria-invalid');
+    el.removeAttribute('aria-describedby');
+    var pick = el.closest('.pick');
+    if (pick) pick.removeAttribute('aria-invalid');
+  }
+
+  /* Returns true when the form may go. Reports every bad field at once — one at
+     a time is what the bubble does, and it means five submits to learn five
+     things. */
+  function validateForm(form) {
+    var bad = null;
+    qsa('input, select, textarea', form).forEach(function (el) {
+      if (el.disabled || el.type === 'hidden' || !el.willValidate) return;
+      if (el.checkValidity()) { clearError(el); return; }
+      var m = fieldMessage(el);
+      showError(el, m[0], m[1]);
+      if (!bad) bad = el;
+    });
+    if (bad) {
+      var focusable = bad.closest('.pick');
+      focusable = focusable ? qs('.pick__trigger', focusable) : bad;
+      if (focusable && focusable.focus) focusable.focus();
+      if (bad.scrollIntoView) bad.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+    return !bad;
+  }
+
+  /* Once a field has been told off, fix the message the moment it becomes
+     valid rather than making the visitor submit again to find out. */
+  function initLiveClear() {
+    document.addEventListener('input', function (e) {
+      var el = e.target;
+      if (el.getAttribute && el.getAttribute('aria-invalid') === 'true' && el.checkValidity()) clearError(el);
+    });
+    document.addEventListener('change', function (e) {
+      var el = e.target;
+      if (el.getAttribute && el.getAttribute('aria-invalid') === 'true' && el.checkValidity()) clearError(el);
+    });
+  }
+
+  /* ------------------------------------------------------------------ PICK -- */
+  /* Themed dropdowns. A native <select> opens a menu drawn by the operating
+     system, which no stylesheet reaches — on macOS that is a dark panel with a
+     system-blue row and a tick, the one saturated blue anywhere near this
+     palette.
+
+     The <select> is not replaced, it is wrapped. It stays in the DOM, stays the
+     element that submits, and stays the element the language switcher rewrites
+     the <option> text of. The trigger mirrors it; choosing an option writes the
+     value back and dispatches `change`, so everything already listening — the
+     shop's sort, in particular — carries on unaware.
+
+     Follows the listbox keyboard contract: Up/Down, Home/End, Enter and Space
+     to commit, Escape to abandon, type-ahead on a letter, and focus returned to
+     the trigger on close. */
+
+  var CHEV = '<svg viewBox="0 0 10 7" fill="none" aria-hidden="true">' +
+             '<path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" ' +
+             'stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  function initPicks() {
+    qsa('select').forEach(function (sel) {
+      if (sel.multiple || sel.closest('[data-pick]')) return;
+
+      var wrap = document.createElement('div');
+      wrap.className = 'pick' + (sel.closest('.field') ? ' pick--field' : ' pick--end');
+      wrap.setAttribute('data-pick', '');
+      wrap.setAttribute('data-open', 'false');
+
+      sel.parentNode.insertBefore(wrap, sel);
+      wrap.appendChild(sel);
+      sel.classList.add('pick__native');
+      /* The trigger is the thing a pointer uses; the native control keeps its
+         own tab stop so the field still works if this script dies halfway. */
+      sel.tabIndex = -1;
+
+      var trigger = document.createElement('button');
+      trigger.type = 'button';
+      trigger.className = 'pick__trigger';
+      trigger.setAttribute('aria-haspopup', 'listbox');
+      trigger.setAttribute('aria-expanded', 'false');
+
+      var label = document.createElement('span');
+      label.className = 'pick__value';
+      trigger.appendChild(label);
+      trigger.insertAdjacentHTML('beforeend', CHEV);
+
+      var list = document.createElement('ul');
+      list.className = 'pick__list';
+      list.setAttribute('role', 'listbox');
+      list.hidden = true;
+
+      wrap.appendChild(trigger);
+      wrap.appendChild(list);
+
+      var opts = [];
+      var active = -1;
+
+      /* Built from the <select> every time, so an <option> whose text the
+         language switcher has just rewritten is picked up on the next open
+         rather than going stale. */
+      function build() {
+        list.innerHTML = '';
+        opts = [];
+        Array.prototype.forEach.call(sel.options, function (o, i) {
+          var li = document.createElement('li');
+          li.className = 'pick__opt';
+          li.setAttribute('role', 'option');
+          li.setAttribute('aria-selected', String(i === sel.selectedIndex));
+          li.textContent = o.textContent;
+          if (o.disabled) li.setAttribute('aria-disabled', 'true');
+          li.addEventListener('click', function () { commit(i); });
+          li.addEventListener('mousemove', function () { mark(i); });
+          list.appendChild(li);
+          opts.push(li);
+        });
+        label.textContent = sel.options[sel.selectedIndex]
+          ? sel.options[sel.selectedIndex].textContent : '';
+      }
+
+      function mark(i) {
+        if (i < 0 || i >= opts.length) return;
+        if (active > -1 && opts[active]) opts[active].removeAttribute('data-active');
+        active = i;
+        opts[i].setAttribute('data-active', 'true');
+        opts[i].scrollIntoView({ block: 'nearest' });
+      }
+
+      function open() {
+        build();
+        list.hidden = false;
+        wrap.setAttribute('data-open', 'true');
+        trigger.setAttribute('aria-expanded', 'true');
+        mark(sel.selectedIndex > -1 ? sel.selectedIndex : 0);
+        document.addEventListener('pointerdown', outside, true);
+      }
+
+      function close(refocus) {
+        list.hidden = true;
+        wrap.setAttribute('data-open', 'false');
+        trigger.setAttribute('aria-expanded', 'false');
+        document.removeEventListener('pointerdown', outside, true);
+        if (refocus) trigger.focus();
+      }
+
+      function outside(e) { if (!wrap.contains(e.target)) close(false); }
+
+      function commit(i) {
+        var o = sel.options[i];
+        if (!o || o.disabled) return;
+        sel.selectedIndex = i;
+        label.textContent = o.textContent;
+        /* bubbles, so a delegated listener sees it too */
+        sel.dispatchEvent(new Event('change', { bubbles: true }));
+        close(true);
+      }
+
+      trigger.addEventListener('click', function (e) {
+        e.preventDefault();          /* the sort control sits inside a <label> */
+        if (list.hidden) open(); else close(false);
+      });
+
+      trigger.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          open();
+        }
+      });
+
+      wrap.addEventListener('keydown', function (e) {
+        if (list.hidden) return;
+        var k = e.key;
+        if (k === 'Escape') { e.preventDefault(); close(true); return; }
+        if (k === 'Tab') { close(false); return; }
+        if (k === 'ArrowDown') { e.preventDefault(); mark(Math.min(active + 1, opts.length - 1)); return; }
+        if (k === 'ArrowUp') { e.preventDefault(); mark(Math.max(active - 1, 0)); return; }
+        if (k === 'Home') { e.preventDefault(); mark(0); return; }
+        if (k === 'End') { e.preventDefault(); mark(opts.length - 1); return; }
+        if (k === 'Enter' || k === ' ') { e.preventDefault(); commit(active); return; }
+        if (k.length === 1) {
+          var c = k.toLowerCase();
+          for (var i = 1; i <= opts.length; i++) {
+            var j = (active + i) % opts.length;
+            if (opts[j].textContent.trim().toLowerCase().indexOf(c) === 0) { mark(j); break; }
+          }
+        }
+      });
+
+      /* Anything that changes the <select> from outside — the language switch,
+         a reset, a script — is reflected back into the trigger. */
+      sel.addEventListener('change', function () { build(); });
+      document.addEventListener('ac:lang', function () { build(); });
+
+      build();
     });
   }
 
@@ -1412,6 +1664,8 @@
     initAccordions();
     initDrawer();
     initForms();
+    initLiveClear();
+    initPicks();
     initEnquiry();
     initFileFields();
     initHero();

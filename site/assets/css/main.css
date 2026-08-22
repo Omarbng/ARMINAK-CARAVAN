@@ -2610,6 +2610,158 @@ button, input, select, textarea { font: inherit; color: inherit; }
   cursor: pointer;
 }
 
+/* ------------------------------------------------------------------ PICK -- */
+/* A themed dropdown, because a native <select> opens an operating-system menu
+   that no stylesheet can reach — on macOS a dark panel with a system-blue
+   highlight and a tick, which is the one saturated blue anywhere near this
+   navy-and-sand palette.
+
+   Progressive enhancement, not replacement: the real <select> stays in the DOM
+   and stays the thing that submits. It is moved out of sight but kept
+   focusable, the trigger below mirrors its value, and choosing an option writes
+   back to it and dispatches `change` — so the shop's sort handler, the language
+   switcher retranslating <option> text, and the no-JS case all keep working
+   untouched. See initPicks() in main.js. */
+
+.pick { position: relative; display: inline-block; max-width: 100%; }
+.pick--field { display: block; width: 100%; }
+
+/* Off-screen rather than display:none — a hidden-but-present control still
+   pairs with its <label> and still reports validity. */
+.pick__native {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.pick__trigger {
+  appearance: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: 0;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  text-align: left;
+}
+
+.pick__trigger svg {
+  width: 10px; height: 7px;
+  flex: none;
+  margin-left: auto;
+  transition: transform 260ms var(--ease);
+}
+.pick[data-open="true"] .pick__trigger svg { transform: rotate(180deg); }
+
+/* In a form the trigger has to be indistinguishable from .input beside it. */
+.pick--field .pick__trigger {
+  border: 1px solid transparent;
+  border-radius: var(--radius-s);
+  background: var(--tile);
+  padding: 13px 15px;
+  font-weight: 400;
+  line-height: 1.5;
+  transition: border-color 300ms var(--ease), background 300ms var(--ease);
+}
+.formcard .pick--field .pick__trigger { background: var(--bg); }
+.pick--field .pick__trigger:hover { border-color: var(--hairline-strong); }
+.pick[data-open="true"] .pick--field .pick__trigger,
+.pick--field[data-open="true"] .pick__trigger { border-color: var(--ink); }
+
+.pick__native:focus-visible + .pick__trigger,
+.pick__trigger:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.pick__list {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 100%;
+  max-height: 280px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--bg);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-s);
+  box-shadow: 0 2px 6px rgba(27, 42, 65, 0.06), 0 18px 40px rgba(27, 42, 65, 0.14);
+}
+.pick__list[hidden] { display: none; }
+
+/* Right-aligned where the trigger sits at the right edge of its row, so the
+   panel does not push the page sideways. */
+.pick--end .pick__list { left: auto; right: 0; }
+
+.pick__opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 11px;
+  border-radius: calc(var(--radius-s) - 3px);
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+/* One highlight, driven by keyboard and pointer alike, so arrowing down and
+   hovering cannot disagree about what is current. */
+.pick__opt[data-active="true"] { background: var(--tile-strong); }
+
+.pick__opt::before {
+  content: "";
+  width: 14px; height: 14px;
+  flex: none;
+  border-radius: 50%;
+  border: 1px solid var(--hairline-strong);
+  transition: background 200ms var(--ease), border-color 200ms var(--ease);
+}
+.pick__opt[aria-selected="true"]::before {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: inset 0 0 0 3px var(--bg);
+}
+.pick__opt[aria-selected="true"] { font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pick__trigger svg, .pick__opt::before { transition: none; }
+}
+
+/* ------------------------------------------------------------ FIELD ERROR -- */
+/* Replaces the browser's validation bubble — another OS-drawn panel, and one
+   that vanishes on the next click and is never read by anyone using a
+   screen reader on some platforms. This is in the page, tied to the input by
+   aria-describedby, and survives until the field is fixed. */
+
+.field__error {
+  display: none;
+  margin: 7px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #B4443A;
+}
+.field__error.is-visible { display: block; }
+
+[data-theme="dark"] .field__error { color: #E4877A; }
+
+.input[aria-invalid="true"],
+.textarea[aria-invalid="true"],
+.pick[aria-invalid="true"] .pick__trigger {
+  border-color: #B4443A;
+}
+
 .field-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 16px; }
 
 .form__note { margin-top: 14px; font-size: 11.5px; line-height: 1.6; color: var(--muted); }

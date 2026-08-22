@@ -89,6 +89,14 @@ rerun the three generators. Nothing else reads the mark.
 - **The star has four points, not five.** A crescent beside a five-pointed star
   is a flag; four points reads as a light in the sky and keeps the mark a
   company's rather than a country's. One line in `build_logo.py` if you disagree.
+- **The crescent's arc flags are load-bearing, and `check_inside()` guards
+  them.** Two circles cross at two points, so "the arc from A to B" names four
+  possible paths — and two of them close into a crescent of *identical area* on
+  opposite sides of the pair. The first build used the mirror of the one it
+  wanted: a perfectly convincing crescent, half a unit outside the disc, which
+  the client caught on paper. `build_logo.py` now asserts that nothing in the
+  sky can reach past the disc's radius, and prints the clearance on every run
+  (moon 6.11, star 7.99 of 47). Move the moon too far out and the build stops.
 
 ### How C is used on the site
 
