@@ -26,6 +26,32 @@ BADGES = {
 PRIVATE_LABEL = {"refined-rapeseed-oil", "uht-milk-3-2", "ice-cream-private-label",
                  "natural-mineral-water", "durum-wheat-pasta"}
 
+# Real product photography, when the client has sent it. Presence on disk is
+# the switch: build_photos.py writes assets/img/products/photo/<art>.jpg and
+# from that moment the tile paints the photograph instead of the line art, in
+# the catalogue grid, the home rails and the product page. No data edit here.
+PHOTOS = {p.stem for p in (ROOT / "assets" / "img" / "products" / "photo").glob("*.jpg")}
+
+
+def art_tag(art, cls, *, lazy=True, width=400, height=420):
+    """The tile image — a photograph if we have one, else the line art.
+
+    Photographs are cropped to the tile ratio by build_photos.py and fill it
+    edge to edge; the line-art placeholders float inset on the sand tile. The
+    <picture>/webp pattern is the same one the hero poster uses.
+    """
+    loading = ' loading="lazy"' if lazy else ''
+    if art in PHOTOS:
+        base = f"assets/img/products/photo/{art}"
+        return (f'<picture>'
+                f'<source type="image/webp" srcset="{base}.webp">'
+                f'<img class="{cls} {cls}--photo" src="{base}.jpg" alt=""{loading} '
+                f'width="{width}" height="{height}">'
+                f'</picture>')
+    return (f'<img class="{cls}" src="assets/img/products/{art}.svg" alt=""{loading} '
+            f'width="{width}" height="{height}">')
+
+
 HEART = ('<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5'
          ' 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg>')
 
@@ -39,40 +65,49 @@ CATEGORIES = [
  "note_en": "Origination from Black Sea, Turkish and Central Asian producers.",
  "note_ru": "Закупка напрямую у производителей Причерноморья, Турции и Центральной Азии.",
  "items": [
+  # Laboratory specification as issued by the producer — the client's own
+  # bilingual spec table, transcribed row for row. Test weight is quoted in
+  # kg/hl here because that is the unit on the certificate; do not silently
+  # convert it to g/l.
   {"slug": "milling-wheat-grade-3", "art": "wheat",
    "en": "Milling Wheat", "ru": "Пшеница мукомольная",
    "grade_en": "Grade 3 · Milling", "grade_ru": "3 класс · мукомольная",
-   "origin_en": "Black Sea · Central Asia", "origin_ru": "Причерноморье · Центральная Азия",
-   "metrics_en": ["Protein 12.5% min · Moisture 14% max", "Test weight 770 g/l min", "Bulk / 50 kg bags / big bags"],
-   "metrics_ru": ["Протеин 12,5% мин · Влажность 14% макс", "Натура 770 г/л мин", "Навал / мешки 50 кг / биг-бэги"],
+   "origin_en": "Russia", "origin_ru": "Россия",
+   "metrics_en": ["Protein 12.5% min · Moisture 14% max", "Test weight 76 kg/hl min", "Bulk / 50 kg bags / big bags"],
+   "metrics_ru": ["Протеин 12,5% мин · Влажность 14% макс", "Натура 76 кг/гл мин", "Навал / мешки 50 кг / биг-бэги"],
    "spec": [
-     ("Protein", "12.5% min", "Протеин", "12,5% мин"),
+     ("Protein (dry basis)", "12.5% min", "Протеин (на сухое вещество)", "12,5% мин"),
+     ("Wet Gluten", "24.0% min", "Сырая клейковина", "24,0% мин"),
+     ("Gluten Index", "60–90", "ИДК", "60–90"),
      ("Falling Number", "250 sec min", "Число падения", "250 сек мин"),
-     ("Test Weight", "770 g/l min", "Натура", "770 г/л мин"),
-     ("Wet Gluten", "23–25%", "Клейковина сырая", "23–25%"),
-     ("Moisture", "14% max", "Влажность", "14% макс"),
-     ("Foreign Matter", "2% max", "Сорная примесь", "2% макс")],
+     ("Test Weight", "76 kg/hl min", "Натура", "76 кг/гл мин"),
+     ("Moisture", "14.0% max", "Влажность", "14,0% макс"),
+     ("Foreign Matter", "2.0% max", "Сорная примесь", "2,0% макс"),
+     ("Grain Admixture", "5.0% max", "Зерновая примесь", "5,0% макс")],
    "meta": [
-     ("Origin", "Russia · Kazakhstan", "Происхождение", "Россия · Казахстан"),
+     ("Origin", "Russia", "Происхождение", "Россия"),
      ("Packing", "Bulk / 50 kg / big bags", "Упаковка", "Навал / 50 кг / биг-бэг"),
      ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
      ("Minimum lot", "3 000 MT", "Минимальная партия", "3 000 тонн")]},
 
+  # As above — the producer's own table. Infestation and odour are carried as
+  # spec rows because they are certified parameters, not commercial terms.
   {"slug": "feed-barley-grade-1", "art": "barley",
    "en": "Feed Barley", "ru": "Ячмень фуражный",
    "grade_en": "Grade 1 · Feed", "grade_ru": "1 класс · фуражный",
-   "origin_en": "Black Sea · Turkey", "origin_ru": "Причерноморье · Турция",
-   "metrics_en": ["Protein 11% min · Moisture 13.5% max", "Test weight 620 g/l min", "Bulk / 50 kg bags"],
-   "metrics_ru": ["Протеин 11% мин · Влажность 13,5% макс", "Натура 620 г/л мин", "Навал / мешки 50 кг"],
+   "origin_en": "Russia", "origin_ru": "Россия",
+   "metrics_en": ["Protein 11.3% min · Moisture 11.5% max", "Test weight 640 g/l min", "Bulk / 50 kg bags"],
+   "metrics_ru": ["Протеин 11,3% мин · Влажность 11,5% макс", "Натура 640 г/л мин", "Навал / мешки 50 кг"],
    "spec": [
-     ("Protein", "11% min", "Протеин", "11% мин"),
-     ("Moisture", "13.5% max", "Влажность", "13,5% макс"),
-     ("Test Weight", "620 g/l min", "Натура", "620 г/л мин"),
-     ("Foreign Matter", "2% max", "Сорная примесь", "2% макс"),
-     ("Broken Grains", "5% max", "Битое зерно", "5% макс"),
-     ("Damaged Grains", "3% max", "Повреждённое зерно", "3% макс")],
+     ("Test Weight", "640 g/l min", "Натура", "640 г/л мин"),
+     ("Protein", "11.3% min", "Протеин", "11,3% мин"),
+     ("Moisture", "11.5% max", "Влажность", "11,5% макс"),
+     ("Foreign Matter", "0.9% max", "Сорная примесь", "0,9% макс"),
+     ("Grain Admixture", "0.7% max", "Зерновая примесь", "0,7% макс"),
+     ("Infestation", "Free of live insects", "Заражённость", "Не обнаружено"),
+     ("Odour", "Normal", "Запах", "Свойственный")],
    "meta": [
-     ("Origin", "Russia · Ukraine · Kazakhstan", "Происхождение", "Россия · Украина · Казахстан"),
+     ("Origin", "Russia", "Происхождение", "Россия"),
      ("Packing", "Bulk / 50 kg bags", "Упаковка", "Навал / мешки 50 кг"),
      ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
      ("Minimum lot", "3 000 MT", "Минимальная партия", "3 000 тонн")]},
@@ -496,6 +531,13 @@ def spec_sheet(item, lang="en"):
     p.text(48, 614, "ЛАБОРАТОРНАЯ СПЕЦИФИКАЦИЯ" if L else "LABORATORY SPECIFICATION",
            font="F2", size=7.5, color=BRASS, spacing=1.6)
 
+    # Row pitch is adaptive. The sheet is one page and the quality-control note
+    # has to clear the footer rule at y=96; a 12-row specification at the
+    # natural 26 pt lands 6 pt short of that. Solving for the last note
+    # baseline gives rows × pitch ≤ 306, so tighten rather than collide.
+    rows = len(item["spec"]) + len(item["meta"])
+    pitch = max(18, min(26, 306 // rows))
+
     y = 586
     p.text(48, y, "ПАРАМЕТР" if L else "PARAMETER", font="F2", size=7, color=NAVY, spacing=1.2)
     p.text(330, y, "ЗНАЧЕНИЕ" if L else "VALUE", font="F2", size=7, color=NAVY, spacing=1.2)
@@ -503,7 +545,7 @@ def spec_sheet(item, lang="en"):
     p.line(48, y, 547, y, SAND2, 0.8)
 
     for (pe, ve, pr, vr) in item["spec"]:
-        y -= 26
+        y -= pitch
         p.text(48, y, pr if L else pe, font="F1", size=9.5, color=GREY)
         p.text(330, y, vr if L else ve, font="F2", size=9.5, color=NAVY)
         p.line(48, y - 9, 547, y - 9, SAND2, 0.8)
@@ -516,7 +558,7 @@ def spec_sheet(item, lang="en"):
     p.line(48, y, 547, y, SAND2, 0.8)
 
     for (pe, ve, pr, vr) in item["meta"]:
-        y -= 26
+        y -= pitch
         p.text(48, y, pr if L else pe, font="F1", size=9.5, color=GREY)
         p.text(330, y, vr if L else ve, font="F2", size=9.5, color=NAVY)
         p.line(48, y - 9, 547, y - 9, SAND2, 0.8)
@@ -619,7 +661,7 @@ def card_html(item, cat_id, cat_en):
                data-cat="{cat_id}" data-name="{item["en"]}" data-collections="{' '.join(collections)}">
         <div class="card__figure">{badge_html}
           <button type="button" class="card__fav" aria-label="Save to favourites">{HEART}</button>
-          <img class="card__art" src="assets/img/products/{item["art"]}.svg" alt="" loading="lazy" width="400" height="500">
+          {art_tag(item["art"], "card__art", height=420)}
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -676,6 +718,7 @@ def build_products_js():
             data[s] = {
                 "cat": c["id"],
                 "art": item["art"],
+                "photo": item["art"] in PHOTOS,
                 "badge": BADGES.get(s),
                 "collections": (["new"] if BADGES.get(s) == "new" else [])
                              + (["bestsellers"] if BADGES.get(s) == "best" else [])

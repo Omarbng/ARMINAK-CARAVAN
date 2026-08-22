@@ -40,8 +40,28 @@
     var L = data[lang()] || data.en;
 
     document.title = L.name + ' — ARMINAK CARAVAN';
-    qs('#pdpImage').src = 'assets/img/products/' + data.art + '.svg';
-    qs('#pdpImage').alt = L.name;
+    /* A real photograph of the cargo fills the stage; the line-art placeholder
+       floats inset on it. The stage is the same 4:4.2 the photo was cropped
+       to, so cover crops nothing. */
+    var img = qs('#pdpImage');
+    if (data.photo) {
+      var base = 'assets/img/products/photo/' + data.art;
+      img.src = base + '.jpg';
+      if (img.parentNode.tagName !== 'PICTURE') {
+        var pic = document.createElement('picture');
+        var src = document.createElement('source');
+        src.type = 'image/webp';
+        src.srcset = base + '.webp';
+        img.parentNode.insertBefore(pic, img);
+        pic.appendChild(src);
+        pic.appendChild(img);
+      }
+      img.classList.add('pdp__photo');
+    } else {
+      img.src = 'assets/img/products/' + data.art + '.svg';
+      img.classList.remove('pdp__photo');
+    }
+    img.alt = L.name;
     qs('#pdpCat').textContent = L.catName + ' · ' + L.grade;
     qs('#pdpTitle').textContent = L.name;
     qs('#pdpDesc').textContent = desc(lang());

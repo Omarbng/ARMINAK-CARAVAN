@@ -37,11 +37,19 @@ PAGE = '''<!doctype html>
 
 <main id="main">
 
-  <section class="pagehead" id="top">
-    <div class="shell">
-      <span class="label pagehead__tag fade-up" data-i18n="cat.tag">Product Catalogue</span>
-      <h1 class="t-section pagehead__title fade-up stagger-1" data-i18n="cat.title">Shop all</h1>
-      <p class="pagehead__copy fade-up stagger-2" data-i18n="cat.copy">Commodities documented to contract standard. Every line is quoted against a specific enquiry — laboratory parameters are fixed in the contract and verified by independent inspection at the load port.</p>
+  <section class="pagehero pagehero--catalogue" id="top">
+    <div class="pagehero__media" aria-hidden="true">
+      <picture>
+        <source type="image/webp" srcset="assets/film/still-caravan.webp">
+        <img src="assets/film/still-caravan.jpg" alt="" width="1280" height="720" fetchpriority="high">
+      </picture>
+    </div>
+    <div class="pagehero__scrim" aria-hidden="true"></div>
+    <div class="pagehero__fade" aria-hidden="true"></div>
+    <div class="shell pagehero__inner">
+      <span class="label pagehero__tag fade-up" data-i18n="cat.tag">Product Catalogue</span>
+      <h1 class="t-section pagehero__title fade-up stagger-1" data-i18n="cat.title">Everything the caravan carries.</h1>
+      <p class="pagehero__copy fade-up stagger-2" data-i18n="cat.copy">Commodities documented to contract standard. Every line is quoted against a specific enquiry — laboratory parameters are fixed in the contract and verified by independent inspection at the load port.</p>
     </div>
   </section>
 
@@ -108,6 +116,21 @@ PAGE = '''<!doctype html>
     </div>
   </div>
 
+
+  <!-- Closing band. Catalogue, product and contact used to drop straight from
+       content into the footer, which reads as a page that was cut off. Every
+       other page ends on this, so they do too. -->
+  <section class="section section--inverse closing" id="desk">
+    <div class="shell">
+      <h2 class="t-section closing__title fade-up" data-i18n="cat.cta.title">Not in the catalogue?</h2>
+      <p class="closing__copy fade-up stagger-1" data-i18n="cat.cta.copy">Sixteen lines are what we publish, not what we can originate. Name the commodity, the specification and the destination port, and the trade desk will price the route.</p>
+      <div class="closing__actions fade-up stagger-2">
+        <a class="btn btn--primary" href="contact.html#sourcing" data-i18n="cat.cta.btn">Request a sourcing quote</a>
+        <a class="link-quiet" href="contact.html?enq=sell" data-i18n="cat.cta.sell">I have cargo to offer →</a>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 %DRAWER%
@@ -122,6 +145,53 @@ PAGE = '''<!doctype html>
 </html>
 '''
 
+# ============================================================== THE LOCKUP ==
+# ONE brand signature, used everywhere the company signs its name: the bar, the
+# navigation panel and the footer. Before this the name was set five different
+# ways — Manrope caps in the bar, JetBrains Mono in the panel, a 172px outlined
+# plate in the footer — so the site never read as one identity. It is now a
+# single component (`.lockup` in main.css) at three sizes.
+#
+# The mark is direction C, "Seal" (brand/README.md), inlined rather than linked
+# to a file. Inlining is what lets it recolour with the bar: the disc takes
+# `currentColor`, so it is navy on the page, cream over the film and warm
+# off-white in dark mode — with no second file to fetch and nothing to keep in
+# sync. An <img> could not do that.
+#
+# Geometry is lifted verbatim from brand/svg/c-mark-colour.svg, so the live
+# lockup and the delivered logo files are the same mark and cannot drift.
+# `uid` exists because clipPath ids must be unique within a document and the
+# lockup appears more than once per page.
+
+def mark(uid):
+    return (
+        f'<svg class="lockup__mark" viewBox="0 0 100 100" '
+        f'aria-hidden="true" focusable="false">'
+        f'<defs><clipPath id="{uid}"><circle cx="50" cy="50" r="47"/></clipPath></defs>'
+        f'<circle class="lockup__disc" cx="50" cy="50" r="47"/>'
+        f'<g clip-path="url(#{uid})">'
+        f'<path class="lockup__dune lockup__dune--far" '
+        f'd="M 0 71 C 12 71 20 53 37 53 C 52 53 61 63 100 61 L 100 100 L 0 100 Z"/>'
+        f'<path class="lockup__dune" '
+        f'd="M 0 86 C 20 86 33 71 59 69 C 77 67.6 87 77 100 75 L 100 100 L 0 100 Z"/>'
+        f'</g>'
+        f'<circle class="lockup__sun" cx="69" cy="29" r="9"/>'
+        f'</svg>')
+
+
+# The name is live text, not paths baked into the SVG, for three reasons: it is
+# selectable and searchable, it recolours with the bar for free, and Cormorant
+# Garamond 400 at 0.115em tracking is exactly what build_logo.py sets direction
+# C in — so this renders the same wordmark the logo files carry.
+NAME = '<span class="lockup__name">Arminak Caravan</span>'
+
+# The third line of the full lockup. Manrope 600 at 0.30em is what dir_c() sets
+# it in, and 12/128 of the mark is its size — which is why it appears only where
+# the mark is big enough to carry it. In the bar it would be about 4px tall, so
+# the bar gets the reduced lockup (mark + name) and the footer gets this.
+DESC = '<span class="lockup__desc">Foodstuff &amp; Beverages Trading</span>'
+
+
 NAV = '''<header class="nav" id="nav">
   <div class="nav__inner">
     <!-- ONE navigation for the whole site. The bar used to carry four page
@@ -135,22 +205,36 @@ NAV = '''<header class="nav" id="nav">
          works differently. This block is the source of every _nav_*.html
          partial (see the writes at the bottom of this file) — editing those by
          hand does not survive the next run. -->
-    <button class="navtrig" id="navTrig" type="button"
-            aria-expanded="false" aria-controls="navPanel">
-      <span class="navtrig__bars" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span class="navtrig__label" data-i18n="nav.index">Index</span>
-    </button>
 
-    <a class="nav__mark" href="index.html">ARMINAK CARAVAN<sup>&trade;</sup></a>
+    <!-- The trigger and the logo are ONE object, not two grid items. They used
+         to be two, and both declared `grid-column: 1` — so above 1024px the
+         grid dropped them onto separate rows: the trigger alone in the bar and
+         the logo outside it, over the page. A media query moved the logo to
+         column 2 below 1024px, which is the only reason it ever looked right,
+         and it looked right only on a phone. Wrapping them means the left
+         cluster cannot split at any width, in any language, whatever either
+         one grows to.
 
-    <!-- No page links and no theme toggle. The links moved into the panel; the
-         toggle is a preference, is duplicated in the footer, and was the
-         eighth control in a bar that should read as a mark and one action. -->
+         The trigger has lost its "Index" label and kept its bars: the word was
+         the widest thing on the left of the bar and it pushed the logo off the
+         optical margin for no information a three-line mark does not already
+         carry. The affordance now lives in aria-label. -->
+    <div class="nav__lead">
+      <button class="navtrig" id="navTrig" type="button"
+              aria-expanded="false" aria-controls="navPanel"
+              aria-label="Open navigation">
+        <span class="navtrig__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
+
+      <a class="nav__mark lockup" href="index.html" aria-label="ARMINAK CARAVAN — home">%MARK_NAV%<span class="lockup__text">%NAME%</span></a>
+    </div>
+
+    <!-- A mark and one action. Nothing else. The page links went into the panel
+         first, and the language pair has now followed them: it is a preference,
+         it belongs with the other preference, and having it here meant the top
+         right was two things competing rather than one ask. Both live in the
+         panel's preferences strip. -->
     <div class="nav__side">
-      <div class="lang" role="group" aria-label="Language">
-        <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
-        <button class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
-      </div>
       <a class="btn nav__cta" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
     </div>
   </div>
@@ -167,7 +251,7 @@ NAV = '''<header class="nav" id="nav">
 
   <nav class="navpanel__sheet" aria-label="Site navigation">
     <div class="navpanel__head">
-      <span class="navpanel__eyebrow">ARMINAK CARAVAN</span>
+      <span class="navpanel__eyebrow lockup">%MARK_PANEL%<span class="lockup__text">%NAME%</span></span>
       <button class="navpanel__close" type="button" data-nav-close aria-label="Close navigation">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
       </button>
@@ -185,6 +269,36 @@ NAV = '''<header class="nav" id="nav">
     </div>
 
 %SECTIONS%
+    <!-- Preferences, not navigation — which is why they sit here rather than as
+         a numbered group with the pages and the sections. Two identical
+         segmented controls: the panel is where a reader goes to change how the
+         site behaves, so both settings are in one place and read as one pair. -->
+    <div class="navpanel__prefs">
+      <div class="navpanel__pref">
+        <span class="navpanel__prefLabel" data-i18n="nav.p.lang">Language</span>
+        <div class="seg lang" role="group" aria-label="Language">
+          <button class="seg__btn lang__btn" type="button" data-lang="en" aria-pressed="true">EN</button>
+          <button class="seg__btn lang__btn" type="button" data-lang="ru" aria-pressed="false">RU</button>
+          <span class="seg__thumb" aria-hidden="true"></span>
+        </div>
+      </div>
+
+      <div class="navpanel__pref">
+        <span class="navpanel__prefLabel" data-i18n="nav.p.theme">Appearance</span>
+        <div class="seg seg--theme" role="group" aria-label="Appearance">
+          <button class="seg__btn theme-set" type="button" data-theme-set="light" aria-pressed="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.3M12 19.1v2.3M2.6 12h2.3M19.1 12h2.3M5.1 5.1l1.6 1.6M17.3 17.3l1.6 1.6M18.9 5.1l-1.6 1.6M6.7 17.3l-1.6 1.6"/></svg>
+            <span data-i18n="nav.p.light">Light</span>
+          </button>
+          <button class="seg__btn theme-set" type="button" data-theme-set="dark" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.6 14.6A8.6 8.6 0 0 1 9.4 3.4a8.6 8.6 0 1 0 11.2 11.2Z"/></svg>
+            <span data-i18n="nav.p.dark">Dark</span>
+          </button>
+          <span class="seg__thumb" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+
     <div class="navpanel__foot">
       <a class="btn btn--primary btn--full" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
       <a class="navpanel__mail" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20&mdash;%20ARMINAK%20CARAVAN">trading@arminakcaravan.ae</a>
@@ -317,9 +431,16 @@ FOOTER = '''<footer class="footer">
       </div>
     </nav>
 
-    <a class="footer__plate" href="index.html" aria-label="ARMINAK CARAVAN — home">
-      <span aria-hidden="true">Arminak</span><em aria-hidden="true">Caravan</em>
-    </a>
+    <!-- The sign-off is the full logo — mark, wordmark and descriptor, the
+         complete lockup as the brand files carry it, at a size where the
+         descriptor is actually readable.
+
+         The 166px outlined wordmark that used to sit here is gone. It was a
+         typographic stand-in for a logo the site did not have yet; keeping it
+         under the real lockup meant the footer said the same two words twice,
+         once properly and once as decoration. Restoring it is `.footer__plate`
+         in git history if it is ever wanted back. -->
+    <a class="footer__sign lockup lockup--full" href="index.html" aria-label="ARMINAK CARAVAN — home">%MARK_FOOT%<span class="lockup__text">%NAME%%DESC%</span></a>
 
     <div class="footer__reg">
       <dl class="footer__regList">
@@ -360,6 +481,12 @@ FOOTER = '''<footer class="footer">
   </div>
 </footer>'''
 
+# Resolve the lockup into the footer once, at definition, so all three builders
+# that read _footer.html get the same rendered mark.
+FOOTER = (FOOTER.replace("%MARK_FOOT%", mark("acMarkFoot"))
+                .replace("%NAME%", NAME)
+                .replace("%DESC%", DESC))
+
 
 # The "on this page" list, per page. Anchor, i18n key, English label.
 # A page with nothing worth jumping to gets no group at all rather than a group
@@ -385,7 +512,8 @@ PAGE_SECTIONS = {
              ("#notes",         "nav.s.notes",    "Recent notes"),
              ("#desk",          "nav.s.desk",     "Trading desk")],
     "con":  [("#top",           "nav.s.top",      "Top"),
-             ("#consultation",  "nav.s.consult",  "Consultation"),
+             ("#sourcing",      "nav.s.sourcing", "Custom sourcing"),
+             ("#consultation",  "nav.s.consult",  "Enquiry desk"),
              ("#legal",         "nav.s.legal",    "Terms & documents")],
     "":     [],
 }
@@ -407,7 +535,9 @@ def sections_block(active):
 
 
 def nav_for(active):
-    n = NAV
+    n = (NAV.replace("%MARK_NAV%", mark("acMarkNav"))
+            .replace("%MARK_PANEL%", mark("acMarkPanel"))
+            .replace("%NAME%", NAME))
     for key, marker in (("home", "%HOME%"), ("cat", "%CAT%"), ("abt", "%ABT%"),
                         ("ins", "%INS%"), ("con", "%CON%")):
         n = n.replace(marker, ' aria-current="page"' if active == key else "")

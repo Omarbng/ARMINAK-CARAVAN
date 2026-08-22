@@ -4,6 +4,7 @@ window.PRODUCTS = {
  "milling-wheat-grade-3": {
   "cat": "grains",
   "art": "wheat",
+  "photo": true,
   "badge": "best",
   "collections": [
    "bestsellers"
@@ -11,17 +12,25 @@ window.PRODUCTS = {
   "en": {
    "name": "Milling Wheat",
    "grade": "Grade 3 · Milling",
-   "origin": "Black Sea · Central Asia",
+   "origin": "Russia",
    "catName": "Agriculture & Grains",
    "metrics": [
     "Protein 12.5% min · Moisture 14% max",
-    "Test weight 770 g/l min",
+    "Test weight 76 kg/hl min",
     "Bulk / 50 kg bags / big bags"
    ],
    "spec": [
     [
-     "Protein",
+     "Protein (dry basis)",
      "12.5% min"
+    ],
+    [
+     "Wet Gluten",
+     "24.0% min"
+    ],
+    [
+     "Gluten Index",
+     "60–90"
     ],
     [
      "Falling Number",
@@ -29,25 +38,25 @@ window.PRODUCTS = {
     ],
     [
      "Test Weight",
-     "770 g/l min"
-    ],
-    [
-     "Wet Gluten",
-     "23–25%"
+     "76 kg/hl min"
     ],
     [
      "Moisture",
-     "14% max"
+     "14.0% max"
     ],
     [
      "Foreign Matter",
-     "2% max"
+     "2.0% max"
+    ],
+    [
+     "Grain Admixture",
+     "5.0% max"
     ]
    ],
    "meta": [
     [
      "Origin",
-     "Russia · Kazakhstan"
+     "Russia"
     ],
     [
      "Packing",
@@ -66,17 +75,25 @@ window.PRODUCTS = {
   "ru": {
    "name": "Пшеница мукомольная",
    "grade": "3 класс · мукомольная",
-   "origin": "Причерноморье · Центральная Азия",
+   "origin": "Россия",
    "catName": "Сельхозпродукция и зерновые",
    "metrics": [
     "Протеин 12,5% мин · Влажность 14% макс",
-    "Натура 770 г/л мин",
+    "Натура 76 кг/гл мин",
     "Навал / мешки 50 кг / биг-бэги"
    ],
    "spec": [
     [
-     "Протеин",
+     "Протеин (на сухое вещество)",
      "не менее 12,5%"
+    ],
+    [
+     "Сырая клейковина",
+     "не менее 24,0%"
+    ],
+    [
+     "ИДК",
+     "60–90"
     ],
     [
      "Число падения",
@@ -84,25 +101,25 @@ window.PRODUCTS = {
     ],
     [
      "Натура",
-     "не менее 770 г/л"
-    ],
-    [
-     "Клейковина сырая",
-     "23–25%"
+     "не менее 76 кг/гл"
     ],
     [
      "Влажность",
-     "не более 14%"
+     "не более 14,0%"
     ],
     [
      "Сорная примесь",
-     "не более 2%"
+     "не более 2,0%"
+    ],
+    [
+     "Зерновая примесь",
+     "не более 5,0%"
     ]
    ],
    "meta": [
     [
      "Происхождение",
-     "Россия · Казахстан"
+     "Россия"
     ],
     [
      "Упаковка",
@@ -122,6 +139,7 @@ window.PRODUCTS = {
  "feed-barley-grade-1": {
   "cat": "grains",
   "art": "barley",
+  "photo": true,
   "badge": "best",
   "collections": [
    "bestsellers"
@@ -129,43 +147,47 @@ window.PRODUCTS = {
   "en": {
    "name": "Feed Barley",
    "grade": "Grade 1 · Feed",
-   "origin": "Black Sea · Turkey",
+   "origin": "Russia",
    "catName": "Agriculture & Grains",
    "metrics": [
-    "Protein 11% min · Moisture 13.5% max",
-    "Test weight 620 g/l min",
+    "Protein 11.3% min · Moisture 11.5% max",
+    "Test weight 640 g/l min",
     "Bulk / 50 kg bags"
    ],
    "spec": [
     [
+     "Test Weight",
+     "640 g/l min"
+    ],
+    [
      "Protein",
-     "11% min"
+     "11.3% min"
     ],
     [
      "Moisture",
-     "13.5% max"
-    ],
-    [
-     "Test Weight",
-     "620 g/l min"
+     "11.5% max"
     ],
     [
      "Foreign Matter",
-     "2% max"
+     "0.9% max"
     ],
     [
-     "Broken Grains",
-     "5% max"
+     "Grain Admixture",
+     "0.7% max"
     ],
     [
-     "Damaged Grains",
-     "3% max"
+     "Infestation",
+     "Free of live insects"
+    ],
+    [
+     "Odour",
+     "Normal"
     ]
    ],
    "meta": [
     [
      "Origin",
-     "Russia · Ukraine · Kazakhstan"
+     "Russia"
     ],
     [
      "Packing",
@@ -184,43 +206,47 @@ window.PRODUCTS = {
   "ru": {
    "name": "Ячмень фуражный",
    "grade": "1 класс · фуражный",
-   "origin": "Причерноморье · Турция",
+   "origin": "Россия",
    "catName": "Сельхозпродукция и зерновые",
    "metrics": [
-    "Протеин 11% мин · Влажность 13,5% макс",
-    "Натура 620 г/л мин",
+    "Протеин 11,3% мин · Влажность 11,5% макс",
+    "Натура 640 г/л мин",
     "Навал / мешки 50 кг"
    ],
    "spec": [
     [
+     "Натура",
+     "не менее 640 г/л"
+    ],
+    [
      "Протеин",
-     "не менее 11%"
+     "не менее 11,3%"
     ],
     [
      "Влажность",
-     "не более 13,5%"
-    ],
-    [
-     "Натура",
-     "не менее 620 г/л"
+     "не более 11,5%"
     ],
     [
      "Сорная примесь",
-     "не более 2%"
+     "не более 0,9%"
     ],
     [
-     "Битое зерно",
-     "не более 5%"
+     "Зерновая примесь",
+     "не более 0,7%"
     ],
     [
-     "Повреждённое зерно",
-     "не более 3%"
+     "Заражённость",
+     "Не обнаружено"
+    ],
+    [
+     "Запах",
+     "Свойственный"
     ]
    ],
    "meta": [
     [
      "Происхождение",
-     "Россия · Украина · Казахстан"
+     "Россия"
     ],
     [
      "Упаковка",
@@ -240,6 +266,7 @@ window.PRODUCTS = {
  "corn-feed-grade": {
   "cat": "grains",
   "art": "corn",
+  "photo": false,
   "badge": null,
   "collections": [],
   "en": {
@@ -356,6 +383,7 @@ window.PRODUCTS = {
  "flaxseed-food-grade": {
   "cat": "grains",
   "art": "flaxseed",
+  "photo": false,
   "badge": "new",
   "collections": [
    "new"
@@ -474,6 +502,7 @@ window.PRODUCTS = {
  "crude-sunflower-oil": {
   "cat": "oils",
   "art": "sunflower-oil",
+  "photo": false,
   "badge": "best",
   "collections": [
    "bestsellers"
@@ -592,6 +621,7 @@ window.PRODUCTS = {
  "refined-rapeseed-oil": {
   "cat": "oils",
   "art": "rapeseed-oil",
+  "photo": false,
   "badge": "new",
   "collections": [
    "new",
@@ -711,6 +741,7 @@ window.PRODUCTS = {
  "wheat-flour-type-550": {
   "cat": "oils",
   "art": "flour",
+  "photo": false,
   "badge": null,
   "collections": [],
   "en": {
@@ -827,6 +858,7 @@ window.PRODUCTS = {
  "durum-wheat-pasta": {
   "cat": "oils",
   "art": "pasta",
+  "photo": false,
   "badge": null,
   "collections": [
    "private-label"
@@ -945,6 +977,7 @@ window.PRODUCTS = {
  "long-grain-white-rice": {
   "cat": "oils",
   "art": "rice",
+  "photo": false,
   "badge": null,
   "collections": [],
   "en": {
@@ -1061,6 +1094,7 @@ window.PRODUCTS = {
  "skimmed-milk-powder": {
   "cat": "dairy",
   "art": "milk-powder",
+  "photo": false,
   "badge": "best",
   "collections": [
    "bestsellers"
@@ -1179,6 +1213,7 @@ window.PRODUCTS = {
  "uht-milk-3-2": {
   "cat": "dairy",
   "art": "uht-milk",
+  "photo": false,
   "badge": null,
   "collections": [
    "private-label"
@@ -1297,6 +1332,7 @@ window.PRODUCTS = {
  "ice-cream-private-label": {
   "cat": "dairy",
   "art": "ice-cream",
+  "photo": false,
   "badge": "new",
   "collections": [
    "new",
@@ -1416,6 +1452,7 @@ window.PRODUCTS = {
  "natural-mineral-water": {
   "cat": "dairy",
   "art": "water",
+  "photo": false,
   "badge": null,
   "collections": [
    "private-label"
@@ -1534,6 +1571,7 @@ window.PRODUCTS = {
  "refined-sugar-icumsa-45": {
   "cat": "sugar",
   "art": "sugar",
+  "photo": false,
   "badge": "best",
   "collections": [
    "bestsellers"
@@ -1652,6 +1690,7 @@ window.PRODUCTS = {
  "tomato-paste-28-30": {
   "cat": "sugar",
   "art": "tomato-paste",
+  "photo": false,
   "badge": "new",
   "collections": [
    "new"
@@ -1770,6 +1809,7 @@ window.PRODUCTS = {
  "chickpeas-kabuli-8mm": {
   "cat": "sugar",
   "art": "chickpeas",
+  "photo": false,
   "badge": "new",
   "collections": [
    "new"

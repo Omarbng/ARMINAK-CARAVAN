@@ -36,22 +36,36 @@
          works differently. This block is the source of every _nav_*.html
          partial (see the writes at the bottom of this file) — editing those by
          hand does not survive the next run. -->
-    <button class="navtrig" id="navTrig" type="button"
-            aria-expanded="false" aria-controls="navPanel">
-      <span class="navtrig__bars" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span class="navtrig__label" data-i18n="nav.index">Index</span>
-    </button>
 
-    <a class="nav__mark" href="index.html">ARMINAK CARAVAN<sup>&trade;</sup></a>
+    <!-- The trigger and the logo are ONE object, not two grid items. They used
+         to be two, and both declared `grid-column: 1` — so above 1024px the
+         grid dropped them onto separate rows: the trigger alone in the bar and
+         the logo outside it, over the page. A media query moved the logo to
+         column 2 below 1024px, which is the only reason it ever looked right,
+         and it looked right only on a phone. Wrapping them means the left
+         cluster cannot split at any width, in any language, whatever either
+         one grows to.
 
-    <!-- No page links and no theme toggle. The links moved into the panel; the
-         toggle is a preference, is duplicated in the footer, and was the
-         eighth control in a bar that should read as a mark and one action. -->
+         The trigger has lost its "Index" label and kept its bars: the word was
+         the widest thing on the left of the bar and it pushed the logo off the
+         optical margin for no information a three-line mark does not already
+         carry. The affordance now lives in aria-label. -->
+    <div class="nav__lead">
+      <button class="navtrig" id="navTrig" type="button"
+              aria-expanded="false" aria-controls="navPanel"
+              aria-label="Open navigation">
+        <span class="navtrig__bars" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
+
+      <a class="nav__mark lockup" href="index.html" aria-label="ARMINAK CARAVAN — home"><svg class="lockup__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><defs><clipPath id="acMarkNav"><circle cx="50" cy="50" r="47"/></clipPath></defs><circle class="lockup__disc" cx="50" cy="50" r="47"/><g clip-path="url(#acMarkNav)"><path class="lockup__dune lockup__dune--far" d="M 0 71 C 12 71 20 53 37 53 C 52 53 61 63 100 61 L 100 100 L 0 100 Z"/><path class="lockup__dune" d="M 0 86 C 20 86 33 71 59 69 C 77 67.6 87 77 100 75 L 100 100 L 0 100 Z"/></g><circle class="lockup__sun" cx="69" cy="29" r="9"/></svg><span class="lockup__text"><span class="lockup__name">Arminak Caravan</span></span></a>
+    </div>
+
+    <!-- A mark and one action. Nothing else. The page links went into the panel
+         first, and the language pair has now followed them: it is a preference,
+         it belongs with the other preference, and having it here meant the top
+         right was two things competing rather than one ask. Both live in the
+         panel's preferences strip. -->
     <div class="nav__side">
-      <div class="lang" role="group" aria-label="Language">
-        <button class="lang__btn" data-lang="en" aria-pressed="true">EN</button>
-        <button class="lang__btn" data-lang="ru" aria-pressed="false">RU</button>
-      </div>
       <a class="btn nav__cta" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
     </div>
   </div>
@@ -68,7 +82,7 @@
 
   <nav class="navpanel__sheet" aria-label="Site navigation">
     <div class="navpanel__head">
-      <span class="navpanel__eyebrow">ARMINAK CARAVAN</span>
+      <span class="navpanel__eyebrow lockup"><svg class="lockup__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><defs><clipPath id="acMarkPanel"><circle cx="50" cy="50" r="47"/></clipPath></defs><circle class="lockup__disc" cx="50" cy="50" r="47"/><g clip-path="url(#acMarkPanel)"><path class="lockup__dune lockup__dune--far" d="M 0 71 C 12 71 20 53 37 53 C 52 53 61 63 100 61 L 100 100 L 0 100 Z"/><path class="lockup__dune" d="M 0 86 C 20 86 33 71 59 69 C 77 67.6 87 77 100 75 L 100 100 L 0 100 Z"/></g><circle class="lockup__sun" cx="69" cy="29" r="9"/></svg><span class="lockup__text"><span class="lockup__name">Arminak Caravan</span></span></span>
       <button class="navpanel__close" type="button" data-nav-close aria-label="Close navigation">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
       </button>
@@ -92,6 +106,36 @@
       </ul>
     </div>
 
+    <!-- Preferences, not navigation — which is why they sit here rather than as
+         a numbered group with the pages and the sections. Two identical
+         segmented controls: the panel is where a reader goes to change how the
+         site behaves, so both settings are in one place and read as one pair. -->
+    <div class="navpanel__prefs">
+      <div class="navpanel__pref">
+        <span class="navpanel__prefLabel" data-i18n="nav.p.lang">Language</span>
+        <div class="seg lang" role="group" aria-label="Language">
+          <button class="seg__btn lang__btn" type="button" data-lang="en" aria-pressed="true">EN</button>
+          <button class="seg__btn lang__btn" type="button" data-lang="ru" aria-pressed="false">RU</button>
+          <span class="seg__thumb" aria-hidden="true"></span>
+        </div>
+      </div>
+
+      <div class="navpanel__pref">
+        <span class="navpanel__prefLabel" data-i18n="nav.p.theme">Appearance</span>
+        <div class="seg seg--theme" role="group" aria-label="Appearance">
+          <button class="seg__btn theme-set" type="button" data-theme-set="light" aria-pressed="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.3M12 19.1v2.3M2.6 12h2.3M19.1 12h2.3M5.1 5.1l1.6 1.6M17.3 17.3l1.6 1.6M18.9 5.1l-1.6 1.6M6.7 17.3l-1.6 1.6"/></svg>
+            <span data-i18n="nav.p.light">Light</span>
+          </button>
+          <button class="seg__btn theme-set" type="button" data-theme-set="dark" aria-pressed="false">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.6 14.6A8.6 8.6 0 0 1 9.4 3.4a8.6 8.6 0 1 0 11.2 11.2Z"/></svg>
+            <span data-i18n="nav.p.dark">Dark</span>
+          </button>
+          <span class="seg__thumb" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+
     <div class="navpanel__foot">
       <a class="btn btn--primary btn--full" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
       <a class="navpanel__mail" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20&mdash;%20ARMINAK%20CARAVAN">trading@arminakcaravan.ae</a>
@@ -101,11 +145,19 @@
 
 <main id="main">
 
-  <section class="pagehead" id="top">
-    <div class="shell">
-      <span class="label pagehead__tag fade-up" data-i18n="cat.tag">Product Catalogue</span>
-      <h1 class="t-section pagehead__title fade-up stagger-1" data-i18n="cat.title">Shop all</h1>
-      <p class="pagehead__copy fade-up stagger-2" data-i18n="cat.copy">Commodities documented to contract standard. Every line is quoted against a specific enquiry — laboratory parameters are fixed in the contract and verified by independent inspection at the load port.</p>
+  <section class="pagehero pagehero--catalogue" id="top">
+    <div class="pagehero__media" aria-hidden="true">
+      <picture>
+        <source type="image/webp" srcset="assets/film/still-caravan.webp">
+        <img src="assets/film/still-caravan.jpg" alt="" width="1280" height="720" fetchpriority="high">
+      </picture>
+    </div>
+    <div class="pagehero__scrim" aria-hidden="true"></div>
+    <div class="pagehero__fade" aria-hidden="true"></div>
+    <div class="shell pagehero__inner">
+      <span class="label pagehero__tag fade-up" data-i18n="cat.tag">Product Catalogue</span>
+      <h1 class="t-section pagehero__title fade-up stagger-1" data-i18n="cat.title">Everything the caravan carries.</h1>
+      <p class="pagehero__copy fade-up stagger-2" data-i18n="cat.copy">Commodities documented to contract standard. Every line is quoted against a specific enquiry — laboratory parameters are fixed in the contract and verified by independent inspection at the load port.</p>
     </div>
   </section>
 
@@ -189,7 +241,7 @@
         <div class="card__figure">
           <span class="card__badge" data-i18n="shop.badgeBest">Core Line</span>
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/wheat.svg" alt="" loading="lazy" width="400" height="500">
+          <picture><source type="image/webp" srcset="assets/img/products/photo/wheat.webp"><img class="card__art card__art--photo" src="assets/img/products/photo/wheat.jpg" alt="" loading="lazy" width="400" height="420"></picture>
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -203,7 +255,7 @@
 
         <div class="card__metrics">
           <span data-i18n="p.milling-wheat-grade-3.m0">Protein 12.5% min · Moisture 14% max</span>
-          <span data-i18n="p.milling-wheat-grade-3.m1">Test weight 770 g/l min</span>
+          <span data-i18n="p.milling-wheat-grade-3.m1">Test weight 76 kg/hl min</span>
           <span data-i18n="p.milling-wheat-grade-3.m2">Bulk / 50 kg bags / big bags</span>
         </div>
 
@@ -221,16 +273,18 @@
             </tr>
             </thead>
             <tbody>
-            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp0">Protein</th><td data-i18n="p.milling-wheat-grade-3.sv0">12.5% min</td></tr>
-            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp1">Falling Number</th><td data-i18n="p.milling-wheat-grade-3.sv1">250 sec min</td></tr>
-            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp2">Test Weight</th><td data-i18n="p.milling-wheat-grade-3.sv2">770 g/l min</td></tr>
-            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp3">Wet Gluten</th><td data-i18n="p.milling-wheat-grade-3.sv3">23–25%</td></tr>
-            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp4">Moisture</th><td data-i18n="p.milling-wheat-grade-3.sv4">14% max</td></tr>
-            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp5">Foreign Matter</th><td data-i18n="p.milling-wheat-grade-3.sv5">2% max</td></tr>
+            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp0">Protein (dry basis)</th><td data-i18n="p.milling-wheat-grade-3.sv0">12.5% min</td></tr>
+            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp1">Wet Gluten</th><td data-i18n="p.milling-wheat-grade-3.sv1">24.0% min</td></tr>
+            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp2">Gluten Index</th><td data-i18n="p.milling-wheat-grade-3.sv2">60–90</td></tr>
+            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp3">Falling Number</th><td data-i18n="p.milling-wheat-grade-3.sv3">250 sec min</td></tr>
+            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp4">Test Weight</th><td data-i18n="p.milling-wheat-grade-3.sv4">76 kg/hl min</td></tr>
+            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp5">Moisture</th><td data-i18n="p.milling-wheat-grade-3.sv5">14.0% max</td></tr>
+            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp6">Foreign Matter</th><td data-i18n="p.milling-wheat-grade-3.sv6">2.0% max</td></tr>
+            <tr><th scope="row" data-i18n="p.milling-wheat-grade-3.sp7">Grain Admixture</th><td data-i18n="p.milling-wheat-grade-3.sv7">5.0% max</td></tr>
             </tbody>
           </table>
           <dl class="drawer__meta">
-            <div><dt data-i18n="p.milling-wheat-grade-3.mp0">Origin</dt><dd data-i18n="p.milling-wheat-grade-3.mv0">Russia · Kazakhstan</dd></div>
+            <div><dt data-i18n="p.milling-wheat-grade-3.mp0">Origin</dt><dd data-i18n="p.milling-wheat-grade-3.mv0">Russia</dd></div>
             <div><dt data-i18n="p.milling-wheat-grade-3.mp1">Packing</dt><dd data-i18n="p.milling-wheat-grade-3.mv1">Bulk / 50 kg / big bags</dd></div>
             <div><dt data-i18n="p.milling-wheat-grade-3.mp2">Incoterms</dt><dd data-i18n="p.milling-wheat-grade-3.mv2">FOB · CIF · CFR</dd></div>
             <div><dt data-i18n="p.milling-wheat-grade-3.mp3">Minimum lot</dt><dd data-i18n="p.milling-wheat-grade-3.mv3">3 000 MT</dd></div>
@@ -244,7 +298,7 @@
         <div class="card__figure">
           <span class="card__badge" data-i18n="shop.badgeBest">Core Line</span>
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/barley.svg" alt="" loading="lazy" width="400" height="500">
+          <picture><source type="image/webp" srcset="assets/img/products/photo/barley.webp"><img class="card__art card__art--photo" src="assets/img/products/photo/barley.jpg" alt="" loading="lazy" width="400" height="420"></picture>
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -257,8 +311,8 @@
         <span class="card__grade" data-i18n="p.feed-barley-grade-1.grade">Grade 1 · Feed</span>
 
         <div class="card__metrics">
-          <span data-i18n="p.feed-barley-grade-1.m0">Protein 11% min · Moisture 13.5% max</span>
-          <span data-i18n="p.feed-barley-grade-1.m1">Test weight 620 g/l min</span>
+          <span data-i18n="p.feed-barley-grade-1.m0">Protein 11.3% min · Moisture 11.5% max</span>
+          <span data-i18n="p.feed-barley-grade-1.m1">Test weight 640 g/l min</span>
           <span data-i18n="p.feed-barley-grade-1.m2">Bulk / 50 kg bags</span>
         </div>
 
@@ -276,16 +330,17 @@
             </tr>
             </thead>
             <tbody>
-            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp0">Protein</th><td data-i18n="p.feed-barley-grade-1.sv0">11% min</td></tr>
-            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp1">Moisture</th><td data-i18n="p.feed-barley-grade-1.sv1">13.5% max</td></tr>
-            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp2">Test Weight</th><td data-i18n="p.feed-barley-grade-1.sv2">620 g/l min</td></tr>
-            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp3">Foreign Matter</th><td data-i18n="p.feed-barley-grade-1.sv3">2% max</td></tr>
-            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp4">Broken Grains</th><td data-i18n="p.feed-barley-grade-1.sv4">5% max</td></tr>
-            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp5">Damaged Grains</th><td data-i18n="p.feed-barley-grade-1.sv5">3% max</td></tr>
+            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp0">Test Weight</th><td data-i18n="p.feed-barley-grade-1.sv0">640 g/l min</td></tr>
+            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp1">Protein</th><td data-i18n="p.feed-barley-grade-1.sv1">11.3% min</td></tr>
+            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp2">Moisture</th><td data-i18n="p.feed-barley-grade-1.sv2">11.5% max</td></tr>
+            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp3">Foreign Matter</th><td data-i18n="p.feed-barley-grade-1.sv3">0.9% max</td></tr>
+            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp4">Grain Admixture</th><td data-i18n="p.feed-barley-grade-1.sv4">0.7% max</td></tr>
+            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp5">Infestation</th><td data-i18n="p.feed-barley-grade-1.sv5">Free of live insects</td></tr>
+            <tr><th scope="row" data-i18n="p.feed-barley-grade-1.sp6">Odour</th><td data-i18n="p.feed-barley-grade-1.sv6">Normal</td></tr>
             </tbody>
           </table>
           <dl class="drawer__meta">
-            <div><dt data-i18n="p.feed-barley-grade-1.mp0">Origin</dt><dd data-i18n="p.feed-barley-grade-1.mv0">Russia · Ukraine · Kazakhstan</dd></div>
+            <div><dt data-i18n="p.feed-barley-grade-1.mp0">Origin</dt><dd data-i18n="p.feed-barley-grade-1.mv0">Russia</dd></div>
             <div><dt data-i18n="p.feed-barley-grade-1.mp1">Packing</dt><dd data-i18n="p.feed-barley-grade-1.mv1">Bulk / 50 kg bags</dd></div>
             <div><dt data-i18n="p.feed-barley-grade-1.mp2">Incoterms</dt><dd data-i18n="p.feed-barley-grade-1.mv2">FOB · CIF · CFR</dd></div>
             <div><dt data-i18n="p.feed-barley-grade-1.mp3">Minimum lot</dt><dd data-i18n="p.feed-barley-grade-1.mv3">3 000 MT</dd></div>
@@ -298,7 +353,7 @@
                data-cat="grains" data-name="Corn (Maize)" data-collections="">
         <div class="card__figure">
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/corn.svg" alt="" loading="lazy" width="400" height="500">
+          <img class="card__art" src="assets/img/products/corn.svg" alt="" loading="lazy" width="400" height="420">
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -353,7 +408,7 @@
         <div class="card__figure">
           <span class="card__badge" data-i18n="shop.badgeNew">New</span>
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/flaxseed.svg" alt="" loading="lazy" width="400" height="500">
+          <img class="card__art" src="assets/img/products/flaxseed.svg" alt="" loading="lazy" width="400" height="420">
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -408,7 +463,7 @@
         <div class="card__figure">
           <span class="card__badge" data-i18n="shop.badgeBest">Core Line</span>
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/sunflower-oil.svg" alt="" loading="lazy" width="400" height="500">
+          <img class="card__art" src="assets/img/products/sunflower-oil.svg" alt="" loading="lazy" width="400" height="420">
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -463,7 +518,7 @@
         <div class="card__figure">
           <span class="card__badge" data-i18n="shop.badgeNew">New</span>
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/rapeseed-oil.svg" alt="" loading="lazy" width="400" height="500">
+          <img class="card__art" src="assets/img/products/rapeseed-oil.svg" alt="" loading="lazy" width="400" height="420">
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -517,7 +572,7 @@
                data-cat="oils" data-name="Wheat Flour" data-collections="">
         <div class="card__figure">
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/flour.svg" alt="" loading="lazy" width="400" height="500">
+          <img class="card__art" src="assets/img/products/flour.svg" alt="" loading="lazy" width="400" height="420">
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -571,7 +626,7 @@
                data-cat="oils" data-name="Durum Wheat Pasta" data-collections="private-label">
         <div class="card__figure">
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/pasta.svg" alt="" loading="lazy" width="400" height="500">
+          <img class="card__art" src="assets/img/products/pasta.svg" alt="" loading="lazy" width="400" height="420">
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -625,7 +680,7 @@
                data-cat="oils" data-name="Long Grain White Rice" data-collections="">
         <div class="card__figure">
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/rice.svg" alt="" loading="lazy" width="400" height="500">
+          <img class="card__art" src="assets/img/products/rice.svg" alt="" loading="lazy" width="400" height="420">
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -680,7 +735,7 @@
         <div class="card__figure">
           <span class="card__badge" data-i18n="shop.badgeBest">Core Line</span>
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/milk-powder.svg" alt="" loading="lazy" width="400" height="500">
+          <img class="card__art" src="assets/img/products/milk-powder.svg" alt="" loading="lazy" width="400" height="420">
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -734,7 +789,7 @@
                data-cat="dairy" data-name="UHT Milk 3.2%" data-collections="private-label">
         <div class="card__figure">
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/uht-milk.svg" alt="" loading="lazy" width="400" height="500">
+          <img class="card__art" src="assets/img/products/uht-milk.svg" alt="" loading="lazy" width="400" height="420">
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -789,7 +844,7 @@
         <div class="card__figure">
           <span class="card__badge" data-i18n="shop.badgeNew">New</span>
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/ice-cream.svg" alt="" loading="lazy" width="400" height="500">
+          <img class="card__art" src="assets/img/products/ice-cream.svg" alt="" loading="lazy" width="400" height="420">
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -843,7 +898,7 @@
                data-cat="dairy" data-name="Natural Mineral Water" data-collections="private-label">
         <div class="card__figure">
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/water.svg" alt="" loading="lazy" width="400" height="500">
+          <img class="card__art" src="assets/img/products/water.svg" alt="" loading="lazy" width="400" height="420">
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -898,7 +953,7 @@
         <div class="card__figure">
           <span class="card__badge" data-i18n="shop.badgeBest">Core Line</span>
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/sugar.svg" alt="" loading="lazy" width="400" height="500">
+          <img class="card__art" src="assets/img/products/sugar.svg" alt="" loading="lazy" width="400" height="420">
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -953,7 +1008,7 @@
         <div class="card__figure">
           <span class="card__badge" data-i18n="shop.badgeNew">New</span>
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/tomato-paste.svg" alt="" loading="lazy" width="400" height="500">
+          <img class="card__art" src="assets/img/products/tomato-paste.svg" alt="" loading="lazy" width="400" height="420">
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -1008,7 +1063,7 @@
         <div class="card__figure">
           <span class="card__badge" data-i18n="shop.badgeNew">New</span>
           <button type="button" class="card__fav" aria-label="Save to favourites"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>
-          <img class="card__art" src="assets/img/products/chickpeas.svg" alt="" loading="lazy" width="400" height="500">
+          <img class="card__art" src="assets/img/products/chickpeas.svg" alt="" loading="lazy" width="400" height="420">
           <button type="button" class="card__quick" data-drawer-trigger data-i18n="shop.quickRfq">Quick RFQ</button>
         </div>
 
@@ -1063,6 +1118,21 @@
 
     </div>
   </div>
+
+
+  <!-- Closing band. Catalogue, product and contact used to drop straight from
+       content into the footer, which reads as a page that was cut off. Every
+       other page ends on this, so they do too. -->
+  <section class="section section--inverse closing" id="desk">
+    <div class="shell">
+      <h2 class="t-section closing__title fade-up" data-i18n="cat.cta.title">Not in the catalogue?</h2>
+      <p class="closing__copy fade-up stagger-1" data-i18n="cat.cta.copy">Sixteen lines are what we publish, not what we can originate. Name the commodity, the specification and the destination port, and the trade desk will price the route.</p>
+      <div class="closing__actions fade-up stagger-2">
+        <a class="btn btn--primary" href="contact.html#sourcing" data-i18n="cat.cta.btn">Request a sourcing quote</a>
+        <a class="link-quiet" href="contact.html?enq=sell" data-i18n="cat.cta.sell">I have cargo to offer →</a>
+      </div>
+    </div>
+  </section>
 
 </main>
 
@@ -1191,9 +1261,16 @@
       </div>
     </nav>
 
-    <a class="footer__plate" href="index.html" aria-label="ARMINAK CARAVAN — home">
-      <span aria-hidden="true">Arminak</span><em aria-hidden="true">Caravan</em>
-    </a>
+    <!-- The sign-off is the full logo — mark, wordmark and descriptor, the
+         complete lockup as the brand files carry it, at a size where the
+         descriptor is actually readable.
+
+         The 166px outlined wordmark that used to sit here is gone. It was a
+         typographic stand-in for a logo the site did not have yet; keeping it
+         under the real lockup meant the footer said the same two words twice,
+         once properly and once as decoration. Restoring it is `.footer__plate`
+         in git history if it is ever wanted back. -->
+    <a class="footer__sign lockup lockup--full" href="index.html" aria-label="ARMINAK CARAVAN — home"><svg class="lockup__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><defs><clipPath id="acMarkFoot"><circle cx="50" cy="50" r="47"/></clipPath></defs><circle class="lockup__disc" cx="50" cy="50" r="47"/><g clip-path="url(#acMarkFoot)"><path class="lockup__dune lockup__dune--far" d="M 0 71 C 12 71 20 53 37 53 C 52 53 61 63 100 61 L 100 100 L 0 100 Z"/><path class="lockup__dune" d="M 0 86 C 20 86 33 71 59 69 C 77 67.6 87 77 100 75 L 100 100 L 0 100 Z"/></g><circle class="lockup__sun" cx="69" cy="29" r="9"/></svg><span class="lockup__text"><span class="lockup__name">Arminak Caravan</span><span class="lockup__desc">Foodstuff &amp; Beverages Trading</span></span></a>
 
     <div class="footer__reg">
       <dl class="footer__regList">

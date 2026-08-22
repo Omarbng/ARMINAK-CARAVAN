@@ -17,7 +17,7 @@ FOOTER = (HERE / "_footer.html").read_text(encoding="utf-8")
 
 ARTICLES = [
 {
- "slug": "black-sea-grain-corridor-q3",
+ "slug": "black-sea-grain-corridor-q3", "still": "corridor", "still_alt": "The caravan strung out across an open dune field at low sun",
  "tag_en": "Grain Market Report", "tag_ru": "Обзор зернового рынка",
  "date_iso": "2026-08-04", "date_en": "4 August 2026", "date_ru": "4 августа 2026",
  "title_en": "Black Sea Grain Corridor: Q3 Freight & Yield Analysis",
@@ -55,7 +55,7 @@ ARTICLES = [
  ],
 },
 {
- "slug": "jebel-ali-transhipment-east-africa",
+ "slug": "jebel-ali-transhipment-east-africa", "still": "route", "still_alt": "A loaded caravan crossing a wide dune field, tracks running behind it",
  "tag_en": "Logistics", "tag_ru": "Логистика",
  "date_iso": "2026-07-22", "date_en": "22 July 2026", "date_ru": "22 июля 2026",
  "title_en": "Jebel Ali Transhipment: Container Availability into East Africa",
@@ -87,7 +87,7 @@ ARTICLES = [
  ],
 },
 {
- "slug": "falling-number-disputes",
+ "slug": "falling-number-disputes", "still": "sand", "still_alt": "Close on a camel's foot breaking the crust of a dune",
  "tag_en": "Quality Protocol", "tag_ru": "Протокол качества",
  "date_iso": "2026-07-09", "date_en": "9 July 2026", "date_ru": "9 июля 2026",
  "title_en": "Falling Number Disputes and How Load-Port Inspection Resolves Them",
@@ -119,7 +119,7 @@ ARTICLES = [
  ],
 },
 {
- "slug": "lc-versus-cad",
+ "slug": "lc-versus-cad", "still": "handler", "still_alt": "A handler leading a loaded string of camels by the rein",
  "tag_en": "Trade Finance", "tag_ru": "Торговое финансирование",
  "date_iso": "2026-06-11", "date_en": "11 June 2026", "date_ru": "11 июня 2026",
  "title_en": "L/C versus CAD: Choosing the Settlement Instrument",
@@ -222,7 +222,10 @@ PAGE = '''<!doctype html>
       </header>
 
       <figure class="article__figure">
-        <img src="assets/img/editorial-terminal.svg" alt="Grain terminal and bulk vessel at golden hour" width="1200" height="675">
+        <picture>
+          <source type="image/webp" srcset="assets/film/still-{still}.webp">
+          <img src="assets/film/still-{still}.jpg" alt="{still_alt}" width="1280" height="720">
+        </picture>
       </figure>
 
       <div class="article__body" data-article="{slug}">
@@ -255,6 +258,7 @@ if __name__ == "__main__":
             site=SITE, slug=a["slug"], title_en=a["title_en"], desc_en=a["desc_en"],
             date_iso=a["date_iso"], date_en=a["date_en"], tag_en=a["tag_en"],
             read_en=a["read_en"], body_en=render_body(a["body_en"]),
+            still=a["still"], still_alt=a["still_alt"],
             nav=NAV, footer=FOOTER)
         (ROOT / f"{a['slug']}.html").write_text(html, encoding="utf-8")
 

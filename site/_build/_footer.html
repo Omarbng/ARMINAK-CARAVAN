@@ -56,9 +56,16 @@
       </div>
     </nav>
 
-    <a class="footer__plate" href="index.html" aria-label="ARMINAK CARAVAN — home">
-      <span aria-hidden="true">Arminak</span><em aria-hidden="true">Caravan</em>
-    </a>
+    <!-- The sign-off is the full logo — mark, wordmark and descriptor, the
+         complete lockup as the brand files carry it, at a size where the
+         descriptor is actually readable.
+
+         The 166px outlined wordmark that used to sit here is gone. It was a
+         typographic stand-in for a logo the site did not have yet; keeping it
+         under the real lockup meant the footer said the same two words twice,
+         once properly and once as decoration. Restoring it is `.footer__plate`
+         in git history if it is ever wanted back. -->
+    <a class="footer__sign lockup lockup--full" href="index.html" aria-label="ARMINAK CARAVAN — home"><svg class="lockup__mark" viewBox="0 0 100 100" aria-hidden="true" focusable="false"><defs><clipPath id="acMarkFoot"><circle cx="50" cy="50" r="47"/></clipPath></defs><circle class="lockup__disc" cx="50" cy="50" r="47"/><g clip-path="url(#acMarkFoot)"><path class="lockup__dune lockup__dune--far" d="M 0 71 C 12 71 20 53 37 53 C 52 53 61 63 100 61 L 100 100 L 0 100 Z"/><path class="lockup__dune" d="M 0 86 C 20 86 33 71 59 69 C 77 67.6 87 77 100 75 L 100 100 L 0 100 Z"/></g><circle class="lockup__sun" cx="69" cy="29" r="9"/></svg><span class="lockup__text"><span class="lockup__name">Arminak Caravan</span><span class="lockup__desc">Foodstuff &amp; Beverages Trading</span></span></a>
 
     <div class="footer__reg">
       <dl class="footer__regList">

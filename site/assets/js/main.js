@@ -18,21 +18,51 @@
      this wires the toggles and persists the choice. */
 
   function initTheme() {
-    function apply(theme) {
-      document.documentElement.setAttribute('data-theme', theme);
-      try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+    /* Two shapes of control, one state. The footer keeps the pill toggle it
+       has always had; the navigation panel carries a two-up segmented control
+       beside the language pair, because in a preferences strip a switch next
+       to a text pair reads as two unrelated widgets.
+
+       .theme-toggle is pressed when dark (it is one button that flips).
+       .theme-set names the theme it selects, so it is pressed when the page is
+       already on that theme. Both are synced here rather than in their own
+       handlers, so any number of either can exist on a page. */
+    function sync(theme) {
       qsa('.theme-toggle').forEach(function (b) {
         b.setAttribute('aria-pressed', String(theme === 'dark'));
       });
+      qsa('.theme-set').forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b.getAttribute('data-theme-set') === theme));
+      });
+    }
+
+    function apply(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      try { localStorage.setItem(THEME_KEY, theme); } catch (e) {}
+      sync(theme);
       document.dispatchEvent(new CustomEvent('ac:theme', { detail: { theme: theme } }));
+    }
+
+    function current() {
+      return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
     }
 
     qsa('.theme-toggle').forEach(function (btn) {
       btn.addEventListener('click', function () {
-        var next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        apply(next);
+        apply(current() === 'dark' ? 'light' : 'dark');
       });
     });
+
+    qsa('.theme-set').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        apply(btn.getAttribute('data-theme-set') === 'dark' ? 'dark' : 'light');
+      });
+    });
+
+    /* The pre-paint script in <head> sets data-theme straight from storage and
+       nothing has told the controls about it, so the segmented control would
+       load showing Light on a dark page. */
+    sync(current());
   }
 
   /* ------------------------------------- (SAND EDGES, REMOVED) ---------- */
@@ -619,6 +649,12 @@
 
     var hero = qs('#hero');
 
+    /* The landing page opens on the film; every interior page now opens on a
+       still from it (.pagehero). Both want the cream bar while that band is
+       still behind it, so "over the film" resolves to either. A page with
+       neither is never over one — see the note in onScroll. */
+    var film = hero || qs('.pagehero');
+
     /* Over the film the bar is transparent and cream; past the hero it picks
        up its blurred page-coloured background. Pages without a hero only ever
        do the second half.
@@ -639,14 +675,26 @@
       var y = window.scrollY || window.pageYOffset;
       var intro = document.documentElement.classList.contains('ac-intro');
 
-      /* No hero on this page: the bar is over page content from 8px down. */
-      var onFilm = hero ? y < hero.offsetHeight - nav.offsetHeight : y <= 8;
+      /* "Over the film" requires a film. This used to read `y <= 8` on pages
+         with no hero, which made every interior page start life over an
+         imaginary one: at scroll 0 the bar took .nav--over and painted the
+         wordmark, the language pair and the quotation button cream #FDF6EA —
+         on a white page. The header was invisible on load on catalogue,
+         about, insights, contact, product and all four notes; the trigger was
+         the only thing you could see, because it is the one control the class
+         does not recolour. A page with no film is never over one. */
+      var onFilm = film ? y < film.offsetHeight - nav.offsetHeight : false;
 
       /* Cream type needs the film behind it. During the window beat the ground
          is still ivory, so the bar keeps page colours even though it has not
          scrolled yet. */
       nav.classList.toggle('nav--over', onFilm && !intro);
-      nav.classList.toggle('nav--scrolled', !onFilm);
+
+      /* Solid once anything is actually passing underneath — which is also
+         what gives an interior page a full-height bar in page colours at rest,
+         rather than a condensed one occluding nothing. Past a hero, y is
+         always well beyond 8, so film pages are unchanged. */
+      nav.classList.toggle('nav--scrolled', !onFilm && y > 8);
     }
 
     onScroll();
@@ -659,7 +707,13 @@
   /* -------------------------------------------------------- SCROLL REVEAL -- */
 
   function initReveal() {
-    var els = qsa('.fade-up, .corridor');
+    /* .footer__sign joins the list so the seal performs its sunrise the first
+       time it is scrolled to — the CSS hangs the one-shot off .in-view. Only
+       the footer lockup is observed: the one in the bar is on screen at load,
+       so it would fire against the bar's own entrance and read as two
+       animations arguing. That one lights on hover, which is the only way you
+       can ask it to. */
+    var els = qsa('.fade-up, .corridor, .footer__sign');
     if (!els.length) return;
 
     if (!('IntersectionObserver' in window)) {
@@ -676,6 +730,22 @@
     }, { rootMargin: '0px 0px -10% 0px', threshold: 0.08 });
 
     els.forEach(function (el) { io.observe(el); });
+  }
+
+  /* ----------------------------------------------------------- SCROLL CUE -- */
+  /* [data-scroll-to="#id"] advances one section. The page sets
+     scroll-behavior:smooth and scroll-padding-top on <html>, so scrollIntoView
+     inherits both and the target clears the bar without a second offset to
+     keep in sync here. Reduced motion is honoured by the CSS that turns
+     scroll-behavior back to auto, not by a branch in this function. */
+
+  function initScrollCue() {
+    qsa('[data-scroll-to]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = qs(btn.getAttribute('data-scroll-to'));
+        if (target) target.scrollIntoView({ block: 'start' });
+      });
+    });
   }
 
   /* ------------------------------------------------------------ TAB RAILS -- */
@@ -722,6 +792,23 @@
      made it feel busy. The card title links to the product page, where both
      actions live in full. The catalogue grid is built by build_catalogue.py and
      still carries them, because that is the shopping context. */
+  /* The tile image. A commodity we have a real photograph of paints it edge to
+     edge; everything else keeps the line-art placeholder floating on the sand
+     tile. Mirrors art_tag() in build_catalogue.py — the static cards and these
+     JS-rendered rails have to agree or the grid reads as two grids. */
+  function artTag(p) {
+    if (!p.photo) {
+      return '<img class="card__art" src="assets/img/products/' + p.art +
+             '.svg" alt="" loading="lazy" width="400" height="500">';
+    }
+    var base = 'assets/img/products/photo/' + p.art;
+    return '<picture>' +
+      '<source type="image/webp" srcset="' + base + '.webp">' +
+      '<img class="card__art card__art--photo" src="' + base +
+      '.jpg" alt="" loading="lazy" width="400" height="420">' +
+      '</picture>';
+  }
+
   function cardHTML(slug) {
     var p = window.PRODUCTS && window.PRODUCTS[slug];
     if (!p) return '';
@@ -751,7 +838,7 @@
       '<div class="card__figure">' + badge +
       '<button type="button" class="card__fav" aria-label="Save to favourites">' +
       '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.3 4.9 13a4.6 4.6 0 0 1 0-6.5 4.5 4.5 0 0 1 6.4 0l.7.7.7-.7a4.5 4.5 0 0 1 6.4 0 4.6 4.6 0 0 1 0 6.5Z"/></svg></button>' +
-      '<img class="card__art" src="assets/img/products/' + p.art + '.svg" alt="" loading="lazy" width="400" height="500">' +
+      artTag(p) +
       '</div>' +
       '<div class="card__row">' +
       '<h3 class="card__title"><a class="card__link" href="product.html?p=' + slug + '" data-i18n="p.' + slug + '.name">' + p.en.name + '</a></h3>' +
@@ -971,7 +1058,21 @@
 
      To go live: create a free form endpoint (Web3Forms, Formspree, or a
      Vercel function) and paste the URL below. If the service needs an access
-     key, put it in FORM_KEY — it is a public submission key, not a secret. */
+     key, put it in FORM_KEY — it is a public submission key, not a secret.
+
+     ATTACHMENTS. The enquiry desk on the contact page offers a file upload —
+     a company profile from a buyer, a quality passport from a supplier. A
+     static page cannot deliver a file on its own, and a mailto: link cannot
+     attach one, so until FORM_ENDPOINT is set the form carries the filename
+     into the email body with an instruction to attach it by hand. That is the
+     honest degradation, not the intended behaviour.
+
+     Once an endpoint is set the file is posted for real: submissions carrying
+     a file are sent as multipart/form-data instead of JSON (see the submit
+     handler below), which is what both Web3Forms and Formspree expect. Check
+     that the plan you sign up for actually accepts attachments — on both
+     services file upload is a paid feature, and a free endpoint will take the
+     text fields and silently drop the file. */
 
   var FORM_ENDPOINT = '';
   var FORM_KEY = '';
@@ -984,6 +1085,14 @@
 
       function labelFor(name) {
         var field = form.elements[name];
+        /* The enquiry desk gives the same name to a field on more than one
+           route ("Commodity", "Attachment"), so elements[name] hands back a
+           RadioNodeList. Only one route is ever enabled — label from that. */
+        if (field && !field.tagName && typeof field.length === 'number') {
+          for (var i = 0; i < field.length; i++) {
+            if (!field[i].disabled) { field = field[i]; break; }
+          }
+        }
         if (field && field.id) {
           var lab = qs('label[for="' + field.id + '"]', form);
           if (lab) return lab.textContent.replace(/\*/g, '').trim();
@@ -1014,12 +1123,28 @@
         if (window.ACI18N) window.ACI18N.retranslate(form);
       }
 
-      function fallbackToMail(payload) {
+      function fallbackToMail(payload, attachment) {
         var lines = Object.keys(payload).map(function (k) { return k + ': ' + payload[k]; });
+
+        /* A mailto: URL cannot attach a file — no browser permits it, for good
+           reason. Say so in the body the visitor is about to send, rather than
+           letting them believe the document went with it. */
+        if (attachment) {
+          lines.push('');
+          lines.push('--- ' + (window.ACI18N && window.ACI18N.current() === 'ru'
+            ? 'ВЛОЖЕНИЕ: прикрепите к этому письму файл ' + attachment.file.name
+            : 'ATTACHMENT: please attach ' + attachment.file.name + ' to this email') + ' ---');
+        }
+
         window.location.href = 'mailto:' + form.getAttribute('data-mailto') +
           '?subject=' + encodeURIComponent(form.getAttribute('data-subject') || 'Enquiry') +
           '&body=' + encodeURIComponent(lines.join('\n'));
-        say('form.status', 'Your enquiry has been prepared in your mail client. Send it to reach the trading desk.');
+
+        say(attachment ? 'form.statusFile' : 'form.status',
+            attachment
+              ? 'Your enquiry has been prepared in your mail client. Attach ' +
+                attachment.file.name + ' before sending it.'
+              : 'Your enquiry has been prepared in your mail client. Send it to reach the trading desk.');
       }
 
       form.addEventListener('submit', function (e) {
@@ -1027,20 +1152,46 @@
         if (typeof form.reportValidity === 'function' && !form.reportValidity()) return;
 
         var payload = {};
+        var attachment = null;
+
         new FormData(form).forEach(function (value, key) {
+          /* A File stringifies to "[object File]", which is how an attachment
+             silently becomes nothing. Carry the file itself for the POST and
+             its name for the human-readable copy. */
+          if (typeof File !== 'undefined' && value instanceof File) {
+            if (value.size) {
+              attachment = { field: key, file: value };
+              payload[labelFor(key)] = value.name + ' (' + fmtSize(value.size) + ')';
+            }
+            return;
+          }
           if (String(value).trim() !== '') payload[labelFor(key)] = value;
         });
         payload.subject = form.getAttribute('data-subject') || 'Enquiry';
 
-        if (!FORM_ENDPOINT) { fallbackToMail(payload); return; }
+        if (!FORM_ENDPOINT) { fallbackToMail(payload, attachment); return; }
 
         if (FORM_KEY) payload.access_key = FORM_KEY;
         busy(true);
 
+        /* With a file the request has to be multipart — a JSON body cannot
+           carry one. Both Web3Forms and Formspree accept either shape, so the
+           endpoint does not change, only the encoding. */
+        var request = attachment
+          ? { body: (function () {
+                var fd = new FormData();
+                Object.keys(payload).forEach(function (k) { fd.append(k, payload[k]); });
+                fd.append(attachment.field, attachment.file, attachment.file.name);
+                return fd;
+              })(),
+              headers: { 'Accept': 'application/json' } }
+          : { body: JSON.stringify(payload),
+              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' } };
+
         fetch(FORM_ENDPOINT, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify(payload)
+          headers: request.headers,
+          body: request.body
         }).then(function (res) {
           if (!res.ok) throw new Error('HTTP ' + res.status);
           busy(false);
@@ -1102,6 +1253,187 @@
     setInterval(tick, 30000);
   }
 
+  /* ------------------------------------------------------- ENQUIRY DESK -- */
+  /* One form, three routes: a buyer asking for a quotation, a producer
+     offering a cargo, and everyone else.
+
+     Routes are switched by DISABLING the fields of the routes you are not on,
+     not merely by hiding them. Two reasons, both load-bearing:
+
+       · a required field inside [hidden] still fails constraint validation, so
+         reportValidity() would refuse to submit and point at something the
+         visitor cannot see or fix;
+       · a disabled field is dropped from FormData, so the desk never receives
+         a supplier's country of origin appended to a buyer's RFQ.
+
+     The commodity list is read from window.PRODUCTS rather than written out
+     here, so it cannot drift from the catalogue and it follows the language
+     toggle for free. */
+
+  function initEnquiry() {
+    var form = qs('#enqForm');
+    if (!form) return;
+
+    var tabs = qsa('.enq__tab');
+    var panels = qsa('[data-enq-panel]', form);
+
+    var SUBJECTS = {
+      buy: 'Request for Quotation',
+      sell: 'Cargo Offer — Supplier',
+      general: 'General Enquiry'
+    };
+
+    /* ------------------------------------------------------------ routing */
+
+    function select(route, moveFocus) {
+      if (!SUBJECTS[route]) route = 'buy';
+
+      tabs.forEach(function (tab) {
+        var on = tab.getAttribute('data-enq-tab') === route;
+        tab.classList.toggle('is-active', on);
+        tab.setAttribute('aria-selected', on ? 'true' : 'false');
+        tab.tabIndex = on ? 0 : -1;
+        if (on && moveFocus) tab.focus();
+      });
+
+      panels.forEach(function (panel) {
+        var on = panel.getAttribute('data-enq-panel') === route;
+        panel.hidden = !on;
+        qsa('input, select, textarea', panel).forEach(function (el) {
+          el.disabled = !on;
+        });
+      });
+
+      form.setAttribute('data-subject', SUBJECTS[route]);
+    }
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        select(tab.getAttribute('data-enq-tab'));
+      });
+    });
+
+    /* Left/right walks the group, as a tablist is expected to. */
+    var order = tabs.map(function (t) { return t.getAttribute('data-enq-tab'); });
+    qs('.enq__tabs').addEventListener('keydown', function (e) {
+      var step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if (!step) return;
+      e.preventDefault();
+      var at = order.indexOf(qs('.enq__tab.is-active').getAttribute('data-enq-tab'));
+      select(order[(at + step + order.length) % order.length], true);
+    });
+
+    /* The two cards in the sourcing block above open the matching route. */
+    qsa('[data-enq-go]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        select(btn.getAttribute('data-enq-go'));
+        qs('#enq').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    });
+
+    /* --------------------------------------------------- commodity lists */
+
+    function fillCommodities() {
+      if (!window.PRODUCTS || !window.PRODUCT_ORDER) return;
+      var ru = window.ACI18N && window.ACI18N.current() === 'ru';
+
+      qsa('[data-commodity]', form).forEach(function (sel) {
+        var chosen = sel.value;
+        /* Keep the placeholder and the "Other" escape hatch; everything
+           between them is the catalogue and is rebuilt on every language
+           change. */
+        qsa('option[data-from-catalogue]', sel).forEach(function (o) { o.remove(); });
+        var other = qs('option[value="Other / Custom Commodity"]', sel);
+
+        window.PRODUCT_ORDER.forEach(function (slug) {
+          var p = window.PRODUCTS[slug];
+          if (!p) return;
+          var L = (ru && p.ru) ? p.ru : p.en;
+          var opt = document.createElement('option');
+          /* The value stays English — the trading desk reads the enquiry, and
+             an RFQ that names the commodity in the visitor's language is one
+             more thing to translate before it can be quoted. */
+          opt.value = p.en.name + ' — ' + p.en.grade;
+          opt.textContent = L.name + ' — ' + L.grade;
+          opt.setAttribute('data-from-catalogue', '');
+          sel.insertBefore(opt, other);
+        });
+
+        if (chosen) sel.value = chosen;
+      });
+    }
+
+    fillCommodities();
+    document.addEventListener('ac:lang', fillCommodities);
+
+    /* "Other" reveals a free-text field, and only then is it required. */
+    qsa('[data-commodity]', form).forEach(function (sel) {
+      var extra = qs('[data-commodity-other]', sel.closest('.field-row') || form);
+      if (!extra) return;
+      var input = qs('input', extra);
+
+      sel.addEventListener('change', function () {
+        var other = sel.value === 'Other / Custom Commodity';
+        extra.hidden = !other;
+        input.required = other;
+        /* select() owns the disabled flag for the whole panel, so this only
+           steps in while the panel is live. */
+        if (other && !sel.disabled) input.focus();
+        if (!other) input.value = '';
+      });
+    });
+
+    /* Deep link, so a supplier-facing link can open on the supplier's route:
+       contact.html?enq=sell, or #sell. Defaults to the buyer. */
+    var asked = (/[?&]enq=(buy|sell|general)\b/.exec(location.search) ||
+                 /^#(buy|sell|general)$/.exec(location.hash) || [])[1];
+    select(asked || 'buy');
+  }
+
+  /* ---------------------------------------------------------- FILE FIELD -- */
+  /* The native control cannot be styled and announces the filename in a
+     system font. The input keeps doing the work; the label is what you see.
+     Type and size are checked here so the visitor is told before they submit
+     rather than by a rejected POST. */
+
+  var FILE_MAX = 10 * 1024 * 1024;
+
+  function fmtSize(bytes) {
+    return bytes >= 1048576
+      ? (bytes / 1048576).toFixed(1) + ' MB'
+      : Math.max(1, Math.round(bytes / 1024)) + ' kB';
+  }
+
+  function initFileFields() {
+    qsa('[data-filefield]').forEach(function (wrap) {
+      var input = qs('input[type="file"]', wrap);
+      var name = qs('[data-filename]', wrap);
+      if (!input || !name) return;
+
+      input.addEventListener('change', function () {
+        var file = input.files && input.files[0];
+        wrap.classList.remove('has-file', 'is-invalid');
+        input.setCustomValidity('');
+
+        if (!file) { name.textContent = ''; return; }
+
+        if (file.size > FILE_MAX) {
+          wrap.classList.add('is-invalid');
+          name.textContent = file.name + ' — ' + fmtSize(file.size);
+          input.setCustomValidity(
+            window.ACI18N && window.ACI18N.current() === 'ru'
+              ? 'Файл больше 10 МБ. Пришлите его письмом на trading@arminakcaravan.ae.'
+              : 'That file is over 10 MB. Email it to trading@arminakcaravan.ae instead.');
+          input.reportValidity();
+          return;
+        }
+
+        wrap.classList.add('has-file');
+        name.textContent = file.name + ' · ' + fmtSize(file.size);
+      });
+    });
+  }
+
   /* ----------------------------------------------------------------- GO --- */
 
   function boot() {
@@ -1109,6 +1441,7 @@
     initDeskClock();
     initNav();
     initReveal();
+    initScrollCue();
     initTabs();
     initFavs();
     initRails();
@@ -1116,6 +1449,8 @@
     initAccordions();
     initDrawer();
     initForms();
+    initEnquiry();
+    initFileFields();
     initHero();
     initNavPanel();
     initQualify();

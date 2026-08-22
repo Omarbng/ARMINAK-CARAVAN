@@ -16,6 +16,21 @@ NAV_CON = (HERE / "_nav_con.html").read_text(encoding="utf-8")
 DRAWER = (HERE / "_drawer.html").read_text(encoding="utf-8")
 FOOTER = (HERE / "_footer.html").read_text(encoding="utf-8")
 
+# Category tiles carry a representative commodity. Same rule as the product
+# cards: a real photograph if build_photos.py has produced one, otherwise the
+# line art. See art_tag() in build_catalogue.py.
+PHOTOS = {q.stem for q in (ROOT / "assets" / "img" / "products" / "photo").glob("*.jpg")}
+
+
+def cat_art(art):
+    if art in PHOTOS:
+        base = f"assets/img/products/photo/{art}"
+        return (f'<picture><source type="image/webp" srcset="{base}.webp">'
+                f'<img class="catcard__art catcard__art--photo" src="{base}.jpg" '
+                f'alt="" loading="lazy"></picture>')
+    return f'<img class="catcard__art" src="assets/img/products/{art}.svg" alt="" loading="lazy">'
+
+
 HEAD = '''<!doctype html>
 <html lang="en">
 <head>
@@ -212,22 +227,27 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
 
     <h1 class="hero__title">
       <span class="line"><span class="l1" data-i18n="hero.l1">Sourced at origin.</span></span>
-      <span class="line"><span class="l2" data-i18n="hero.l2">Delivered across continents.</span></span>
+      <span class="line"><span class="l2" data-i18n="hero.l2">Delivered across continents</span></span>
     </h1>
 
     <p class="hero__copy reveal" data-i18n="hero.copy">Global supply of agricultural commodities and everyday foodstuff — from the Black Sea, Turkey and Central Asia to ports worldwide.</p>
-
-    <!-- One button. "Request a Quote" used to sit beside it, which put the
-         same ask on screen twice — the nav carries Request Quotation, pinned
-         and visible the whole way down the page. -->
-    <div class="hero__actions reveal">
-      <a class="btn btn--primary" href="catalogue.html" data-i18n="hero.cta1">View Catalogue</a>
-    </div>
   </div>
 
-  <div class="hero__cue" aria-hidden="true">
-    <i></i><span data-i18n="hero.scroll">Scroll</span>
-  </div>
+  <!-- No button here any more. "View Catalogue" sent a reader to another page
+       to see the goods that are already two screens down this one, and the bar
+       carries the site's actual ask, pinned, the whole way down. What replaces
+       it is the descent itself: this cue is now a real control, and the
+       catalogue arrives by scrolling rather than by navigating.
+
+       It is also where the eye leaves the hero, so it is built as one vertical
+       gesture on the same left axis as the logo, the meta line and the
+       headline — label, then a rail with a light falling down it — instead of
+       the horizontal dash that used to sit beside the word. -->
+  <button class="hero__cue" type="button" data-scroll-to="#categories"
+          aria-label="Scroll to what we trade">
+    <span data-i18n="hero.scroll">Scroll</span>
+    <i aria-hidden="true"></i>
+  </button>
 </section>
 
 <!-- The waypoint rail that used to sit here listed the same five points the
@@ -262,22 +282,22 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
     <div class="grid-cats">
       <a class="catcard fade-up" href="catalogue.html?cat=grains">
         <span class="catcard__count tabular">04</span>
-        <img class="catcard__art" src="assets/img/products/wheat.svg" alt="" loading="lazy">
+        ''' + cat_art("wheat") + '''
         <span class="catcard__label" data-i18n="cat.c.grains">Agriculture &amp; Grains</span>
       </a>
       <a class="catcard fade-up stagger-1" href="catalogue.html?cat=oils">
         <span class="catcard__count tabular">04</span>
-        <img class="catcard__art" src="assets/img/products/sunflower-oil.svg" alt="" loading="lazy">
+        ''' + cat_art("sunflower-oil") + '''
         <span class="catcard__label" data-i18n="cat.c.oils">Oils &amp; Grocery</span>
       </a>
       <a class="catcard fade-up stagger-2" href="catalogue.html?cat=dairy">
         <span class="catcard__count tabular">04</span>
-        <img class="catcard__art" src="assets/img/products/uht-milk.svg" alt="" loading="lazy">
+        ''' + cat_art("uht-milk") + '''
         <span class="catcard__label" data-i18n="cat.c.dairy">Dairy &amp; Beverages</span>
       </a>
       <a class="catcard fade-up stagger-3" href="catalogue.html?cat=sugar">
         <span class="catcard__count tabular">04</span>
-        <img class="catcard__art" src="assets/img/products/sugar.svg" alt="" loading="lazy">
+        ''' + cat_art("sugar") + '''
         <span class="catcard__label" data-i18n="cat.c.sugar">Sugar &amp; Foodstuff</span>
       </a>
     </div>
@@ -647,6 +667,19 @@ PRODUCT = HEAD.replace("%SLUG%", "product.html").replace("%TITLE%", "Product —
     </section>
   </div>
 
+
+  <!-- Closing band. The product page used to drop from the related rail
+       straight into the footer; every other page ends on this. -->
+  <section class="section section--inverse closing" id="desk">
+    <div class="shell">
+      <h2 class="t-section closing__title fade-up" data-i18n="pdp.cta.title">Quote this position</h2>
+      <p class="closing__copy fade-up stagger-1" data-i18n="pdp.cta.copy">Give the desk a volume, a destination port and a shipment period. Indicative terms and the documentation package come back within one business day.</p>
+      <div class="closing__actions fade-up stagger-2">
+        <a class="btn btn--primary" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
+        <a class="link-quiet" href="catalogue.html" data-i18n="home.shopAll">Shop all →</a>
+      </div>
+    </div>
+  </section>
 </main>
 
 ''' + DRAWER + "\n\n" + FOOTER + "\n\n" + SCRIPTS.replace('<script src="assets/js/main.js"></script>',
@@ -687,10 +720,13 @@ CONTACT_BODY = CONTACT_MAIN[start:end].replace('section--sand2', 'section--tight
                                       .replace('<section class="pagehead">', '<section class="pagehead" id="top">', 1) \
                                       .replace('<section class="section section--tight">', '<section class="section section--tight" id="legal">', 1)
 
+# Unlike the other leaf pages this one keeps products.js: the commodity
+# dropdown on the enquiry form is built from window.PRODUCTS so it cannot drift
+# from the catalogue, and it follows the language toggle for free.
 CONTACT = HEAD.replace("%SLUG%", "contact.html").replace("%TITLE%", "Contacts &amp; Institutional Desk | ARMINAK CARAVAN, KEZAD Free Zone Abu Dhabi") \
-              .replace("%DESC%", "Contact ARMINAK CARAVAN — KEZAD Free Zone, Abu Dhabi. Institutional contact desk, WhatsApp trading line and consultation booking.") \
+              .replace("%DESC%", "Contact ARMINAK CARAVAN — KEZAD Free Zone, Abu Dhabi. Buy or supply: RFQ desk, cargo offers and custom sourcing from origin to destination.") \
               .replace("%EXTRA%", "") + NAV_CON + "\n\n" + CONTACT_BODY + "\n\n" + FOOTER + "\n\n" + \
-              SCRIPTS.replace('<script src="assets/js/products.js"></script>\n', '') + '''</body>
+              SCRIPTS + '''</body>
 </html>
 '''
 
@@ -831,13 +867,28 @@ corridor_html = "\n".join(
 ABOUT_BODY = f'''<main id="main">
 
 <!-- ============================================================== HERITAGE -->
-<section class="section--tight ab-hero" id="story">
-  <div class="shell">
-    <span class="label fade-up" data-i18n="ab.tag">About the company</span>
-    <h1 class="ab-hero__title fade-up stagger-1">
+<section class="pagehero pagehero--about" id="story">
+  <div class="pagehero__media" aria-hidden="true">
+    <picture>
+      <source type="image/webp" srcset="assets/film/still-route.webp">
+      <img src="assets/film/still-route.jpg" alt="" width="1280" height="720" fetchpriority="high">
+    </picture>
+  </div>
+  <div class="pagehero__scrim" aria-hidden="true"></div>
+  <div class="pagehero__fade" aria-hidden="true"></div>
+  <div class="shell pagehero__inner">
+    <span class="label pagehero__tag fade-up" data-i18n="ab.tag">About the company</span>
+    <h1 class="ab-hero__title pagehero__title fade-up stagger-1">
       <span data-i18n="ab.title1">Heritage of Trust.</span>
       <em data-i18n="ab.title2">Horizon of Innovation.</em>
     </h1>
+  </div>
+</section>
+
+<!-- The copy and the register that used to sit under the heading now open the
+     page proper, on page ground, where they can be read. -->
+<section class="section--tight ab-hero" id="heritage">
+  <div class="shell">
 
     <div class="ab-hero__grid">
       <div class="ab-hero__copy fade-up stagger-2">
