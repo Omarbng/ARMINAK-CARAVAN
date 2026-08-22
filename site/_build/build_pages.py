@@ -332,61 +332,23 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
 </section>
 
 <!-- =============================================================== PROCESS -->
-<!-- The section the page did not have. A first-time institutional buyer is
-     deciding whether to send an enquiry at all, and the thing that decides it
-     is knowing what happens after they do. Every fact here was already on the
-     site — GOST contract standards, load-port inspection, the Gulf hub, CIF and
-     FOB, L/C and CAD, the one-business-day reply — but scattered across five
-     sections, so it never added up to a sequence.
+<!-- The "How we work" block stood here: six numbered steps from enquiry to
+     settlement, plus a keyword ribbon under them. Removed at the client's
+     request — "everyone knows how trade works" — and with it six separate
+     objections it was the only source of:
 
-     It also absorbs the old guarantees ribbon. Those three claims (independent
-     inspection, multi-corridor logistics, transparent banking) are steps 04, 05
-     and 06 here, which is where they mean something, instead of three
-     free-floating assertions between two other sections. -->
-<section class="section flow" id="process">
-  <div class="shell">
-    <div class="flow__head">
-      <span class="label fade-up" data-i18n="flow.tag">How we work</span>
-      <h2 class="t-section flow__title fade-up stagger-1 u-mt-s" data-i18n="flow.title">From enquiry to documents against payment.</h2>
-      <p class="body-copy flow__copy fade-up stagger-2" data-i18n="flow.copy">Six steps, the same on every line we trade. Quality is proven before loading, and every parameter is fixed in the contract rather than negotiated on arrival.</p>
-    </div>
+       · naming GAFTA / FOSFA as the contract form, which reads as though we
+         dictate the paper. Regions differ and the form is negotiated.
+       · "consolidated through the Gulf hub at Jebel Ali" — we deliver to
+         whichever port the buyer names; naming one implies a fixed route.
+       · "cash against documents" as a settlement option. The desk does not
+         accept CAD.
+       · "The trading desk replies within one business day" — contact happens
+         in a day, a price does not.
+       · the keyword ribbon, which was written for search engines rather than
+         for a buyer.
 
-    <ol class="flow__grid">
-      <li class="flow__step fade-up">
-        <span class="flow__num" aria-hidden="true">01</span>
-        <h3 class="flow__stepTitle" data-i18n="flow.s1t">Enquiry</h3>
-        <p class="flow__stepCopy" data-i18n="flow.s1c">Volumes, destination port and settlement terms. The trading desk replies within one business day.</p>
-      </li>
-      <li class="flow__step fade-up stagger-1">
-        <span class="flow__num" aria-hidden="true">02</span>
-        <h3 class="flow__stepTitle" data-i18n="flow.s2t">Offer</h3>
-        <p class="flow__stepCopy" data-i18n="flow.s2c">Priced against your specific enquiry on CIF, FOB or CFR — never a list price, because freight and origin decide the number.</p>
-      </li>
-      <li class="flow__step fade-up stagger-2">
-        <span class="flow__num" aria-hidden="true">03</span>
-        <h3 class="flow__stepTitle" data-i18n="flow.s3t">Contract</h3>
-        <p class="flow__stepCopy" data-i18n="flow.s3c">Laboratory parameters written into the contract against the GOST interstate standard for the line, on GAFTA or FOSFA forms.</p>
-      </li>
-      <li class="flow__step fade-up">
-        <span class="flow__num" aria-hidden="true">04</span>
-        <h3 class="flow__stepTitle" data-i18n="flow.s4t">Inspection</h3>
-        <p class="flow__stepCopy" data-i18n="flow.s4c">Independent inspection at the load port by SGS, Intertek or Bureau Veritas — before loading, not after arrival.</p>
-      </li>
-      <li class="flow__step fade-up stagger-1">
-        <span class="flow__num" aria-hidden="true">05</span>
-        <h3 class="flow__stepTitle" data-i18n="flow.s5t">Shipment</h3>
-        <p class="flow__stepCopy" data-i18n="flow.s5c">Originated at producer level, consolidated through the Gulf hub at Jebel Ali and delivered to your port.</p>
-      </li>
-      <li class="flow__step fade-up stagger-2">
-        <span class="flow__num" aria-hidden="true">06</span>
-        <h3 class="flow__stepTitle" data-i18n="flow.s6t">Settlement</h3>
-        <p class="flow__stepCopy" data-i18n="flow.s6c">Documents against an irrevocable letter of credit or cash against documents. No instrument you have not agreed in the contract.</p>
-      </li>
-    </ol>
-
-    <p class="flow__seo fade-up" data-i18n="ribbon.seo">Global wheat trading, barley supply UAE, and full-container foodstuff programmes shipped from Abu Dhabi to the Gulf, East Africa and Central Asia.</p>
-  </div>
-</section>
+     Do not reinstate any of the above without checking with the desk first. -->
 
 <!-- ====================================================== TRADE CORRIDORS -->
 <section class="section corridor" id="corridors">
@@ -432,7 +394,7 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
          The section is now the globe plus the manifest, and the manifest is the
          fallback on its own where WebGL will not start. -->
 
-    <!-- The 05 / CIF·FOB / L/C·CAD strip that closed this section is gone. It
+    <!-- The 05 / CIF·FOB / L/C strip that closed this section is gone. It
          was a third layer of technical notation under a globe and a table that
          already carry the point, and the ribbon above states the settlement
          instruments in a sentence. -->
@@ -540,7 +502,7 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
     <div class="closing__ask">
       <span class="label fade-up" data-i18n="closing.tag">Trading desk</span>
       <h2 class="t-section closing__title fade-up stagger-1 u-mt-s" data-i18n="closing.title">Discuss your supply requirements</h2>
-      <p class="closing__copy fade-up stagger-2" data-i18n="closing.copy">Volumes, destination ports and settlement terms are quoted against a specific enquiry. Our trading desk replies within one business day.</p>
+      <p class="closing__copy fade-up stagger-2" data-i18n="closing.copy">Volumes, destination ports and settlement terms are quoted against a specific enquiry. The desk makes contact within one business day; pricing a route takes longer than that.</p>
 
       <div class="closing__actions fade-up stagger-3">
         <a class="btn btn--primary" href="https://wa.me/971500000000" target="_blank" rel="noopener">
@@ -565,7 +527,7 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
       </div>
       <div>
         <dt data-i18n="closing.t3k">Settlement</dt>
-        <dd>L/C · CAD</dd>
+        <dd>L/C · <span data-i18n="closing.t3v">Advance payment</span></dd>
       </div>
       <div>
         <dt data-i18n="closing.t4k">Quotation</dt>
@@ -616,12 +578,13 @@ PRODUCT = HEAD.replace("%SLUG%", "product.html").replace("%TITLE%", "Product —
         <p class="pdp__opt-label" data-i18n="pdp.packing">Packing</p>
         <div class="chips" id="pdpChips"></div>
 
+        <!-- The tonnage stepper stood here, defaulting to 500 MT in steps of
+             25. Removed at the client's request: lots run from a single
+             container upward, most often three, so a four-figure default in
+             tonnes both misstates the trade and asks the buyer to price the
+             lot before the desk has. The ask is the button; the volume is a
+             field on the form it opens. -->
         <div class="pdp__buy">
-          <div class="qty">
-            <button type="button" id="qtyMinus" aria-label="Decrease">−</button>
-            <input id="qtyInput" type="number" value="500" min="25" step="25" inputmode="numeric" aria-label="Volume, tonnes">
-            <button type="button" id="qtyPlus" aria-label="Increase">+</button>
-          </div>
           <button type="button" class="btn btn--primary" id="pdpCta" data-drawer-trigger data-i18n="pdp.cta">Request Quotation</button>
         </div>
 
@@ -673,7 +636,7 @@ PRODUCT = HEAD.replace("%SLUG%", "product.html").replace("%TITLE%", "Product —
   <section class="section section--inverse closing" id="desk">
     <div class="shell">
       <h2 class="t-section closing__title fade-up" data-i18n="pdp.cta.title">Quote this position</h2>
-      <p class="closing__copy fade-up stagger-1" data-i18n="pdp.cta.copy">Give the desk a volume, a destination port and a shipment period. Indicative terms and the documentation package come back within one business day.</p>
+      <p class="closing__copy fade-up stagger-1" data-i18n="pdp.cta.copy">Give the desk a volume, a destination port and a shipment period. Someone makes contact within one business day; indicative terms follow once the route has been costed.</p>
       <div class="closing__actions fade-up stagger-2">
         <a class="btn btn--primary" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>
         <a class="link-quiet" href="catalogue.html" data-i18n="home.shopAll">Shop all →</a>
@@ -979,7 +942,7 @@ ABOUT_BODY = f'''<main id="main">
 <section class="section section--inverse closing" id="desk">
   <div class="shell">
     <h2 class="t-section closing__title fade-up" data-i18n="ab.cta.title">Discuss your supply requirements</h2>
-    <p class="closing__copy fade-up stagger-1" data-i18n="ab.cta.copy">Volumes, destination ports and settlement terms are quoted against a specific enquiry. Our trading desk replies within one business day.</p>
+    <p class="closing__copy fade-up stagger-1" data-i18n="ab.cta.copy">Volumes, destination ports and settlement terms are quoted against a specific enquiry. The desk makes contact within one business day; pricing a route takes longer than that.</p>
 
     <div class="closing__actions fade-up stagger-2">
       <a class="btn btn--primary" href="contact.html#consultation" data-i18n="nav.rfq">Request Quotation</a>

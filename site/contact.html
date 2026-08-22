@@ -267,7 +267,7 @@
              desk never receives a supplier's origin on a buyer's RFQ. -->
         <div class="formcard fade-up stagger-1" id="enq">
           <h2 class="t-sub formcard__title" data-i18n="enq.title">Get in touch</h2>
-          <p class="formcard__copy" data-i18n="enq.copy">Tell us which side of the trade you are on. A trader replies with indicative terms and the documentation package within one business day.</p>
+          <p class="formcard__copy" data-i18n="enq.copy">Tell us which side of the trade you are on. A trader makes contact within one business day to confirm what the desk needs; pricing follows once the route has been costed.</p>
 
           <div class="enq__tabs" role="tablist" aria-label="Enquiry type">
             <button class="enq__tab is-active" type="button" role="tab" id="enqTabBuy"
@@ -327,17 +327,16 @@
 
               <div class="field-row">
                 <div class="field">
-                  <label class="field__label" for="bVolume" data-i18n="enq.volume">Volume (MT)</label>
-                  <input class="input tabular" id="bVolume" name="Volume (MT)" type="number" min="25" step="25" inputmode="numeric" required data-i18n-ph="enq.volumePh" placeholder="5 000">
+                  <label class="field__label" for="bVolume" data-i18n="enq.volume">Volume</label>
+                  <input class="input" id="bVolume" name="Volume" type="text" required data-i18n-ph="enq.volumePh" placeholder="e.g. 3 containers, or tonnes">
                 </div>
                 <div class="field">
                   <label class="field__label" for="bPort" data-i18n="form.port">Destination port</label>
-                  <select class="select" id="bPort" name="Destination port" required>
-                    <option value="CIF Jebel Ali" data-i18n="form.port1">CIF Jebel Ali</option>
-                    <option value="CIF Dammam" data-i18n="form.port2">CIF Dammam</option>
-                    <option value="FOB load port" data-i18n="enq.portFob">FOB load port</option>
-                    <option value="Other" data-i18n="enq.portOther">Other — named below</option>
-                  </select>
+                  <!-- Free text, not a menu. The menu offered CIF Jebel Ali, CIF Dammam
+                 and "Other", which reads as a fixed set of routes; the desk
+                 delivers to whichever port the buyer names. -->
+                  <input class="input" id="bPort" name="Destination port" type="text" required
+                         data-i18n-ph="form.portPh" placeholder="e.g. CIF Mombasa, or FOB load port">
                 </div>
               </div>
 
@@ -354,7 +353,7 @@
 
               <div class="field">
                 <label class="field__label" for="bSpec" data-i18n="enq.reqSpec">Required specification</label>
-                <textarea class="textarea" id="bSpec" name="Required specification" rows="4" data-i18n-ph="enq.reqSpecPh" placeholder="GOST / ISO parameters, protein, moisture, packing, settlement instrument (L/C at sight, CAD)"></textarea>
+                <textarea class="textarea" id="bSpec" name="Required specification" rows="4" data-i18n-ph="enq.reqSpecPh" placeholder="GOST / ISO parameters, protein, moisture, packing, settlement instrument (L/C at sight, advance payment)"></textarea>
               </div>
 
               <div class="field">
@@ -394,8 +393,8 @@
                   <input class="input" id="sOrigin" name="Country of origin" type="text" required data-i18n-ph="enq.originPh" placeholder="e.g. Russia">
                 </div>
                 <div class="field">
-                  <label class="field__label" for="sVolume" data-i18n="enq.availVolume">Available volume (MT)</label>
-                  <input class="input tabular" id="sVolume" name="Available volume (MT)" type="number" min="25" step="25" inputmode="numeric" required data-i18n-ph="enq.volumePh" placeholder="5 000">
+                  <label class="field__label" for="sVolume" data-i18n="enq.availVolume">Available volume</label>
+                  <input class="input" id="sVolume" name="Available volume" type="text" required data-i18n-ph="enq.volumePh" placeholder="e.g. 3 containers, or tonnes">
                 </div>
               </div>
 
@@ -513,7 +512,7 @@
   <section class="section section--inverse closing" id="desk">
     <div class="shell">
       <h2 class="t-section closing__title fade-up" data-i18n="con.cta.title">Prefer to speak to a trader?</h2>
-      <p class="closing__copy fade-up stagger-1" data-i18n="con.cta.copy">The desk answers on WhatsApp during Gulf hours and by email within one business day. Quotations are released against a written request naming volume, destination and settlement instrument.</p>
+      <p class="closing__copy fade-up stagger-1" data-i18n="con.cta.copy">The desk answers on WhatsApp during Gulf hours and by email within one business day. A quotation is not same-day work: it is released against a written request naming volume, destination and settlement instrument, once the route has been priced.</p>
       <div class="closing__actions fade-up stagger-2">
         <a class="btn btn--primary" href="https://wa.me/971500000000" target="_blank" rel="noopener" data-i18n="con.wa">WhatsApp Trading Line</a>
         <a class="link-quiet" href="mailto:trading@arminakcaravan.ae?subject=Official%20Inquiry%20—%20ARMINAK%20CARAVAN" data-i18n="closing.mail">Send Official Inquiry</a>
@@ -577,7 +576,7 @@
         <address class="footer__addr">
           <span data-i18n="footer.addr">KEZAD Free Zone, Abu Dhabi, United Arab Emirates</span>
         </address>
-        <p class="footer__reply" data-i18n="footer.reply">Enquiries answered within one business day</p>
+        <p class="footer__reply" data-i18n="footer.reply">We make contact within one business day</p>
       </div>
     </nav>
 

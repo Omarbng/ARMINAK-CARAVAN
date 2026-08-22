@@ -347,16 +347,16 @@ DRAWER = '''<!-- ==================================================== SPEC / RFQ
 
         <div class="field-row">
           <div class="field">
-            <label class="field__label" for="rfqVolume" data-i18n="form.volume">Target volume, tonnes</label>
-            <input class="input tabular" id="rfqVolume" name="Target volume (MT)" type="number" min="1" step="1" required placeholder="3000" inputmode="numeric">
+            <label class="field__label" for="rfqVolume" data-i18n="form.volume">Target volume</label>
+            <input class="input" id="rfqVolume" name="Target volume" type="text" required data-i18n-ph="form.volumePh" placeholder="e.g. 3 containers, or tonnes">
           </div>
           <div class="field">
             <label class="field__label" for="rfqPort" data-i18n="form.port">Destination port</label>
-            <select class="select" id="rfqPort" name="Destination port" required>
-              <option value="CIF Jebel Ali" data-i18n="form.port1">CIF Jebel Ali</option>
-              <option value="CIF Dammam" data-i18n="form.port2">CIF Dammam</option>
-              <option value="Other" data-i18n="form.port3">Other — specify below</option>
-            </select>
+            <!-- Free text, not a menu. The menu offered CIF Jebel Ali, CIF Dammam
+                 and "Other", which reads as a fixed set of routes; the desk
+                 delivers to whichever port the buyer names. -->
+            <input class="input" id="rfqPort" name="Destination port" type="text" required
+                   data-i18n-ph="form.portPh" placeholder="e.g. CIF Mombasa, or FOB load port">
           </div>
         </div>
 
@@ -438,7 +438,7 @@ FOOTER = '''<footer class="footer">
         <address class="footer__addr">
           <span data-i18n="footer.addr">KEZAD Free Zone, Abu Dhabi, United Arab Emirates</span>
         </address>
-        <p class="footer__reply" data-i18n="footer.reply">Enquiries answered within one business day</p>
+        <p class="footer__reply" data-i18n="footer.reply">We make contact within one business day</p>
       </div>
     </nav>
 
@@ -508,7 +508,6 @@ PAGE_SECTIONS = {
     "home": [("#hero",          "nav.s.top",      "Top"),
              ("#categories",    "nav.s.cats",     "What we trade"),
              ("#products",      "nav.s.products", "Selected lines"),
-             ("#process",       "nav.s.flow",     "How we work"),
              ("#corridors",     "nav.s.corr",     "Trade corridors"),
              ("#about",         "nav.s.qual",     "Qualification"),
              ("#desk",          "nav.s.desk",     "Trading desk")],

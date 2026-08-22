@@ -106,20 +106,10 @@
       }).join('') + '</dl>';
     root.appendChild(tpl);
 
-    /* Quantity stepper feeds the drawer's volume field. */
-    var input = qs('#qtyInput');
-    qs('#qtyMinus').addEventListener('click', function () {
-      input.value = Math.max(+input.min, (+input.value || 0) - (+input.step || 25));
-    });
-    qs('#qtyPlus').addEventListener('click', function () {
-      input.value = (+input.value || 0) + (+input.step || 25);
-    });
-
     qs('#pdpCta').addEventListener('click', function () {
-      setTimeout(function () {
-        var vol = qs('#rfqVolume');
-        if (vol) vol.value = input.value;
-      }, 0);
+      /* Nothing to pre-fill any more — the stepper that fed the drawer's
+         volume field is gone, and guessing a figure on the buyer's behalf is
+         what it was doing wrong. */
     });
 
     /* Chip selection (visual) */

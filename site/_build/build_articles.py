@@ -16,44 +16,10 @@ NAV = (HERE / "_nav_ins.html").read_text(encoding="utf-8")
 FOOTER = (HERE / "_footer.html").read_text(encoding="utf-8")
 
 ARTICLES = [
-{
- "slug": "black-sea-grain-corridor-q3", "still": "corridor", "still_alt": "The caravan strung out across an open dune field at low sun",
- "tag_en": "Grain Market Report", "tag_ru": "Обзор зернового рынка",
- "date_iso": "2026-08-04", "date_en": "4 August 2026", "date_ru": "4 августа 2026",
- "title_en": "Black Sea Grain Corridor: Q3 Freight & Yield Analysis",
- "title_ru": "Черноморский зерновой коридор: фрахт и урожайность в III квартале",
- "desc_en": "Q3 analysis of Black Sea milling and feed wheat spreads, Handysize freight into the Gulf, and what both mean for global wheat trading contracts in Q4.",
- "desc_ru": "Анализ спреда между мукомольной и фуражной пшеницей Причерноморья, ставок Handysize в Персидский залив и последствий для контрактов IV квартала.",
- "read_en": "6 min read", "read_ru": "6 мин чтения",
- "body_en": [
-   ("h2", "Harvest pressure has re-opened the milling–feed spread"),
-   ("p", "New-crop pressure across the Black Sea basin widened the gap between milling and feed wheat through July. Protein carried a clear premium as buyers competed for 12.5% material while feed grades cleared at a discount, and that divergence is the single most important input into Q4 contracting."),
-   ("p", "For buyers running blended programmes, the practical consequence is that a fixed protein specification now costs materially more than a banded one. Where a mill can work with a 12.0–12.5% range rather than a hard 12.5% floor, the saving is real and worth writing into the contract."),
-   ("h2", "Handysize into the Gulf remains below the five-year mean"),
-   ("p", "Freight has not followed the grain. Handysize and Supramax rates into Jebel Ali and Dammam held below their five-year average for the quarter, which continues to favour CIF structures over FOB for buyers without their own chartering desk."),
-   ("p", "That gap is the quiet argument for consolidating volume: at current levels the freight component of a CIF price is unusually forgiving, and locking it for Q4 is cheaper than the spot market has been for most of the past three years."),
-   ("h2", "What this means for Q4"),
-   ("ul", ["Fix protein bands rather than single figures where the end use allows it.",
-           "Favour CIF while Handysize sits below its mean; revisit if rates recover.",
-           "Agree the sampling protocol and the appointed inspector before shipment, not after.",
-           "Where storage permits, split the programme across two shipment windows to average the basis."]),
-   ("p", "Every parameter above is fixed in the contract and verified by independent inspection at the load port. Volumes, destination ports and settlement instruments are quoted against a specific enquiry."),
- ],
- "body_ru": [
-   ("h2", "Давление урожая вновь расширило спред «мукомольная — фуражная»"),
-   ("p", "Давление нового урожая в Черноморском бассейне в течение июля увеличило разрыв между мукомольной и фуражной пшеницей. Протеин получил выраженную премию: покупатели конкурировали за материал 12,5%, тогда как фуражные классы уходили с дисконтом. Именно это расхождение — ключевой фактор для контрактования в IV квартале."),
-   ("p", "Для покупателей, работающих со смесовыми программами, практический вывод такой: жёсткая фиксация протеина сегодня стоит заметно дороже, чем диапазон. Если мельница может работать с интервалом 12,0–12,5% вместо жёсткого минимума 12,5%, экономия реальна и её стоит закрепить в контракте."),
-   ("h2", "Ставки Handysize в Персидский залив остаются ниже пятилетней средней"),
-   ("p", "Фрахт за зерном не последовал. Ставки Handysize и Supramax в направлении Джебель-Али и Даммама весь квартал держались ниже пятилетней средней, что по-прежнему делает структуру CIF выгоднее FOB для покупателей без собственного фрахтового отдела."),
-   ("p", "Этот разрыв — тихий аргумент в пользу консолидации объёмов: на текущих уровнях фрахтовая составляющая цены CIF необычно мягкая, и зафиксировать её на IV квартал дешевле, чем позволял спотовый рынок в последние три года."),
-   ("h2", "Что это значит для IV квартала"),
-   ("ul", ["Фиксируйте диапазон протеина, а не единственное значение, если это допускает конечное применение.",
-           "Отдавайте предпочтение CIF, пока Handysize ниже средней; пересмотрите при восстановлении ставок.",
-           "Согласуйте протокол отбора проб и инспектора до отгрузки, а не после.",
-           "При наличии хранения разделите программу на два периода отгрузки, чтобы усреднить базис."]),
-   ("p", "Все перечисленные параметры фиксируются в контракте и подтверждаются независимой инспекцией в порту погрузки. Объёмы, порты назначения и инструменты расчётов рассчитываются под конкретный запрос."),
- ],
-},
+# The Black Sea Q3 analysis was removed with the featured block that promoted
+# it — same reason: it quoted a milling/feed spread and Handysize freight
+# against a five-year mean, with no source behind either. A market note is
+# publishable when the desk supplies the figure and will defend it.
 {
  "slug": "jebel-ali-transhipment-east-africa", "still": "route", "still_alt": "A loaded caravan crossing a wide dune field, tracks running behind it",
  "tag_en": "Logistics", "tag_ru": "Логистика",
@@ -118,38 +84,11 @@ ARTICLES = [
    ("p", "Когда эти четыре пункта согласованы заранее, споры редки. Когда нет — сертификат превращается в стартовую переговорную позицию, а не в расчётный документ."),
  ],
 },
-{
- "slug": "lc-versus-cad", "still": "handler", "still_alt": "A handler leading a loaded string of camels by the rein",
- "tag_en": "Trade Finance", "tag_ru": "Торговое финансирование",
- "date_iso": "2026-06-11", "date_en": "11 June 2026", "date_ru": "11 июня 2026",
- "title_en": "L/C versus CAD: Choosing the Settlement Instrument",
- "title_ru": "Аккредитив или CAD: выбор инструмента расчётов",
- "desc_en": "A practical comparison of cost, timing and documentary risk for first-time counterparties in agricultural commodity trade.",
- "desc_ru": "Практическое сравнение стоимости, сроков и документарного риска для новых контрагентов.",
- "read_en": "5 min read", "read_ru": "5 мин чтения",
- "body_en": [
-   ("h2", "What each instrument actually protects"),
-   ("p", "A letter of credit substitutes the buyer's credit risk with a bank's, at a cost and with strict documentary compliance. Cash against documents is cheaper and faster but leaves the seller exposed if the buyer declines the documents at destination."),
-   ("h2", "How we choose with a new counterparty"),
-   ("p", "For a first shipment with a new buyer we normally propose an L/C at sight confirmed by an acceptable bank. It costs more, and it is the reason the second and third shipments can move on lighter terms once a payment record exists."),
-   ("ul", ["First trade: irrevocable L/C at sight, confirmed where country risk warrants it.",
-           "Established record: CAD, with a shortened document presentation period.",
-           "Always: a documentary schedule agreed before the vessel is fixed.",
-           "Never: an instrument whose terms the appointed inspector cannot satisfy."]),
-   ("p", "The most common cause of an L/C being drawn late is not fraud but a discrepancy in ordinary documents. Agreeing the document list in the contract removes most of that risk before it exists."),
- ],
- "body_ru": [
-   ("h2", "Что на самом деле защищает каждый инструмент"),
-   ("p", "Аккредитив заменяет кредитный риск покупателя риском банка — за плату и при строгом документарном соответствии. Платёж против документов (CAD) дешевле и быстрее, но оставляет продавца незащищённым, если покупатель откажется от документов в порту назначения."),
-   ("h2", "Как мы выбираем с новым контрагентом"),
-   ("p", "Для первой отгрузки с новым покупателем мы обычно предлагаем безотзывный аккредитив по предъявлении, подтверждённый приемлемым банком. Он дороже — и именно поэтому вторая и третья отгрузки могут идти на более мягких условиях, когда появилась платёжная история."),
-   ("ul", ["Первая сделка: безотзывный аккредитив по предъявлении, при необходимости подтверждённый.",
-           "Сложившаяся история: CAD с сокращённым сроком представления документов.",
-           "Всегда: документарный график, согласованный до фиксации судна.",
-           "Никогда: инструмент, условия которого не может выполнить назначенный инспектор."]),
-   ("p", "Самая частая причина задержки раскрытия аккредитива — не мошенничество, а расхождение в обычных документах. Согласование перечня документов в контракте снимает большую часть этого риска заранее."),
- ],
-},
+# The L/C-versus-CAD note was removed with the rest of the CAD references: it
+# compared the two instruments and recommended CAD for established
+# counterparties, which is the opposite of the desk's position. Do not restore
+# it as a comparison; if a settlement note is wanted, it should cover the
+# instruments the desk actually accepts.
 ]
 
 

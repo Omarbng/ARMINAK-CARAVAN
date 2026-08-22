@@ -1196,7 +1196,7 @@
           if (!res.ok) throw new Error('HTTP ' + res.status);
           busy(false);
           form.reset();
-          say('form.sent', 'Thank you — your enquiry has reached the trading desk. We reply within one business day.', 'is-ok');
+          say('form.sent', 'Thank you — your enquiry has reached the trading desk. We make contact within one business day; pricing a route takes longer than that.', 'is-ok');
         }).catch(function () {
           busy(false);
           say('form.failed', 'The enquiry could not be sent. Opening your mail client instead…', 'is-error');
