@@ -1069,10 +1069,19 @@
 
      Once an endpoint is set the file is posted for real: submissions carrying
      a file are sent as multipart/form-data instead of JSON (see the submit
-     handler below), which is what both Web3Forms and Formspree expect. Check
-     that the plan you sign up for actually accepts attachments — on both
-     services file upload is a paid feature, and a free endpoint will take the
-     text fields and silently drop the file. */
+     handler below), which is what both Web3Forms and Formspree expect.
+
+     ATTACHMENTS NEED A PAID PLAN. Web3Forms: "This is a PRO feature. You must
+     have an active subscription to use this feature."
+     (docs.web3forms.com/getting-started/pro-features/file-attachments).
+     Formspree lists uploads as "Available on: Personal, Professional, Business
+     plans", capped at 10 files, 25 MB each, 100 MB per request
+     (help.formspree.io/hc/en-us/articles/115008380088-File-uploads).
+
+     What a FREE endpoint does with a posted file is undocumented by both —
+     rejected, ignored, or accepted-and-dropped is not stated anywhere. Do not
+     assume. Send one real submission with an attachment and confirm it lands in
+     the inbox before telling the desk that uploads work. */
 
   var FORM_ENDPOINT = '';
   var FORM_KEY = '';

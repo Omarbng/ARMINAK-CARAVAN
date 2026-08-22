@@ -131,9 +131,17 @@ static page cannot deliver a file on its own — a `mailto:` link cannot attach
 one. Until an endpoint is set, the form carries the filename into the email
 body with an instruction to attach it by hand. Once an endpoint is set,
 submissions that carry a file are POSTed as `multipart/form-data` instead of
-JSON, which both Web3Forms and Formspree accept — but on both, file upload is a
-paid feature, and a free endpoint takes the text fields and silently drops the
-file. Verify with a real submission before telling the desk it works.
+JSON, which both Web3Forms and Formspree accept.
+
+| Service | Attachments | Source |
+|---|---|---|
+| Web3Forms | Pro only — *"You must have an active subscription to use this feature."* | [docs](https://docs.web3forms.com/getting-started/pro-features/file-attachments) |
+| Formspree | *"Available on: Personal, Professional, Business plans."* 10 files, 25 MB each, 100 MB/request | [docs](https://help.formspree.io/hc/en-us/articles/115008380088-File-uploads) |
+
+**What a free endpoint does with a posted file is undocumented by both** —
+whether it rejects, ignores, or accepts-and-drops is stated nowhere. Do not
+assume a failure mode. Send one real submission with an attachment and confirm
+it arrives before telling the desk that uploads work.
 
 ## The enquiry desk (contact page)
 
