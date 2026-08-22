@@ -550,7 +550,7 @@
        It used to end when the section's *bottom* edge reached a quarter up the
        viewport — which is only true once the section has almost entirely
        scrolled off the top. So a reader looking straight at the globe was at
-       p≈0.55, and Jebel Ali and East Africa never connected until they had
+       p≈0.55, and the Gulf node and East Africa never connected until they had
        scrolled well past the thing they were meant to be watching.
 
        Now p runs from "top edge entering at the bottom" to "top edge near the

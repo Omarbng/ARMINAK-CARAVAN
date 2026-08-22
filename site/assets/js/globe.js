@@ -168,7 +168,7 @@ export async function mountGlobe(host, opts = {}) {
      Each lane keeps its index geometry so setProgress can draw it on rather
      than fade it in. A TubeGeometry's indices run in order along the curve, so
      clamping the draw range to a fraction of them literally extends the tube
-     from origin toward the hub — the route is drawn the way it is travelled,
+     from origin toward the Gulf — the route is drawn the way it is travelled,
      which is the entire point of showing a corridor rather than a dot. */
   const hub = NODES.find(n => n.role === 'hub');
   const laneMats = [];
@@ -259,7 +259,7 @@ export async function mountGlobe(host, opts = {}) {
      The five slices read as the trade actually runs: three originations each
      draw their own feeder into the Gulf, the hub slice lands them (the feeders
      brighten as it arrives), and the delivery slice draws the outbound leg.
-     The delivery lane belongs to East Africa, not to Jebel Ali — parked on the
+     The delivery lane belongs to East Africa, not to the Gulf node — parked on the
      hub it left the final fifth of the scroll with nothing to draw.
 
      Reversible by construction, because everything is recomputed from p rather
