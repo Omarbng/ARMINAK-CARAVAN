@@ -19,9 +19,9 @@ import { OrbitControls } from '../vendor/OrbitControls.js';
 
 const NODES = [
   { name: 'Black Sea',    lat:  44.72, lon: 37.77, role: 'origination' },
-  { name: 'Turkey',       lat:  36.80, lon: 34.63, role: 'origination' },
+  { name: 'Türkiye',      lat:  36.80, lon: 34.63, role: 'origination' },
   { name: 'Central Asia', lat:  43.24, lon: 76.89, role: 'origination' },
-  { name: 'Jebel Ali',    lat:  25.01, lon: 55.06, role: 'hub' },
+  { name: 'UAE',          lat:  25.01, lon: 55.06, role: 'hub' },
   { name: 'East Africa',  lat:  -4.04, lon: 39.67, role: 'delivery' },
 ];
 

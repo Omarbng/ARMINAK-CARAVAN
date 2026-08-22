@@ -16,8 +16,14 @@ HERE = pathlib.Path(__file__).resolve().parent
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 EDITIONS = [
+    # The three-direction document, A / B / C. Superseded as a decision but the
+    # client has it, so it keeps its filename.
     ("print-en.html", "ARMINAK-CARAVAN-Identity-EN.pdf"),
     ("print-ru.html", "ARMINAK-CARAVAN-Identity-RU.pdf"),
+    # Direction C redrawn to the client's brief: the evening seal, with the
+    # caravan and without. This is the one to send.
+    ("variants-en.html", "ARMINAK-CARAVAN-Logo-C-EN.pdf"),
+    ("variants-ru.html", "ARMINAK-CARAVAN-Logo-C-RU.pdf"),
 ]
 
 

@@ -22,6 +22,7 @@ Run with the system Python, which is where fontTools is installed:
 
 Rasterising is a separate step (rasterise.sh) because it needs a browser.
 """
+import math
 import pathlib
 
 from fontTools.misc.transform import Transform
@@ -119,6 +120,179 @@ RING_R = 46.0
 RING_W = 3.0
 
 
+# ------------------------------------------------------- the evening scene ---
+# The client's revision to direction C, in their words:
+#
+#   "Лого вариант C, но чтобы в круге был Вечерний закат на фоне пустыни луны и
+#    одной звезды ... точно так же с караваном верблюдов внутри, потому что
+#    пустыня без каравана пусто будет ... вариант С с двумя вариантами с
+#    верблюдами и без них"
+#
+# So: the same seal, but the sun becomes an evening — a crescent moon and a
+# single star — and it ships in two versions, with a camel caravan and without.
+#
+# Both stay strictly two-ink. No sunset gradient: the one-ink builds knock the
+# scene out of the disc with a mask, and a gradient cannot be knocked out, so a
+# glow would mean the colour and single-ink marks were different drawings. The
+# evening reads from the navy sky, the crescent and the star instead.
+
+MOON_C, MOON_R = (71.0, 26.0), 9.0
+MOON_CUT = (3.6, -2.6, 8.4)      # cutter offset dx, dy and radius
+STAR_C, STAR_R = (28.0, 22.0), 3.4
+
+
+def _cubic(p0, p1, p2, p3, t):
+    u = 1 - t
+    return (u**3 * p0[0] + 3*u*u*t * p1[0] + 3*u*t*t * p2[0] + t**3 * p3[0],
+            u**3 * p0[1] + 3*u*u*t * p1[1] + 3*u*t*t * p2[1] + t**3 * p3[1])
+
+
+# RIDGE_BACK as its two cubics, so the caravan can stand ON the crest rather
+# than at a y somebody typed and then re-typed when the dune changed.
+_BACK_SEGS = [((0, 71), (12, 71), (20, 53), (37, 53)),
+              ((37, 53), (52, 53), (61, 63), (100, 61))]
+
+
+def ridge_y(x):
+    """y of RIDGE_BACK at x. Sampled, because inverting a cubic for one
+    coordinate is not worth a solver in a logo script."""
+    best, best_d = None, 1e9
+    for seg in _BACK_SEGS:
+        for i in range(1201):
+            px, py = _cubic(*seg, i / 1200)
+            if abs(px - x) < best_d:
+                best_d, best = abs(px - x), py
+    return best
+
+
+def crescent(cx=MOON_C[0], cy=MOON_C[1], R=MOON_R, cut=MOON_CUT):
+    """A disc with a second disc taken out of it, as one path: two arcs meeting
+    at the circles' intersections. Built as a path rather than a mask so it can
+    itself go INTO the one-ink mask — a mask inside a mask is where this stops
+    rendering the same way in every engine.
+
+    The horns open down-left, toward the caravan and the centre of the seal, so
+    the moon reads as part of a scene rather than as an emblem."""
+    ox, oy, r = cut
+    d = math.hypot(ox, oy)
+    a = (R*R - r*r + d*d) / (2*d)
+    h = math.sqrt(max(R*R - a*a, 0.0))
+    bx, by = cx + a*ox/d, cy + a*oy/d
+    px, py = -oy/d, ox/d
+    i1 = (bx + h*px, by + h*py)
+    i2 = (bx - h*px, by - h*py)
+    return (f"M {i1[0]:.3f} {i1[1]:.3f} "
+            f"A {R} {R} 0 1 0 {i2[0]:.3f} {i2[1]:.3f} "
+            f"A {r} {r} 0 0 1 {i1[0]:.3f} {i1[1]:.3f} Z")
+
+
+def star(cx=STAR_C[0], cy=STAR_C[1], r=STAR_R, waist=0.30):
+    """Four points with concave flanks. Not five: a crescent beside a five-point
+    star is a flag, and this is a company. Four reads as a light in the sky."""
+    w = r * waist
+    return (f"M {cx:.2f} {cy-r:.2f} "
+            f"Q {cx+w*0.55:.2f} {cy-w*0.55:.2f} {cx+r:.2f} {cy:.2f} "
+            f"Q {cx+w*0.55:.2f} {cy+w*0.55:.2f} {cx:.2f} {cy+r:.2f} "
+            f"Q {cx-w*0.55:.2f} {cy+w*0.55:.2f} {cx-r:.2f} {cy:.2f} "
+            f"Q {cx-w*0.55:.2f} {cy-w*0.55:.2f} {cx:.2f} {cy-r:.2f} Z")
+
+
+# ------------------------------------------------------------ the camel ------
+# Drawn against the hero film (assets/hero/v7/hero-desktop.mp4, frame 44), which
+# settled the thing that made nine earlier attempts read as a blob: on a loaded
+# camel the CARGO COVERS THE HUMP. There is no hump to show. A laden camel is a
+# rectilinear bundle on a barrel on long legs, and the animal is named by the
+# neck and the head, not by a hump.
+#
+# Local box: feet on y=0, facing right, x 24..104, y 0..-85. Every dimension is
+# set against the barrel so the proportions survive being scaled to 15 units:
+#     legs   ~48% of the height        load  15 tall on a 22-deep barrel
+#     neck   near-constant width 6     head  a wedge over twice the neck's width
+#
+# The client's standing requirement is that every camel is visibly carrying
+# goods — "верблюды в караване должны быть загружены товарами на спине" — which
+# is why the load is the most prominent mass in the silhouette.
+
+CAMEL_X0, CAMEL_W, CAMEL_H = 24.0, 80.0, 85.0
+
+
+def _barrel():
+    return ("M 28,-50 C 28,-60 32,-65 40,-65 L 62,-65 C 68,-64 70,-58 69,-50 "
+            "C 68,-45 61,-43 52,-43 L 40,-43 C 32,-43 28,-46 28,-50 Z")
+
+
+def _load(style=0):
+    """Straight sides and a flat top. Rectilinear against the barrel's curves is
+    what keeps the two masses legible where they touch."""
+    top = (-80, -84, -77)[style % 3]
+    return f"M 33,-64 L 29,{top} L 67,{top - 1} L 63,-64 Z"
+
+
+def _neck():
+    """Leaves the CHEST, below the load's bottom edge at -64 — not out of the
+    middle of the cargo, which is where it started and which made the animal
+    look like it was growing out of its own luggage."""
+    return ("M 66,-57 C 74,-67 82,-74 89,-77 L 91,-72 "
+            "C 83,-69 75,-63 69,-53 Z")
+
+
+def _head():
+    """A small round skull with a narrow muzzle angled down and forward. The
+    first version ran the muzzle out square at the skull's own height, which at
+    2000px read as a paddle on a stick; tapering it to a point and dropping it
+    below the brow is what makes it a head."""
+    return ("M 84,-81 C 86,-85 92,-85 95,-82 "
+            "L 103,-76 C 104.5,-74.5 103.5,-73 101.5,-73.5 "
+            "L 93,-76 C 88,-76 84,-78 84,-81 Z")
+
+
+def _leg(x, lean, top, w=4.4, hind=False):
+    k1, k2 = top * 0.60, top * 0.24
+    bow = -1.2 if hind else 1.2
+    wt = w * 1.4
+    return (f"M {x:.1f},{top:.1f} "
+            f"C {x+bow:.1f},{k1:.1f} {x+lean*0.5:.1f},{k2:.1f} {x+lean:.1f},0 "
+            f"L {x+lean-w:.1f},0 "
+            f"C {x+lean*0.5-w:.1f},{k2:.1f} {x+bow-wt:.1f},{k1:.1f} {x-wt:.1f},{top:.1f} Z")
+
+
+def _tail():
+    return ("M 30,-55 C 26,-50 24.5,-45 25,-39 C 25,-36.5 27.5,-36.5 27.5,-39 "
+            "C 27,-44 28,-48 32,-52 Z")
+
+
+_GAITS = [(-4, 3, 3, -3), (3, -3, -3, 3), (-2, 4, 2, -4)]
+
+
+def camel_paths(gait=0, load_style=0, legw=4.4):
+    g = _GAITS[gait % 3]
+    return [_leg(40, g[2], -45, legw, hind=True), _leg(32, g[3], -44, legw, hind=True),
+            _leg(66, g[0], -47, legw), _leg(58, g[1], -46, legw),
+            _tail(), _barrel(), _neck(), _head(), _load(load_style)]
+
+
+CARAVAN_H = 15.0                     # camel height inside the 100-box seal
+CARAVAN_XS = (22.0, 33.5, 45.0)      # left edges; clears the moon at x 62
+CARAVAN_SINK = 1.6                   # feet set INTO the sand, not perched on it
+
+
+def caravan(fill):
+    """Three laden camels on the back dune's crest, walking toward the moon.
+
+    The back dune, not the front one: its crest is at y=53 with open sky above,
+    so the caravan is silhouetted. On the front dune (crest y=69) they would be
+    gold on gold and invisible."""
+    s = CARAVAN_H / CAMEL_H
+    out = []
+    for i, x in enumerate(CARAVAN_XS):
+        y = ridge_y(x + CAMEL_W * s / 2) + CARAVAN_SINK
+        paths = "\n".join(f'        <path d="{d}" fill="{fill}"/>'
+                          for d in camel_paths(i, i))
+        out.append(f'      <g transform="translate({x:.2f} {y:.2f}) '
+                   f'scale({s:.5f}) translate({-CAMEL_X0} 0)">\n{paths}\n      </g>')
+    return "\n".join(out)
+
+
 def mark_open(ink, warm, uid, one_ink=False):
     """Open roundel — a ring holding the dunes. The lighter of the two marks.
 
@@ -141,40 +315,61 @@ def mark_open(ink, warm, uid, one_ink=False):
   </g>'''
 
 
-def mark_seal(ink, warm, uid, one_ink=False):
-    """Solid roundel — the disc is the mass, the dunes sit in it.
+def mark_seal(ink, warm, uid, one_ink=False, scene="moon"):
+    """Solid roundel — the disc is the mass, the scene sits in it.
 
     Holds at a favicon's size, where the open mark's ring closes up, and
     survives being embossed or stamped.
 
+    Three scenes, all on the same disc and the same two dunes:
+        "sun"      the original — a plain disc high on the right
+        "moon"     the client's evening — crescent moon and one star
+        "caravan"  the evening with three laden camels on the crest
+
     One ink translates gold to paper rather than to a second shade of the same
-    colour: the dune and the sun are knocked out of the disc. That would leave
-    the silhouette with no bottom edge, so the full ring is drawn back over it —
-    the circle is what makes it a seal.
+    colour: the dune, the sky's lights and the camels are knocked out of the
+    disc. That would leave the silhouette with no bottom edge, so the full ring
+    is drawn back over it — the circle is what makes it a seal.
+
+    The camels are knocked out in exactly the same pass as the dune, which is
+    why the single-ink mark works without a second thought: their feet meet the
+    dune's hole, so they read as paper shapes rising off a paper ridge against
+    an ink sky — the same relationship the colour mark has.
     """
     R = RING_R + 1
 
+    if scene == "sun":
+        sky = f'<circle cx="{SUN_C[0]}" cy="{SUN_C[1]}" r="{SUN_R}" fill="%F%"/>'
+    else:
+        sky = (f'<path d="{crescent()}" fill="%F%"/>\n'
+               f'    <path d="{star()}" fill="%F%"/>')
+
+    cams = caravan("%F%") if scene == "caravan" else ""
+
     if one_ink:
+        knock = sky.replace("%F%", "#000")
+        cam_knock = ("\n" + cams.replace("%F%", "#000")) if cams else ""
         return f'''  <g>
     <defs>
       <mask id="sk{uid}">
         <circle cx="50" cy="50" r="{R}" fill="#fff"/>
-        <path d="{DUNE_BACK}" fill="#000"/>
-        <circle cx="{SUN_C[0]}" cy="{SUN_C[1]}" r="{SUN_R}" fill="#000"/>
+        <path d="{DUNE_BACK}" fill="#000"/>{cam_knock}
+        {knock}
       </mask>
     </defs>
     <circle cx="50" cy="50" r="{R}" fill="{ink}" mask="url(#sk{uid})"/>
     <circle cx="50" cy="50" r="{R - RING_W / 2}" fill="none" stroke="{ink}" stroke-width="{RING_W}"/>
   </g>'''
 
+    cam_block = ("\n" + cams.replace("%F%", warm)) if cams else ""
     return f'''  <g>
     <defs><clipPath id="sc{uid}"><circle cx="50" cy="50" r="{R}"/></clipPath></defs>
     <circle cx="50" cy="50" r="{R}" fill="{ink}"/>
     <g clip-path="url(#sc{uid})">
-      <path d="{DUNE_BACK}" fill="{warm}" opacity="0.45"/>
+      <path d="{DUNE_BACK}" fill="{warm}" opacity="0.45"/>{cam_block}
       <path d="{DUNE_FRONT}" fill="{warm}"/>
     </g>
-    <circle cx="{SUN_C[0]}" cy="{SUN_C[1]}" r="{SUN_R}" fill="{warm}"/>
+    {sky.replace("%F%", warm)}
   </g>'''
 
 
@@ -299,7 +494,7 @@ def dir_b(ink, warm, uid, one_ink=False, stacked=False):
 # The solid roundel with the serif name. This is the one that behaves like a
 # company seal: it holds at a stamp's size and it survives one ink.
 
-def dir_c(ink, warm, uid, one_ink=False, stacked=False):
+def dir_c(ink, warm, uid, one_ink=False, stacked=False, scene="moon"):
     MARK = 128.0
     NAME_SZ, NAME_TR = 62.0, 0.115
     DESC_SZ, DESC_TR = 12.0, 0.30
@@ -333,7 +528,7 @@ def dir_c(ink, warm, uid, one_ink=False, stacked=False):
         height = PAD + MARK + PAD
 
     body = "\n".join([
-        scaled(mark_seal(ink, warm, uid, one_ink), MARK, mark_x, mark_y),
+        scaled(mark_seal(ink, warm, uid, one_ink, scene), MARK, mark_x, mark_y),
         f'  <path d="{name_d}" fill="{ink}"/>',
         f'  <path d="{desc_d}" fill="{warm}"/>',
     ])
@@ -342,9 +537,9 @@ def dir_c(ink, warm, uid, one_ink=False, stacked=False):
 
 # ============================================================== mark alone ==
 
-def mark_only(kind, ink, warm, uid, one_ink=False):
+def mark_only(kind, ink, warm, uid, one_ink=False, scene="moon"):
     inner = (mark_open(ink, warm, uid, one_ink) if kind == "open"
-             else mark_seal(ink, warm, uid, one_ink))
+             else mark_seal(ink, warm, uid, one_ink, scene))
     return svg(100, 100, inner)
 
 
@@ -358,10 +553,24 @@ def main():
             f"a-stacked-{cw}":    dir_a(ink, warm, stacked=True),
             f"b-horizontal-{cw}": dir_b(ink, warm, f"b1{cw}", one, stacked=False),
             f"b-stacked-{cw}":    dir_b(ink, warm, f"b2{cw}", one, stacked=True),
-            f"c-horizontal-{cw}": dir_c(ink, warm, f"c1{cw}", one, stacked=False),
-            f"c-stacked-{cw}":    dir_c(ink, warm, f"c2{cw}", one, stacked=True),
+            # C as first drawn — a plain sun. Superseded by the client's
+            # revision below and kept only so the earlier files still resolve.
+            f"c-horizontal-{cw}": dir_c(ink, warm, f"c1{cw}", one, stacked=False, scene="sun"),
+            f"c-stacked-{cw}":    dir_c(ink, warm, f"c2{cw}", one, stacked=True,  scene="sun"),
+            f"c-mark-{cw}":       mark_only("seal", ink, warm, f"cm{cw}", one, scene="sun"),
+
+            # C — evening. Crescent moon and one star, no caravan.
+            f"c-moon-horizontal-{cw}": dir_c(ink, warm, f"cm1{cw}", one, stacked=False, scene="moon"),
+            f"c-moon-stacked-{cw}":    dir_c(ink, warm, f"cm2{cw}", one, stacked=True,  scene="moon"),
+            f"c-moon-mark-{cw}":       mark_only("seal", ink, warm, f"cmm{cw}", one, scene="moon"),
+
+            # C — evening with the caravan. The one the client asked for on the
+            # grounds that a desert without a caravan is an empty desert.
+            f"c-caravan-horizontal-{cw}": dir_c(ink, warm, f"cc1{cw}", one, stacked=False, scene="caravan"),
+            f"c-caravan-stacked-{cw}":    dir_c(ink, warm, f"cc2{cw}", one, stacked=True,  scene="caravan"),
+            f"c-caravan-mark-{cw}":       mark_only("seal", ink, warm, f"ccm{cw}", one, scene="caravan"),
+
             f"b-mark-{cw}":       mark_only("open", ink, warm, f"bm{cw}", one),
-            f"c-mark-{cw}":       mark_only("seal", ink, warm, f"cm{cw}", one),
         }
         for name, doc in jobs.items():
             (SVG / f"{name}.svg").write_text(doc, encoding="utf-8")

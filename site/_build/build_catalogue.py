@@ -87,8 +87,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "Russia", "Происхождение", "Россия"),
      ("Packing", "Bulk / 50 kg / big bags", "Упаковка", "Навал / 50 кг / биг-бэг"),
-     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
-     ("Minimum lot", "3 000 MT", "Минимальная партия", "3 000 тонн")]},
+     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR")]},
 
   # As above — the producer's own table. Infestation and odour are carried as
   # spec rows because they are certified parameters, not commercial terms.
@@ -109,8 +108,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "Russia", "Происхождение", "Россия"),
      ("Packing", "Bulk / 50 kg bags", "Упаковка", "Навал / мешки 50 кг"),
-     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
-     ("Minimum lot", "3 000 MT", "Минимальная партия", "3 000 тонн")]},
+     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR")]},
 
   {"slug": "corn-feed-grade", "art": "corn",
    "en": "Corn (Maize)", "ru": "Кукуруза",
@@ -128,8 +126,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "Ukraine · Russia · Serbia", "Происхождение", "Украина · Россия · Сербия"),
      ("Packing", "Bulk / 50 kg bags", "Упаковка", "Навал / мешки 50 кг"),
-     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
-     ("Minimum lot", "3 000 MT", "Минимальная партия", "3 000 тонн")]},
+     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR")]},
 
   {"slug": "flaxseed-food-grade", "art": "flaxseed",
    "en": "Flaxseed", "ru": "Семена льна",
@@ -147,8 +144,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "Kazakhstan · Russia", "Происхождение", "Казахстан · Россия"),
      ("Packing", "Big bags / 25 kg bags", "Упаковка", "Биг-бэг / мешки 25 кг"),
-     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
-     ("Minimum lot", "500 MT", "Минимальная партия", "500 тонн")]},
+     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR")]},
  ]},
 
 {
@@ -172,8 +168,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "Russia · Ukraine", "Происхождение", "Россия · Украина"),
      ("Packing", "Flexitank / ISO tank / 200 l drums", "Упаковка", "Флекситанк / ISO-танк / бочки 200 л"),
-     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
-     ("Minimum lot", "1 000 MT", "Минимальная партия", "1 000 тонн")]},
+     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR")]},
 
   {"slug": "refined-rapeseed-oil", "art": "rapeseed-oil",
    "en": "Refined Rapeseed Oil", "ru": "Масло рапсовое рафинированное",
@@ -191,8 +186,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "Russia · Poland · Ukraine", "Происхождение", "Россия · Польша · Украина"),
      ("Packing", "Flexitank / 1 l · 5 l PET", "Упаковка", "Флекситанк / ПЭТ 1 л · 5 л"),
-     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
-     ("Minimum lot", "500 MT", "Минимальная партия", "500 тонн")]},
+     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR")]},
 
   {"slug": "wheat-flour-type-550", "art": "flour",
    "en": "Wheat Flour", "ru": "Мука пшеничная",
@@ -210,8 +204,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "Turkey · Kazakhstan", "Происхождение", "Турция · Казахстан"),
      ("Packing", "25 / 50 kg bags · big bags", "Упаковка", "Мешки 25 / 50 кг · биг-бэг"),
-     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
-     ("Minimum lot", "500 MT", "Минимальная партия", "500 тонн")]},
+     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR")]},
 
 {"slug": "durum-wheat-pasta", "art": "pasta",
    "en": "Durum Wheat Pasta", "ru": "Макаронные изделия из твёрдых сортов",
@@ -229,8 +222,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "Turkey · Italy", "Происхождение", "Турция · Италия"),
      ("Packing", "400 / 500 g · 5 kg catering", "Упаковка", "400 / 500 г · 5 кг HoReCa"),
-     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
-     ("Minimum lot", "1 × 40' FCL", "Минимальная партия", "1 × 40-футовый контейнер")]},
+     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR")]},
 
   {"slug": "long-grain-white-rice", "art": "rice",
    "en": "Long Grain White Rice", "ru": "Рис длиннозёрный шлифованный",
@@ -248,8 +240,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "India · Pakistan · Vietnam", "Происхождение", "Индия · Пакистан · Вьетнам"),
      ("Packing", "25 / 50 kg bags", "Упаковка", "Мешки 25 / 50 кг"),
-     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
-     ("Minimum lot", "1 000 MT", "Минимальная партия", "1 000 тонн")]},
+     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR")]},
  ]},
 
 {
@@ -273,8 +264,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "EU · Belarus", "Происхождение", "ЕС · Беларусь"),
      ("Packing", "25 kg multi-ply bags", "Упаковка", "Мешки 25 кг многослойные"),
-     ("Incoterms", "CIF · CFR · DAP", "Условия поставки", "CIF · CFR · DAP"),
-     ("Minimum lot", "100 MT", "Минимальная партия", "100 тонн")]},
+     ("Incoterms", "CIF · CFR · DAP", "Условия поставки", "CIF · CFR · DAP")]},
 
   {"slug": "uht-milk-3-2", "art": "uht-milk",
    "en": "UHT Milk 3.2%", "ru": "Молоко УВТ 3,2%",
@@ -292,8 +282,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "EU · Turkey", "Происхождение", "ЕС · Турция"),
      ("Packing", "1 l Tetra Pak · 12 per case", "Упаковка", "Tetra Pak 1 л · 12 шт в коробе"),
-     ("Incoterms", "CIF · CFR · DAP", "Условия поставки", "CIF · CFR · DAP"),
-     ("Minimum lot", "1 × 40' FCL", "Минимальная партия", "1 × 40-футовый контейнер")]},
+     ("Incoterms", "CIF · CFR · DAP", "Условия поставки", "CIF · CFR · DAP")]},
 
   {"slug": "ice-cream-private-label", "art": "ice-cream",
    "en": "Ice Cream", "ru": "Мороженое",
@@ -311,8 +300,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "EU · Turkey · UAE", "Происхождение", "ЕС · Турция · ОАЭ"),
      ("Packing", "Retail multipack / HoReCa bulk", "Упаковка", "Мультипак / HoReCa"),
-     ("Incoterms", "CIF · CFR · DAP (reefer)", "Условия поставки", "CIF · CFR · DAP (рефрижератор)"),
-     ("Minimum lot", "1 × 40' RF", "Минимальная партия", "1 × 40-футовый рефконтейнер")]},
+     ("Incoterms", "CIF · CFR · DAP (reefer)", "Условия поставки", "CIF · CFR · DAP (рефрижератор)")]},
 
   {"slug": "natural-mineral-water", "art": "water",
    "en": "Natural Mineral Water", "ru": "Природная минеральная вода",
@@ -330,8 +318,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "Turkey · Georgia", "Происхождение", "Турция · Грузия"),
      ("Packing", "Shrink 6 / 12 per pack", "Упаковка", "Термоусадка 6 / 12 шт"),
-     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
-     ("Minimum lot", "1 × 40' FCL", "Минимальная партия", "1 × 40-футовый контейнер")]},
+     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR")]},
  ]},
 
 {
@@ -355,8 +342,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "Brazil · India", "Происхождение", "Бразилия · Индия"),
      ("Packing", "50 kg bags / 1 MT big bags", "Упаковка", "Мешки 50 кг / биг-бэг 1 т"),
-     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
-     ("Minimum lot", "12 500 MT", "Минимальная партия", "12 500 тонн")]},
+     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR")]},
 
     {"slug": "tomato-paste-28-30", "art": "tomato-paste",
    "en": "Tomato Paste", "ru": "Томатная паста",
@@ -374,8 +360,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "Turkey · Iran", "Происхождение", "Турция · Иран"),
      ("Packing", "220 kg aseptic drum · retail tins", "Упаковка", "Бочка 220 кг · жестебанка"),
-     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
-     ("Minimum lot", "1 × 20' FCL", "Минимальная партия", "1 × 20-футовый контейнер")]},
+     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR")]},
 
   {"slug": "chickpeas-kabuli-8mm", "art": "chickpeas",
    "en": "Chickpeas", "ru": "Нут",
@@ -393,8 +378,7 @@ CATEGORIES = [
    "meta": [
      ("Origin", "Turkey · Kazakhstan", "Происхождение", "Турция · Казахстан"),
      ("Packing", "25 / 50 kg bags · big bags", "Упаковка", "Мешки 25 / 50 кг · биг-бэг"),
-     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR"),
-     ("Minimum lot", "500 MT", "Минимальная партия", "500 тонн")]},
+     ("Incoterms", "FOB · CIF · CFR", "Условия поставки", "FOB · CIF · CFR")]},
  ]},
 ]
 

@@ -65,10 +65,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Minimum lot",
-     "3 000 MT"
     ]
    ]
   },
@@ -128,10 +124,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Минимальная партия",
-     "3 000 тонн"
     ]
    ]
   }
@@ -196,10 +188,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Minimum lot",
-     "3 000 MT"
     ]
    ]
   },
@@ -255,10 +243,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Минимальная партия",
-     "3 000 тонн"
     ]
    ]
   }
@@ -317,10 +301,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Minimum lot",
-     "3 000 MT"
     ]
    ]
   },
@@ -372,10 +352,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Минимальная партия",
-     "3 000 тонн"
     ]
    ]
   }
@@ -436,10 +412,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Minimum lot",
-     "500 MT"
     ]
    ]
   },
@@ -491,10 +463,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Минимальная партия",
-     "500 тонн"
     ]
    ]
   }
@@ -555,10 +523,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Minimum lot",
-     "1 000 MT"
     ]
    ]
   },
@@ -610,10 +574,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Минимальная партия",
-     "1 000 тонн"
     ]
    ]
   }
@@ -675,10 +635,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Minimum lot",
-     "500 MT"
     ]
    ]
   },
@@ -730,10 +686,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Минимальная партия",
-     "500 тонн"
     ]
    ]
   }
@@ -792,10 +744,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Minimum lot",
-     "500 MT"
     ]
    ]
   },
@@ -847,10 +795,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Минимальная партия",
-     "500 тонн"
     ]
    ]
   }
@@ -911,10 +855,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Minimum lot",
-     "1 × 40' FCL"
     ]
    ]
   },
@@ -966,10 +906,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Минимальная партия",
-     "1 × 40-футовый контейнер"
     ]
    ]
   }
@@ -1028,10 +964,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Minimum lot",
-     "1 000 MT"
     ]
    ]
   },
@@ -1083,10 +1015,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Минимальная партия",
-     "1 000 тонн"
     ]
    ]
   }
@@ -1147,10 +1075,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "CIF · CFR · DAP"
-    ],
-    [
-     "Minimum lot",
-     "100 MT"
     ]
    ]
   },
@@ -1202,10 +1126,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "CIF · CFR · DAP"
-    ],
-    [
-     "Минимальная партия",
-     "100 тонн"
     ]
    ]
   }
@@ -1266,10 +1186,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "CIF · CFR · DAP"
-    ],
-    [
-     "Minimum lot",
-     "1 × 40' FCL"
     ]
    ]
   },
@@ -1321,10 +1237,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "CIF · CFR · DAP"
-    ],
-    [
-     "Минимальная партия",
-     "1 × 40-футовый контейнер"
     ]
    ]
   }
@@ -1386,10 +1298,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "CIF · CFR · DAP (reefer)"
-    ],
-    [
-     "Minimum lot",
-     "1 × 40' RF"
     ]
    ]
   },
@@ -1441,10 +1349,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "CIF · CFR · DAP (рефрижератор)"
-    ],
-    [
-     "Минимальная партия",
-     "1 × 40-футовый рефконтейнер"
     ]
    ]
   }
@@ -1505,10 +1409,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Minimum lot",
-     "1 × 40' FCL"
     ]
    ]
   },
@@ -1560,10 +1460,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Минимальная партия",
-     "1 × 40-футовый контейнер"
     ]
    ]
   }
@@ -1624,10 +1520,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Minimum lot",
-     "12 500 MT"
     ]
    ]
   },
@@ -1679,10 +1571,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Минимальная партия",
-     "12 500 тонн"
     ]
    ]
   }
@@ -1743,10 +1631,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Minimum lot",
-     "1 × 20' FCL"
     ]
    ]
   },
@@ -1798,10 +1682,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Минимальная партия",
-     "1 × 20-футовый контейнер"
     ]
    ]
   }
@@ -1862,10 +1742,6 @@ window.PRODUCTS = {
     [
      "Incoterms",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Minimum lot",
-     "500 MT"
     ]
    ]
   },
@@ -1917,10 +1793,6 @@ window.PRODUCTS = {
     [
      "Условия поставки",
      "FOB · CIF · CFR"
-    ],
-    [
-     "Минимальная партия",
-     "500 тонн"
     ]
    ]
   }

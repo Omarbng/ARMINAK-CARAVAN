@@ -273,8 +273,6 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
       <li class="press__mark">SGS</li>
       <li class="press__mark">INTERTEK</li>
       <li class="press__mark">BUREAU VERITAS</li>
-      <li class="press__mark">GAFTA</li>
-      <li class="press__mark">FOSFA</li>
     </ul>
   </div>
 </section>
@@ -347,7 +345,7 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
         <span class="label fade-up" data-i18n="corridor.tag">Geography of Supply</span>
         <h2 class="t-section fade-up stagger-1 u-mt-s" data-i18n="corridor.title">Trade Corridors &amp; Waypoints</h2>
       </div>
-      <p class="body-copy fade-up stagger-2" style="max-width:38ch" data-i18n="corridor.copy">Origination across three producing regions, consolidated through the Gulf and delivered to buyers on four continents.</p>
+      <p class="body-copy fade-up stagger-2" style="max-width:38ch" data-i18n="corridor.copy">We originate wherever the crop is and deliver wherever the buyer is. The Gulf is one route of several, not a gate every cargo has to pass through.</p>
     </div>
 
     <!-- Globe first, flat route second. main.js mounts the globe only on a wide
@@ -364,12 +362,12 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
       </div>
 
       <table class="corridor__lanes" id="corridorLanes" hidden>
-        <tr><th data-i18n="corridor.thWaypoint">Waypoint</th><th data-i18n="corridor.thPort">Port</th><th data-i18n="corridor.thRole">Role</th></tr>
-        <tr><td data-i18n="corridor.n1">Black Sea</td><td>Novorossiysk</td><td class="role" data-i18n="corridor.r1">Origination</td></tr>
-        <tr><td data-i18n="corridor.n2">Turkey</td><td>Mersin</td><td class="role" data-i18n="corridor.r2">Origination</td></tr>
-        <tr><td data-i18n="corridor.n3">Central Asia</td><td>Almaty</td><td class="role" data-i18n="corridor.r3">Origination</td></tr>
-        <tr><td data-i18n="corridor.n4">Jebel Ali</td><td>Jebel Ali</td><td class="role" data-i18n="corridor.r4">Transhipment hub</td></tr>
-        <tr><td data-i18n="corridor.n5">East Africa</td><td>Mombasa</td><td class="role" data-i18n="corridor.r5">Delivery</td></tr>
+        <tr><th data-i18n="corridor.thWaypoint">Waypoint</th><th data-i18n="corridor.thRole">Role</th></tr>
+        <tr><td data-i18n="corridor.n1">Black Sea</td><td class="role" data-i18n="corridor.r1">Origination</td></tr>
+        <tr><td data-i18n="corridor.n2">Türkiye</td><td class="role" data-i18n="corridor.r2">Origination</td></tr>
+        <tr><td data-i18n="corridor.n3">Central Asia</td><td class="role" data-i18n="corridor.r3">Origination</td></tr>
+        <tr><td data-i18n="corridor.n4">United Arab Emirates</td><td class="role" data-i18n="corridor.r4">Gulf consolidation</td></tr>
+        <tr><td data-i18n="corridor.n5">East Africa</td><td class="role" data-i18n="corridor.r5">Delivery</td></tr>
       </table>
     </div>
 
@@ -695,10 +693,10 @@ QUALIFY = [
 INSPECTION = [
     ("s1", "SGS · Bureau Veritas · Intertek", "Independent load-port inspection",
            "SGS · Bureau Veritas · Intertek", "Независимая инспекция в порту погрузки"),
-    ("s2", "GAFTA", "Grain and Feed Trade Association",
-           "GAFTA", "Ассоциация торговли зерном и кормами"),
-    ("s3", "FOSFA", "Federation of Oils, Seeds and Fats Associations",
-           "FOSFA", "Федерация ассоциаций по маслам, семенам и жирам"),
+    # GAFTA and FOSFA stood here as accreditations. Removed: the company is not
+    # a member of either. Both publish contract templates that anyone may build
+    # a contract on, which is not the same as belonging to the association, and
+    # listing them here read as membership — a claim a counterparty can check.
     ("s4", "ISO 22000 &amp; HACCP", "Food safety management",
            "ISO 22000 и HACCP", "Менеджмент безопасности пищевой продукции"),
     ("s5", "Halal Certification", "Accredited slaughter and handling chain",
@@ -966,9 +964,9 @@ ABOUT_BODY = f'''<main id="main">
 
 ABOUT_JSONLD = '''<meta property="og:type" content="website">
 <meta property="og:title" content="About ARMINAK CARAVAN — Heritage of Trust. Horizon of Innovation.">
-<meta property="og:description" content="Abu Dhabi (KEZAD) commodity trading house. GAFTA, FOSFA, ISO 22000, HACCP and Halal certified; every position contracted against its GOST interstate standard.">
+<meta property="og:description" content="Abu Dhabi (KEZAD) commodity trading house. Every position contracted against its GOST interstate standard and verified by independent load-port inspection.">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"AboutPage","name":"About ARMINAK CARAVAN","url":"https://arminakcaravan.ae/about.html","mainEntity":{"@type":"Organization","name":"ARMINAK CARAVAN FOODSTUFF AND BEVERAGES TRADING LTD","url":"https://arminakcaravan.ae/","address":{"@type":"PostalAddress","addressLocality":"Abu Dhabi","addressRegion":"KEZAD Free Zone","addressCountry":"AE"},"email":"trading@arminakcaravan.ae","hasCredential":["GAFTA","FOSFA","ISO 22000","HACCP","Halal Certification"],"areaServed":["EAEU","CIS","United Arab Emirates","Saudi Arabia","Oman","Qatar","Israel","Africa","T\\u00fcrkiye","South America"]}}
+{"@context":"https://schema.org","@type":"AboutPage","name":"About ARMINAK CARAVAN","url":"https://arminakcaravan.ae/about.html","mainEntity":{"@type":"Organization","name":"ARMINAK CARAVAN FOODSTUFF AND BEVERAGES TRADING LTD","url":"https://arminakcaravan.ae/","address":{"@type":"PostalAddress","addressLocality":"Abu Dhabi","addressRegion":"KEZAD Free Zone","addressCountry":"AE"},"email":"trading@arminakcaravan.ae","hasCredential":["ISO 22000","HACCP","Halal Certification"],"areaServed":["EAEU","CIS","United Arab Emirates","Saudi Arabia","Oman","Qatar","Israel","Africa","T\\u00fcrkiye","South America"]}}
 </script>
 '''
 
@@ -979,7 +977,7 @@ ABOUT_SCRIPTS = SCRIPTS.replace('<script src="assets/js/products.js"></script>\n
 
 ABOUT = HEAD.replace("%SLUG%", "about.html") \
             .replace("%TITLE%", "About ARMINAK CARAVAN — Heritage of Trust, Standards &amp; Trade Corridors") \
-            .replace("%DESC%", "ARMINAK CARAVAN — Abu Dhabi (KEZAD) commodity trading house. Silk Road heritage, GAFTA / FOSFA / ISO 22000 / HACCP / Halal certification, GOST interstate standards and seven global trade corridors.") \
+            .replace("%DESC%", "ARMINAK CARAVAN — Abu Dhabi (KEZAD) commodity trading house. Silk Road heritage, independent load-port inspection, GOST interstate standards and global trade corridors.") \
             .replace("%EXTRA%", ABOUT_JSONLD) + NAV_ABT + "\n\n" + ABOUT_BODY + "\n\n" + FOOTER + "\n\n" + \
             ABOUT_SCRIPTS + '''</body>
 </html>

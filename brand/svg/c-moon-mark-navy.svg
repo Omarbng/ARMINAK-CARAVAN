@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100.0 100.0" width="100.0" height="100.0" role="img" aria-label="ARMINAK CARAVAN">
+  <g>
+    <defs>
+      <mask id="skcmmnavy">
+        <circle cx="50" cy="50" r="47.0" fill="#fff"/>
+        <path d="M 0 71 C 12 71 20 53 37 53 C 52 53 61 63 100 61 L 100 100 L 0 100 Z" fill="#000"/>
+        <path d="M 78.633 30.769 A 9.0 9.0 0 1 0 68.873 17.255 A 8.4 8.4 0 0 1 78.633 30.769 Z" fill="#000"/>
+    <path d="M 28.00 18.60 Q 28.56 21.44 31.40 22.00 Q 28.56 22.56 28.00 25.40 Q 27.44 22.56 24.60 22.00 Q 27.44 21.44 28.00 18.60 Z" fill="#000"/>
+      </mask>
+    </defs>
+    <circle cx="50" cy="50" r="47.0" fill="#1B2A41" mask="url(#skcmmnavy)"/>
+    <circle cx="50" cy="50" r="45.5" fill="none" stroke="#1B2A41" stroke-width="3.0"/>
+  </g>
+</svg>

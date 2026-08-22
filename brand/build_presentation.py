@@ -123,6 +123,10 @@ COPY = {
     "cardRole":  ("Trading Desk", "Торговый отдел"),
 
     "inUse":     ("in use", "в применении"),
+    "noteK":     ("JPG", "JPG"),
+    "docTitle":  ("Arminak Caravan Identity", "Айдентика ARMINAK CARAVAN"),
+    "colophon":  ("Logo — three directions for selection · August 2026",
+                  "Логотип — три направления на выбор · август 2026"),
     "contents":  ("The three directions", "Три направления"),
     "next":      ("Next", "Дальше"),
     "closeH":    ("Pick a letter and the rest follows.",
@@ -269,10 +273,21 @@ def cards(k, L):
 </figure>'''
 
 
+def has_mark(k):
+    """Whether this direction ships a standalone mark. Direction A is the only
+    one that does not — it is a wordmark and a rule, with nothing to crop out.
+
+    This used to be written `k in "bc"`, which is a SUBSTRING test: correct only
+    while every key was a single letter, and quietly wrong the day one became
+    "c-moon" (which is not in "bc", so the seal lost its mark treatment without
+    anything failing). Naming the question fixes it once for every caller."""
+    return k != "a"
+
+
 def specband(k, L):
     """The head of a generated spec sheet — the other place the logo lands."""
-    name = f"{k}-mark-white" if k in "bc" else f"{k}-horizontal-white"
-    extra = "band__art--mark" if k in "bc" else ""
+    name = f"{k}-mark-white" if has_mark(k) else f"{k}-horizontal-white"
+    extra = "band__art--mark" if has_mark(k) else ""
     return f'''<figure class="mock mock--band">
   <div class="band">
     <div class="band__art {extra}">{art(name, cls="fit")}</div>
@@ -317,7 +332,7 @@ def inks(k, L):
 
 def contents(L):
     cells = "\n".join(f'''  <div class="toc__item">
-    <p class="toc__id"><b>{d["k"].upper()}</b> {d["name"][L.i]}</p>
+    <p class="toc__id"><b>{d.get("id", d["k"].upper())}</b> {d["name"][L.i]}</p>
     <div class="toc__plate">{art(f'{d["k"]}-horizontal-colour', cls="fit")}</div>
     <p class="toc__for">{d["for"][L.i]}</p>
   </div>''' for d in DIRECTIONS)
@@ -331,10 +346,13 @@ def contents(L):
 
 def block(d, L):
     k = d["k"]
-    mark_note = '<code>-mark-</code> &middot; ' if k in "bc" else ""
+    # The letter printed on the page is not the filename key: "c-moon" is a key,
+    # "C1" is what a reader is asked to name when they choose.
+    did = d.get("id", k.upper())
+    mark_note = '<code>-mark-</code> &middot; ' if has_mark(k) else ""
     return f'''<section class="dir" id="dir-{k}">
   <header class="dir__head">
-    <span class="dir__letter" aria-hidden="true">{k.upper()}</span>
+    <span class="dir__letter" aria-hidden="true">{did}</span>
     <div class="dir__id">
     {L.field(d["name"], tag="h2")}
     </div>
@@ -343,7 +361,7 @@ def block(d, L):
     </div>
   </header>
 
-  <div class="dir__stage">{art(f"{k}-horizontal-colour", label=f"Direction {k.upper()}", cls="fit")}</div>
+  <div class="dir__stage">{art(f"{k}-horizontal-colour", label=f"Direction {did}", cls="fit")}</div>
 
   <dl class="dir__fit">
     <div><dt>{L.one("bestAt")}</dt><dd>{d["for"][L.i]}</dd></div>
@@ -352,7 +370,7 @@ def block(d, L):
 
   {inks(k, L)}
 
-  <p class="dir__mockhead">{k.upper()} &mdash; {d["name"][L.i]} &middot; {L.one("inUse")}</p>
+  <p class="dir__mockhead">{did} &mdash; {d["name"][L.i]} &middot; {L.one("inUse")}</p>
 
   <div class="dir__mocks">
     {letterhead(k, L)}
@@ -491,7 +509,7 @@ body {
 .toc { margin-top: 10mm; }
 .toc__row {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(var(--toc-cols, 3), minmax(0, 1fr));
   gap: 5mm;
   margin-top: 4mm;
 }
@@ -883,7 +901,7 @@ def render(mode):
     L = Lang(mode)
     printing = mode != "bi"
 
-    title = "Айдентика ARMINAK CARAVAN" if mode == "ru" else "Arminak Caravan Identity"
+    title = COPY["docTitle"][L.i]
     blocks = "\n\n".join(block(d, L) for d in DIRECTIONS)
     steps = "\n".join(f"      <li><span>{COPY[k][L.i]}</span></li>"
                       for k in ("step1", "step2", "step3", "step4"))
@@ -892,8 +910,7 @@ def render(mode):
 
     colophon = ""
     if printing:
-        line = ("Логотип — три направления на выбор · август 2026" if L.i
-                else "Logo — three directions for selection · August 2026")
+        line = COPY["colophon"][L.i]
         colophon = ('\n  <p class="colophon">ARMINAK CARAVAN FOODSTUFF AND '
                     'BEVERAGES TRADING LTD &middot; KEZAD Free Zone, Abu Dhabi '
                     '&middot; Licence #5820194<br>' + line + '</p>')
@@ -912,7 +929,7 @@ def render(mode):
     {L.pair("lede", cls="top__lede")}
 
     <div class="note">
-      <span class="note__k">JPG</span>
+      <span class="note__k">{L.one("noteK")}</span>
       <div class="note__b">
         {L.pair("jpg1")}
         {L.pair("jpg2")}

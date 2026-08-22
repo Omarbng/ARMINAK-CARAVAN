@@ -10,7 +10,7 @@ endobj
 << /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Resources << /Font << /F1 5 0 R /F2 6 0 R /F3 7 0 R >> /ExtGState << /GS1 8 0 R >> >> /Contents 4 0 R >>
 endobj
 4 0 obj
-<< /Length 4454 >>
+<< /Length 4248 >>
 stream
 0.969 0.953 0.925 rg 0.0 0.0 595.0 842.0 re f
 0.106 0.165 0.255 rg 0.0 742.0 595.0 100.0 re f
@@ -57,13 +57,10 @@ BT 0.106 0.165 0.255 rg /F2 9.5 Tf 0.0 Tc 330.0 304.0 Td (Bulk / 50 kg bags) Tj 
 BT 0.361 0.392 0.439 rg /F1 9.5 Tf 0.0 Tc 48.0 278.0 Td (Incoterms) Tj ET
 BT 0.106 0.165 0.255 rg /F2 9.5 Tf 0.0 Tc 330.0 278.0 Td (FOB · CIF · CFR) Tj ET
 0.922 0.890 0.843 RG 0.8 w 48.0 269.0 m 547.0 269.0 l S
-BT 0.361 0.392 0.439 rg /F1 9.5 Tf 0.0 Tc 48.0 252.0 Td (Minimum lot) Tj ET
-BT 0.106 0.165 0.255 rg /F2 9.5 Tf 0.0 Tc 330.0 252.0 Td (3 000 MT) Tj ET
-0.922 0.890 0.843 RG 0.8 w 48.0 243.0 m 547.0 243.0 l S
-BT 0.690 0.553 0.341 rg /F2 7.5 Tf 1.6 Tc 48.0 206.0 Td (QUALITY CONTROL) Tj ET
-BT 0.361 0.392 0.439 rg /F1 9 Tf 0.0 Tc 48.0 186.0 Td (Quality and quantity of every consignment are certified by independent) Tj ET
-BT 0.361 0.392 0.439 rg /F1 9 Tf 0.0 Tc 48.0 171.0 Td (inspection — SGS / Intertek / Bureau Veritas — at the load port.) Tj ET
-BT 0.361 0.392 0.439 rg /F1 9 Tf 0.0 Tc 48.0 156.0 Td (Certificates are issued against the parameters agreed by both parties.) Tj ET
+BT 0.690 0.553 0.341 rg /F2 7.5 Tf 1.6 Tc 48.0 232.0 Td (QUALITY CONTROL) Tj ET
+BT 0.361 0.392 0.439 rg /F1 9 Tf 0.0 Tc 48.0 212.0 Td (Quality and quantity of every consignment are certified by independent) Tj ET
+BT 0.361 0.392 0.439 rg /F1 9 Tf 0.0 Tc 48.0 197.0 Td (inspection — SGS / Intertek / Bureau Veritas — at the load port.) Tj ET
+BT 0.361 0.392 0.439 rg /F1 9 Tf 0.0 Tc 48.0 182.0 Td (Certificates are issued against the parameters agreed by both parties.) Tj ET
 0.690 0.553 0.341 RG 0.7 w 48.0 96.0 m 547.0 96.0 l S
 BT 0.106 0.165 0.255 rg /F2 7.5 Tf 0.8 Tc 48.0 78.0 Td (ARMINAK CARAVAN FOODSTUFF AND BEVERAGES TRADING LTD) Tj ET
 BT 0.361 0.392 0.439 rg /F1 7.5 Tf 0.0 Tc 48.0 64.0 Td (KEZAD Free Zone, Abu Dhabi, United Arab Emirates  ·  Free Zone Licence #5820194) Tj ET
@@ -92,13 +89,13 @@ xref
 0000000064 00000 n 
 0000000121 00000 n 
 0000000295 00000 n 
-0000004801 00000 n 
-0000004898 00000 n 
-0000005000 00000 n 
-0000005099 00000 n 
-0000005146 00000 n 
+0000004595 00000 n 
+0000004692 00000 n 
+0000004794 00000 n 
+0000004893 00000 n 
+0000004940 00000 n 
 trailer
 << /Size 10 /Root 1 0 R /Info 9 0 R >>
 startxref
-5306
+5100
 %%EOF

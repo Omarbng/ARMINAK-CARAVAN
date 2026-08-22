@@ -1,15 +1,94 @@
 # ARMINAK CARAVAN — logo files / файлы логотипа
 
-**Decided: direction C, "Seal."** It is live on the website — the navigation
-bar, the navigation panel and the footer sign-off all render it, and it is the
-favicon. A and B are kept below for reference only; delete them once nothing
-points at them, so nobody reaches for the wrong mark by accident.
+**Decided: direction C, "Seal."** The client then asked for the roundel to be
+reworked, in their words:
 
-| | Direction | Best at | |
-|---|---|---|---|
-| **A** | **Letterhead** — serif wordmark, dune rule, registered descriptor | letterhead, contracts, spec sheets, email signature | not used |
-| **B** | **Caravan** — open dune roundel + stacked sans wordmark | business cards, social avatars, app icon | not used |
-| **C** | **Seal** — solid navy roundel + serif wordmark | documents, stamps, embossing, favicon | **in use** |
+> «Лого вариант C, но чтобы в круге был **Вечерний закат** на фоне пустыни
+> **луны и одной звезды** … точно так же **с караваном верблюдов** внутри,
+> потому что пустыня без каравана пусто будет … сделайте пожалуйста вариант С
+> с **двумя вариантами** с верблюдами и без них»
+
+So the sun is gone and the roundel is now an evening: a crescent moon and a
+single star over the dunes. It ships in the two versions asked for.
+
+| Pick from | | What is in the circle |
+|---|---|---|
+| **`c-moon-*`** | evening, no caravan | dunes, crescent moon, one star |
+| **`c-caravan-*`** | evening with the caravan | the same, plus three laden camels on the crest |
+
+Both are complete sets — `horizontal`, `stacked` and `mark`, in all four
+colourways. **Which to use where:** `c-caravan` is the fuller mark and the one
+to put on a letterhead, a card or a sign. `c-moon` is the one that survives
+being small — a favicon, an app icon, a social avatar — because at 32px the
+camels close up into a ridge and stop being camels.
+
+### The PDF to send
+
+**`ARMINAK-CARAVAN-Logo-C-RU.pdf`** — four A4 pages: the two circles side by
+side at 52 mm, then each one on a letterhead, a business card, a spec-sheet
+header and held down to favicon size, in all four inks. `-EN` is the same
+document in English.
+
+It is a separate file from `ARMINAK-CARAVAN-Identity-*.pdf` on purpose. That one
+asked "which of A, B, C" and the client already has it; this one asks "with the
+camels or without", which is the only question still open.
+
+Rebuild the whole chain after any change to the artwork:
+
+```bash
+/usr/bin/python3 brand/build_logo.py        # svg masters
+python3 brand/rasterise.py                  # png + jpg  (slow: Chrome, twice per file)
+python3 brand/build_presentation.py         # the A/B/C document
+python3 brand/build_variants.py             # the C1/C2 document
+python3 brand/make_pdf.py                   # all four PDFs
+```
+
+`build_variants.py` holds no page design of its own — it imports
+`build_presentation.py` and replaces only the data, so a change to the layout
+lands in both documents and they cannot drift apart.
+
+### Still to decide, and what to delete
+
+- **`c-*` (no suffix) is the ORIGINAL C with a plain sun.** It is superseded by
+  the two above and is only still generated so older links resolve. Delete it
+  once nothing points at it.
+- **A and B were not chosen.** Delete them too, so nobody reaches for the wrong
+  mark by accident.
+- **The website still carries the old sun seal.** It was left untouched on
+  purpose — see "The website has not been changed yet" below.
+
+| | Direction | Status |
+|---|---|---|
+| **A** | **Letterhead** — serif wordmark, dune rule, registered descriptor | not chosen |
+| **B** | **Caravan** — open dune roundel + stacked sans wordmark | not chosen |
+| **C** | **Seal** — solid navy roundel + serif wordmark | **chosen** |
+| C `c-*` | the first C, plain sun | superseded |
+| C `c-moon-*` | evening, no caravan | **live option** |
+| C `c-caravan-*` | evening with caravan | **live option** |
+
+### The website has not been changed yet
+
+`site/` still renders the original sun seal, inline, in three places (the bar,
+the navigation panel and the footer sign-off) plus the favicon. Swapping it is a
+small job but a deliberate one, because the site does not link these files — it
+reproduces the mark as inline SVG so the disc can take `currentColor` and go
+navy on the page, cream over the film and warm off-white in dark mode.
+
+To move the site onto whichever variant is chosen, update `mark()` in
+`site/_build/assemble_catalogue.py` and `site/assets/img/favicon.svg`, then
+rerun the three generators. Nothing else reads the mark.
+
+### Two things worth knowing about the drawing
+
+- **It is strictly two-ink, with no gradient.** A sunset glow was considered and
+  rejected: the single-ink builds knock the whole scene out of the disc with a
+  mask, and a gradient cannot be knocked out, so a glow would have meant the
+  colour mark and the one-ink mark were two different drawings. The evening
+  reads from the navy sky, the crescent and the star instead. If you want a real
+  graduated sunset it is possible, but only as a colour-only variant.
+- **The star has four points, not five.** A crescent beside a five-pointed star
+  is a flag; four points reads as a light in the sky and keeps the mark a
+  company's rather than a country's. One line in `build_logo.py` if you disagree.
 
 ### How C is used on the site
 
@@ -76,9 +155,13 @@ Naming is `arminak-caravan-<direction>-<layout>-<colourway>`:
 
 | Part | Values |
 |---|---|
-| direction | `a` · `b` · `c` |
-| layout | `horizontal` · `stacked` · `mark` (B and C only) |
+| direction | `a` · `b` · `c` · `c-moon` · `c-caravan` |
+| layout | `horizontal` · `stacked` · `mark` (not A — it has no mark) |
 | colourway | `colour` · `navy` · `black` · `white` |
+
+So the two files most people want are
+`arminak-caravan-c-caravan-horizontal-colour.png` and
+`arminak-caravan-c-moon-horizontal-colour.png`.
 
 **Colourways**
 
