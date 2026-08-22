@@ -8,3 +8,19 @@ __pycache__/
 site/_p.html
 site/_p2.html
 _safaritest.html
+
+# Full-copy backup of the pre-v3 site. Superseded by git history; it was a zip
+# at the repo root until it was unpacked here, and 3 MB of duplicate HTML is
+# not worth tracking twice.
+site-backup-v2/
+
+# The client's inbox — originals arrive here by WhatsApp, complete with .gdoc
+# link stubs and .DS_Store. The photos that are actually in use are tracked as
+# originals in site/_src/photos/.
+Products/
+
+# Print editions of the identity presentation. Regenerated from
+# build_presentation.py in one command, and only exist to be fed to make_pdf.py;
+# the PDFs themselves are the deliverable and are tracked.
+brand/print-en.html
+brand/print-ru.html
