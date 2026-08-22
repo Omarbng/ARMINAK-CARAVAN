@@ -117,19 +117,7 @@ PAGE = '''<!doctype html>
   </div>
 
 
-  <!-- Closing band. Catalogue, product and contact used to drop straight from
-       content into the footer, which reads as a page that was cut off. Every
-       other page ends on this, so they do too. -->
-  <section class="section section--inverse closing" id="desk">
-    <div class="shell">
-      <h2 class="t-section closing__title fade-up" data-i18n="cat.cta.title">Not in the catalogue?</h2>
-      <p class="closing__copy fade-up stagger-1" data-i18n="cat.cta.copy">Sixteen lines are what we publish, not what we can originate. Name the commodity, the specification and the destination port, and the trade desk will price the route.</p>
-      <div class="closing__actions fade-up stagger-2">
-        <a class="btn btn--primary" href="contact.html#sourcing" data-i18n="cat.cta.btn">Request a sourcing quote</a>
-        <a class="link-quiet" href="contact.html?enq=sell" data-i18n="cat.cta.sell">I have cargo to offer →</a>
-      </div>
-    </div>
-  </section>
+%SOURCING%
 
 </main>
 
@@ -267,7 +255,7 @@ NAV = '''<header class="nav" id="nav">
         <li><a class="navpanel__link" href="index.html"%HOME%><i aria-hidden="true"></i><span data-i18n="nav.home">Home</span></a></li>
         <li><a class="navpanel__link" href="catalogue.html"%CAT%><i aria-hidden="true"></i><span data-i18n="nav.catalogue">Catalogue</span></a></li>
         <li><a class="navpanel__link" href="about.html"%ABT%><i aria-hidden="true"></i><span data-i18n="nav.about">About</span></a></li>
-        <li><a class="navpanel__link" href="insights.html"%INS%><i aria-hidden="true"></i><span data-i18n="nav.insights">Market Insights</span></a></li>
+        <li><a class="navpanel__link" href="insights.html"%INS%><i aria-hidden="true"></i><span data-i18n="nav.insights">News</span></a></li>
         <li><a class="navpanel__link" href="contact.html"%CON%><i aria-hidden="true"></i><span data-i18n="nav.contact">Contact</span></a></li>
       </ul>
     </div>
@@ -352,9 +340,6 @@ DRAWER = '''<!-- ==================================================== SPEC / RFQ
           </div>
           <div class="field">
             <label class="field__label" for="rfqPort" data-i18n="form.port">Destination port</label>
-            <!-- Free text, not a menu. The menu offered CIF Jebel Ali, CIF Dammam
-                 and "Other", which reads as a fixed set of routes; the desk
-                 delivers to whichever port the buyer names. -->
             <input class="input" id="rfqPort" name="Destination port" type="text" required
                    data-i18n-ph="form.portPh" placeholder="e.g. CIF Mombasa, or FOB load port">
           </div>
@@ -397,9 +382,9 @@ FOOTER = '''<footer class="footer">
       <div class="footer__desk" id="deskStatus">
         <p class="footer__state">
           <span class="footer__dot" aria-hidden="true"></span>
-          <span class="footer__st footer__st--hours" data-i18n="footer.desk.hours">Desk hours Mon–Fri 09:00–18:00</span>
+          <span class="footer__st footer__st--hours" data-i18n="footer.desk.hours">Desk open 24 / 7</span>
           <span class="footer__st footer__st--open" data-i18n="footer.desk.open">Trading desk open now</span>
-          <span class="footer__st footer__st--shut" data-i18n="footer.desk.shut">Trading desk closed — enquiries answered next business day</span>
+          <span class="footer__st footer__st--shut" data-i18n="footer.desk.shut">Trading desk open</span>
         </p>
         <p class="footer__clock">
           <span class="tabular" id="deskClock">--:--</span>
@@ -414,7 +399,7 @@ FOOTER = '''<footer class="footer">
         <ul class="footer__list">
           <li><a href="catalogue.html" data-i18n="nav.catalogue">Catalogue</a></li>
           <li><a href="about.html" data-i18n="nav.about">About</a></li>
-          <li><a href="insights.html" data-i18n="nav.insights">Market Insights</a></li>
+          <li><a href="insights.html" data-i18n="nav.insights">News</a></li>
           <li><a href="contact.html" data-i18n="nav.contact">Contacts</a></li>
         </ul>
       </div>
@@ -554,11 +539,14 @@ def nav_for(active):
     return n.replace("%SECTIONS%", sections_block(active))
 
 
+SOURCING = (HERE / "_sourcing.html").read_text(encoding="utf-8")
+
 if __name__ == "__main__":
     html = (PAGE
             .replace("%NAV%", nav_for("cat"))
             .replace("%FILTERS%", filters)
             .replace("%CARDS%", cards)
+            .replace("%SOURCING%", SOURCING)
             .replace("%DRAWER%", DRAWER)
             .replace("%FOOTER%", FOOTER))
     (ROOT / "catalogue.html").write_text(html, encoding="utf-8")

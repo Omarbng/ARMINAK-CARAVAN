@@ -100,7 +100,7 @@
         <li><a class="navpanel__link" href="index.html"><i aria-hidden="true"></i><span data-i18n="nav.home">Home</span></a></li>
         <li><a class="navpanel__link" href="catalogue.html" aria-current="page"><i aria-hidden="true"></i><span data-i18n="nav.catalogue">Catalogue</span></a></li>
         <li><a class="navpanel__link" href="about.html"><i aria-hidden="true"></i><span data-i18n="nav.about">About</span></a></li>
-        <li><a class="navpanel__link" href="insights.html"><i aria-hidden="true"></i><span data-i18n="nav.insights">Market Insights</span></a></li>
+        <li><a class="navpanel__link" href="insights.html"><i aria-hidden="true"></i><span data-i18n="nav.insights">News</span></a></li>
         <li><a class="navpanel__link" href="contact.html"><i aria-hidden="true"></i><span data-i18n="nav.contact">Contact</span></a></li>
       </ul>
     </div>
@@ -175,13 +175,6 @@
 
         <p class="pdp__opt-label" data-i18n="pdp.packing">Packing</p>
         <div class="chips" id="pdpChips"></div>
-
-        <!-- The tonnage stepper stood here, defaulting to 500 MT in steps of
-             25. Removed at the client's request: lots run from a single
-             container upward, most often three, so a four-figure default in
-             tonnes both misstates the trade and asks the buyer to price the
-             lot before the desk has. The ask is the button; the volume is a
-             field on the form it opens. -->
         <div class="pdp__buy">
           <button type="button" class="btn btn--primary" id="pdpCta" data-drawer-trigger data-i18n="pdp.cta">Request Quotation</button>
         </div>
@@ -278,9 +271,6 @@
           </div>
           <div class="field">
             <label class="field__label" for="rfqPort" data-i18n="form.port">Destination port</label>
-            <!-- Free text, not a menu. The menu offered CIF Jebel Ali, CIF Dammam
-                 and "Other", which reads as a fixed set of routes; the desk
-                 delivers to whichever port the buyer names. -->
             <input class="input" id="rfqPort" name="Destination port" type="text" required
                    data-i18n-ph="form.portPh" placeholder="e.g. CIF Mombasa, or FOB load port">
           </div>
@@ -323,9 +313,9 @@
       <div class="footer__desk" id="deskStatus">
         <p class="footer__state">
           <span class="footer__dot" aria-hidden="true"></span>
-          <span class="footer__st footer__st--hours" data-i18n="footer.desk.hours">Desk hours Mon–Fri 09:00–18:00</span>
+          <span class="footer__st footer__st--hours" data-i18n="footer.desk.hours">Desk open 24 / 7</span>
           <span class="footer__st footer__st--open" data-i18n="footer.desk.open">Trading desk open now</span>
-          <span class="footer__st footer__st--shut" data-i18n="footer.desk.shut">Trading desk closed — enquiries answered next business day</span>
+          <span class="footer__st footer__st--shut" data-i18n="footer.desk.shut">Trading desk open</span>
         </p>
         <p class="footer__clock">
           <span class="tabular" id="deskClock">--:--</span>
@@ -340,7 +330,7 @@
         <ul class="footer__list">
           <li><a href="catalogue.html" data-i18n="nav.catalogue">Catalogue</a></li>
           <li><a href="about.html" data-i18n="nav.about">About</a></li>
-          <li><a href="insights.html" data-i18n="nav.insights">Market Insights</a></li>
+          <li><a href="insights.html" data-i18n="nav.insights">News</a></li>
           <li><a href="contact.html" data-i18n="nav.contact">Contacts</a></li>
         </ul>
       </div>

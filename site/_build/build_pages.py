@@ -68,6 +68,13 @@ SCRIPTS = '''<script src="assets/js/products.js"></script>
 
 # ============================================================== INDEX =====
 
+# The "How we work" block was removed from the body below at the client's
+# request ("everyone knows how trade works"), and with it five other things
+# they objected to in the same review: naming GAFTA/FOSFA as the contract
+# form, routing all cargo "through the Gulf hub at Jebel Ali", offering cash
+# against documents, promising a reply inside one business day, and a keyword
+# ribbon written for search engines. Do not reinstate any of them without
+# asking the desk.
 INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Global Supply of Agricultural Commodities &amp; Foodstuff | Abu Dhabi") \
             .replace("%DESC%", "ARMINAK CARAVAN FOODSTUFF AND BEVERAGES TRADING LTD — global supply of grain, oils, dairy, sugar and everyday foodstuff from the Black Sea, Turkey and Central Asia. KEZAD Free Zone, Abu Dhabi.") \
             .replace("%EXTRA%", '''<meta property="og:type" content="website">
@@ -332,24 +339,6 @@ INDEX = HEAD.replace("%SLUG%", "").replace("%TITLE%", "ARMINAK CARAVAN — Globa
 </section>
 
 <!-- =============================================================== PROCESS -->
-<!-- The "How we work" block stood here: six numbered steps from enquiry to
-     settlement, plus a keyword ribbon under them. Removed at the client's
-     request — "everyone knows how trade works" — and with it six separate
-     objections it was the only source of:
-
-       · naming GAFTA / FOSFA as the contract form, which reads as though we
-         dictate the paper. Regions differ and the form is negotiated.
-       · "consolidated through the Gulf hub at Jebel Ali" — we deliver to
-         whichever port the buyer names; naming one implies a fixed route.
-       · "cash against documents" as a settlement option. The desk does not
-         accept CAD.
-       · "The trading desk replies within one business day" — contact happens
-         in a day, a price does not.
-       · the keyword ribbon, which was written for search engines rather than
-         for a buyer.
-
-     Do not reinstate any of the above without checking with the desk first. -->
-
 <!-- ====================================================== TRADE CORRIDORS -->
 <section class="section corridor" id="corridors">
   <div class="shell">
@@ -577,13 +566,6 @@ PRODUCT = HEAD.replace("%SLUG%", "product.html").replace("%TITLE%", "Product —
 
         <p class="pdp__opt-label" data-i18n="pdp.packing">Packing</p>
         <div class="chips" id="pdpChips"></div>
-
-        <!-- The tonnage stepper stood here, defaulting to 500 MT in steps of
-             25. Removed at the client's request: lots run from a single
-             container upward, most often three, so a four-figure default in
-             tonnes both misstates the trade and asks the buyer to price the
-             lot before the desk has. The ask is the button; the volume is a
-             field on the form it opens. -->
         <div class="pdp__buy">
           <button type="button" class="btn btn--primary" id="pdpCta" data-drawer-trigger data-i18n="pdp.cta">Request Quotation</button>
         </div>
@@ -665,7 +647,7 @@ INSIGHTS_BODY = INSIGHTS_MAIN[start:end].replace('section--navy', 'section--inve
                                         .replace('<section class="section">', '<section class="section" id="notes">', 1) \
                                         .replace('<section class="section section--inverse closing">', '<section class="section section--inverse closing" id="desk">', 1)
 
-INSIGHTS = HEAD.replace("%SLUG%", "insights.html").replace("%TITLE%", "Market Insights — Grain, Oils &amp; Freight Analysis | ARMINAK CARAVAN") \
+INSIGHTS = HEAD.replace("%SLUG%", "insights.html").replace("%TITLE%", "News — Grain, Oils &amp; Freight Analysis | ARMINAK CARAVAN") \
                .replace("%DESC%", "Weekly market notes from ARMINAK CARAVAN on Black Sea grain, vegetable oils, freight corridors and trade finance.") \
                .replace("%EXTRA%", "") + NAV_INS + "\n\n" + INSIGHTS_BODY + "\n\n" + FOOTER + "\n\n" + \
                SCRIPTS.replace('<script src="assets/js/products.js"></script>\n', '') + '''</body>
@@ -683,13 +665,12 @@ CONTACT_BODY = CONTACT_MAIN[start:end].replace('section--sand2', 'section--tight
                                       .replace('<section class="pagehead">', '<section class="pagehead" id="top">', 1) \
                                       .replace('<section class="section section--tight">', '<section class="section section--tight" id="legal">', 1)
 
-# Unlike the other leaf pages this one keeps products.js: the commodity
-# dropdown on the enquiry form is built from window.PRODUCTS so it cannot drift
-# from the catalogue, and it follows the language toggle for free.
+# products.js came off this page with the commodity dropdown it fed — the field
+# is free text now, so the page has no use for the catalogue data.
 CONTACT = HEAD.replace("%SLUG%", "contact.html").replace("%TITLE%", "Contacts &amp; Institutional Desk | ARMINAK CARAVAN, KEZAD Free Zone Abu Dhabi") \
               .replace("%DESC%", "Contact ARMINAK CARAVAN — KEZAD Free Zone, Abu Dhabi. Buy or supply: RFQ desk, cargo offers and custom sourcing from origin to destination.") \
               .replace("%EXTRA%", "") + NAV_CON + "\n\n" + CONTACT_BODY + "\n\n" + FOOTER + "\n\n" + \
-              SCRIPTS + '''</body>
+              SCRIPTS.replace('<script src="assets/js/products.js"></script>\n', '') + '''</body>
 </html>
 '''
 
@@ -939,6 +920,36 @@ ABOUT_BODY = f'''<main id="main">
 </section>
 
 <!-- =============================================================== CLOSING -->
+<!-- Sourcing & Procurement, from the client's сайт2.pdf brief. Emitted here
+     rather than written per page: it now appears at the end of the catalogue —
+     where a buyer who did not find their line is actually standing — on the
+     About page, and on Contact above the enquiry desk. -->
+<section class="section--tight" id="sourcing">
+  <div class="shell">
+    <div class="sourcing__intro fade-up">
+      <span class="label" data-i18n="src.tag">Sourcing &amp; Procurement</span>
+      <h2 class="t-section sourcing__title" data-i18n="src.title">Beyond our catalogue: global sourcing and custom procurement</h2>
+      <p class="sourcing__copy" data-i18n="src.copy">Looking for a specific commodity, a custom specification, or a volume that is not listed in our catalogue? Or are you a producer seeking direct distribution into the GCC and the global corridors? We form and execute tailored trade contracts from origin to destination.</p>
+    </div>
+
+    <div class="sourcing__paths">
+      <article class="path fade-up">
+        <span class="path__n tabular">01</span>
+        <h3 class="t-card path__title" data-i18n="src.buy.title">I am a buyer</h3>
+        <p class="path__copy" data-i18n="src.buy.copy">Name the commodity, the GOST or ISO parameters you need, the volume — in containers or tonnes — and the destination port on CIF or FOB terms. The trade desk originates the cargo and comes back with a direct route.</p>
+        <a class="btn btn--outline-ink path__cta" href="contact.html?enq=buy#consultation" data-i18n="src.buy.cta">Submit an RFQ</a>
+      </article>
+
+      <article class="path fade-up stagger-1">
+        <span class="path__n tabular">02</span>
+        <h3 class="t-card path__title" data-i18n="src.sell.title">I am a supplier or producer</h3>
+        <p class="path__copy" data-i18n="src.sell.copy">Have grain, foodstuff or agricultural commodities ready for export? Send the product specification, the laboratory analysis, the available volume and the origin. You get immediate access to buyers in the GCC and the international hubs.</p>
+        <a class="btn btn--outline-ink path__cta" href="contact.html?enq=sell#consultation" data-i18n="src.sell.cta">Offer a cargo</a>
+      </article>
+    </div>
+  </div>
+</section>
+
 <section class="section section--inverse closing" id="desk">
   <div class="shell">
     <h2 class="t-section closing__title fade-up" data-i18n="ab.cta.title">Discuss your supply requirements</h2>

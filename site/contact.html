@@ -100,7 +100,7 @@
         <li><a class="navpanel__link" href="index.html"><i aria-hidden="true"></i><span data-i18n="nav.home">Home</span></a></li>
         <li><a class="navpanel__link" href="catalogue.html"><i aria-hidden="true"></i><span data-i18n="nav.catalogue">Catalogue</span></a></li>
         <li><a class="navpanel__link" href="about.html"><i aria-hidden="true"></i><span data-i18n="nav.about">About</span></a></li>
-        <li><a class="navpanel__link" href="insights.html"><i aria-hidden="true"></i><span data-i18n="nav.insights">Market Insights</span></a></li>
+        <li><a class="navpanel__link" href="insights.html"><i aria-hidden="true"></i><span data-i18n="nav.insights">News</span></a></li>
         <li><a class="navpanel__link" href="contact.html" aria-current="page"><i aria-hidden="true"></i><span data-i18n="nav.contact">Contact</span></a></li>
       </ul>
     </div>
@@ -195,7 +195,7 @@
         <article class="path fade-up">
           <span class="path__n tabular">01</span>
           <h3 class="t-card path__title" data-i18n="src.buy.title">I am a buyer</h3>
-          <p class="path__copy" data-i18n="src.buy.copy">Name the commodity, the GOST or ISO parameters you need, the volume in tonnes, your target price and the destination port on CIF or FOB terms. The trade desk originates the cargo and comes back with a direct route.</p>
+          <p class="path__copy" data-i18n="src.buy.copy">Name the commodity, the GOST or ISO parameters you need, the volume — in containers or tonnes — and the destination port on CIF or FOB terms. The trade desk originates the cargo and comes back with a direct route.</p>
           <button type="button" class="btn btn--outline-ink path__cta" data-enq-go="buy" data-i18n="src.buy.cta">Submit an RFQ</button>
         </article>
 
@@ -238,7 +238,7 @@
             </div>
             <div>
               <dt data-i18n="con.hours">Desk hours</dt>
-              <dd data-i18n="con.hoursVal">Sunday–Thursday, 09:00–18:00 (GST, UTC+4)</dd>
+              <dd data-i18n="con.hoursVal">24 / 7</dd>
             </div>
             <div>
               <dt data-i18n="con.langs">Correspondence</dt>
@@ -311,18 +311,10 @@
 
             <!-- ------------------------------------------------ buy / RFQ -->
             <div class="enq__panel" id="enqPanelBuy" role="tabpanel" aria-labelledby="enqTabBuy" data-enq-panel="buy">
-              <div class="field-row">
               <div class="field">
                 <label class="field__label" for="bCommodity" data-i18n="enq.commodity">Commodity</label>
-                <select class="select" id="bCommodity" name="Commodity" data-commodity required>
-                  <option value="" selected disabled data-i18n="enq.pick">Select a commodity…</option>
-                  <option value="Other / Custom Commodity" data-i18n="enq.other">Other / Custom Commodity</option>
-                </select>
-              </div>
-                <div class="field" data-commodity-other hidden>
-                  <label class="field__label" for="bOther" data-i18n="enq.otherName">Which commodity?</label>
-                  <input class="input" id="bOther" name="Custom commodity" type="text" data-i18n-ph="enq.otherPh" placeholder="e.g. sunflower meal, 37% protein">
-                </div>
+                <input class="input" id="bCommodity" name="Commodity" type="text" required
+                       data-i18n-ph="enq.commodityPh" placeholder="e.g. feed barley, or sunflower meal 37 percent protein">
               </div>
 
               <div class="field-row">
@@ -332,24 +324,11 @@
                 </div>
                 <div class="field">
                   <label class="field__label" for="bPort" data-i18n="form.port">Destination port</label>
-                  <!-- Free text, not a menu. The menu offered CIF Jebel Ali, CIF Dammam
-                 and "Other", which reads as a fixed set of routes; the desk
-                 delivers to whichever port the buyer names. -->
                   <input class="input" id="bPort" name="Destination port" type="text" required
                          data-i18n-ph="form.portPh" placeholder="e.g. CIF Mombasa, or FOB load port">
                 </div>
               </div>
 
-              <div class="field-row">
-                <div class="field">
-                  <label class="field__label" for="bTarget" data-i18n="enq.target">Target price (USD/MT)</label>
-                  <input class="input tabular" id="bTarget" name="Target price (USD/MT)" type="text" inputmode="decimal" data-i18n-ph="enq.targetPh" placeholder="indicative — optional">
-                </div>
-                <div class="field">
-                  <label class="field__label" for="bShipment" data-i18n="enq.shipment">Shipment period</label>
-                  <input class="input" id="bShipment" name="Shipment period" type="text" data-i18n-ph="enq.shipmentPh" placeholder="e.g. Q4 2026">
-                </div>
-              </div>
 
               <div class="field">
                 <label class="field__label" for="bSpec" data-i18n="enq.reqSpec">Required specification</label>
@@ -373,18 +352,10 @@
 
             <!-- --------------------------------------------- sell / supply -->
             <div class="enq__panel" id="enqPanelSell" role="tabpanel" aria-labelledby="enqTabSell" data-enq-panel="sell" hidden>
-              <div class="field-row">
               <div class="field">
                 <label class="field__label" for="sCommodity" data-i18n="enq.commodity">Commodity</label>
-                <select class="select" id="sCommodity" name="Commodity" data-commodity required>
-                  <option value="" selected disabled data-i18n="enq.pick">Select a commodity…</option>
-                  <option value="Other / Custom Commodity" data-i18n="enq.other">Other / Custom Commodity</option>
-                </select>
-              </div>
-                <div class="field" data-commodity-other hidden>
-                  <label class="field__label" for="sOther" data-i18n="enq.otherName">Which commodity?</label>
-                  <input class="input" id="sOther" name="Custom commodity" type="text" data-i18n-ph="enq.otherPh" placeholder="e.g. sunflower meal, 37% protein">
-                </div>
+                <input class="input" id="sCommodity" name="Commodity" type="text" required
+                       data-i18n-ph="enq.commodityPh" placeholder="e.g. feed barley, or sunflower meal 37 percent protein">
               </div>
 
               <div class="field-row">
@@ -535,9 +506,9 @@
       <div class="footer__desk" id="deskStatus">
         <p class="footer__state">
           <span class="footer__dot" aria-hidden="true"></span>
-          <span class="footer__st footer__st--hours" data-i18n="footer.desk.hours">Desk hours Mon–Fri 09:00–18:00</span>
+          <span class="footer__st footer__st--hours" data-i18n="footer.desk.hours">Desk open 24 / 7</span>
           <span class="footer__st footer__st--open" data-i18n="footer.desk.open">Trading desk open now</span>
-          <span class="footer__st footer__st--shut" data-i18n="footer.desk.shut">Trading desk closed — enquiries answered next business day</span>
+          <span class="footer__st footer__st--shut" data-i18n="footer.desk.shut">Trading desk open</span>
         </p>
         <p class="footer__clock">
           <span class="tabular" id="deskClock">--:--</span>
@@ -552,7 +523,7 @@
         <ul class="footer__list">
           <li><a href="catalogue.html" data-i18n="nav.catalogue">Catalogue</a></li>
           <li><a href="about.html" data-i18n="nav.about">About</a></li>
-          <li><a href="insights.html" data-i18n="nav.insights">Market Insights</a></li>
+          <li><a href="insights.html" data-i18n="nav.insights">News</a></li>
           <li><a href="contact.html" data-i18n="nav.contact">Contacts</a></li>
         </ul>
       </div>
@@ -630,7 +601,6 @@
   </div>
 </footer>
 
-<script src="assets/js/products.js"></script>
 <script src="assets/js/i18n-catalogue.js"></script>
 <script src="assets/js/i18n.js"></script>
 <script src="assets/js/main.js"></script>

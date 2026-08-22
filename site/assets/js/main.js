@@ -1222,8 +1222,10 @@
     var out = qs('#deskClock');
     if (!host || !out) return;
 
-    var OPEN_H = 9, CLOSE_H = 18;
-    var WORKDAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];
+    /* The desk runs 24/7 at the client's instruction, so there is no window to
+       be outside of. The clock stays — Gulf time is the useful part for a
+       counterparty deciding whether to call now — but the state is constant
+       and the "closed" string is no longer reachable. */
 
     var fmt;
     try {
@@ -1243,10 +1245,8 @@
       var h = parseInt(part.hour, 10);
       if (h === 24) h = 0;         /* some engines emit 24 at midnight */
 
-      var open = WORKDAYS.indexOf(part.weekday) > -1 && h >= OPEN_H && h < CLOSE_H;
-
       out.textContent = (h < 10 ? '0' + h : h) + ':' + part.minute;
-      host.setAttribute('data-open', open ? '1' : '0');
+      host.setAttribute('data-open', '1');
     }
 
     tick();
@@ -1331,57 +1331,11 @@
       });
     });
 
-    /* --------------------------------------------------- commodity lists */
-
-    function fillCommodities() {
-      if (!window.PRODUCTS || !window.PRODUCT_ORDER) return;
-      var ru = window.ACI18N && window.ACI18N.current() === 'ru';
-
-      qsa('[data-commodity]', form).forEach(function (sel) {
-        var chosen = sel.value;
-        /* Keep the placeholder and the "Other" escape hatch; everything
-           between them is the catalogue and is rebuilt on every language
-           change. */
-        qsa('option[data-from-catalogue]', sel).forEach(function (o) { o.remove(); });
-        var other = qs('option[value="Other / Custom Commodity"]', sel);
-
-        window.PRODUCT_ORDER.forEach(function (slug) {
-          var p = window.PRODUCTS[slug];
-          if (!p) return;
-          var L = (ru && p.ru) ? p.ru : p.en;
-          var opt = document.createElement('option');
-          /* The value stays English — the trading desk reads the enquiry, and
-             an RFQ that names the commodity in the visitor's language is one
-             more thing to translate before it can be quoted. */
-          opt.value = p.en.name + ' — ' + p.en.grade;
-          opt.textContent = L.name + ' — ' + L.grade;
-          opt.setAttribute('data-from-catalogue', '');
-          sel.insertBefore(opt, other);
-        });
-
-        if (chosen) sel.value = chosen;
-      });
-    }
-
-    fillCommodities();
-    document.addEventListener('ac:lang', fillCommodities);
-
-    /* "Other" reveals a free-text field, and only then is it required. */
-    qsa('[data-commodity]', form).forEach(function (sel) {
-      var extra = qs('[data-commodity-other]', sel.closest('.field-row') || form);
-      if (!extra) return;
-      var input = qs('input', extra);
-
-      sel.addEventListener('change', function () {
-        var other = sel.value === 'Other / Custom Commodity';
-        extra.hidden = !other;
-        input.required = other;
-        /* select() owns the disabled flag for the whole panel, so this only
-           steps in while the panel is live. */
-        if (other && !sel.disabled) input.focus();
-        if (!other) input.value = '';
-      });
-    });
+    /* The commodity field is free text now. It used to be a <select> built from
+       window.PRODUCTS, with an "Other" option that revealed a second input — a
+       tidy mechanism that could still only offer the sixteen published lines,
+       when the whole purpose of this desk is the cargo that is not in the
+       catalogue. "Убрать выпадающий список а позволить им написать вручную." */
 
     /* Deep link, so a supplier-facing link can open on the supplier's route:
        contact.html?enq=sell, or #sell. Defaults to the buyer. */
