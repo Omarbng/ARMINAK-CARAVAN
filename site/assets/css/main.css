@@ -1025,28 +1025,6 @@ button, input, select, textarea { font: inherit; color: inherit; }
   gap: 16px;
 }
 
-/* The language pair in the panel. It reads as a labelled setting here rather
-   than as the bare pair it is in the bar, because the panel is a list of
-   choices and an unlabelled EN/RU in it looks like two more links. */
-.navpanel__lang {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  width: 100%;
-  padding-bottom: 4px;
-}
-
-.navpanel__langLabel {
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.navpanel__lang .lang__btn:not(.seg__btn) { font-size: 13px; }
-
 .navpanel__mail {
   font-family: var(--font-mono);
   font-size: 11px;
